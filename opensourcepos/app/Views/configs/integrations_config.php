@@ -9,7 +9,6 @@
     <div id="config_wrapper">
         <fieldset id="config_info">
 
-            <div id="required_fields_message"><?= lang('Common.fields_required_message') ?></div>
             <div id="integrations_header"><?= lang('Config.mailchimp_configuration') ?></div>
             <ul id="mailchimp_error_message_box" class="error_message_box"></ul>
 

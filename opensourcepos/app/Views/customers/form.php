@@ -11,15 +11,11 @@
  */
 ?>
 
-<div id="required_fields_message"><?= lang('Common.fields_required_message') ?></div>
-<ul id="error_message_box" class="error_message_box"></ul>
+<ul id="error_message_box" class="error_message_box text-sm text-red-500 mb-4"></ul>
 
-<?= form_open("$controller_name/save/$person_info->person_id", ['id' => 'customer_form', 'class' => 'form-horizontal']) ?>
+<?= form_open("$controller_name/save/$person_info->person_id", ['id' => 'customer_form', 'class' => 'space-y-6']) ?>
 
     <ul class="nav nav-tabs nav-justified" data-tabs="tabs">
-        <li class="active" role="presentation">
-            <a data-toggle="tab" href="#customer_basic_info"><?= lang('Customers.basic_information') ?></a>
-        </li>
         <?php if (!empty($stats)) { ?>
             <li role="presentation">
                 <a data-toggle="tab" href="#customer_stats_info"><?= lang('Customers.stats_info') ?></a>
@@ -32,172 +28,167 @@
         <?php } ?>
     </ul>
 
-    <div class="tab-content">
+    <div class="tab-content py-4">
         <div class="tab-pane fade in active" id="customer_basic_info">
-            <fieldset>
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.consent'), 'consent', ['class' => 'required control-label col-xs-3']) ?>
-                    <div class="col-xs-1">
-                        <?= form_checkbox('consent', 1, $person_info->consent == '' ? !$config['enforce_privacy'] : (bool)$person_info->consent) ?>
-                    </div>
+            <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group w-full md:col-span-2 flex items-center gap-2">
+                    <?= form_checkbox([
+                        'name'    => 'consent',
+                        'id'      => 'consent',
+                        'value'   => 1,
+                        'checked' => $person_info->consent == '' ? !$config['enforce_privacy'] : (bool)$person_info->consent,
+                        'class'   => 'rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
+                    ]) ?>
+                    <?= form_label(lang('Customers.consent'), 'consent', ['class' => 'text-sm text-slate-700 cursor-pointer mb-0 required']) ?>
                 </div>
 
-                <?= view('people/form_basic_info') ?>
+                <div class="md:col-span-2">
+                    <?= view('people/form_basic_info') ?>
+                </div>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.discount_type'), 'discount_type', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-8">
-                        <label class="radio-inline">
+                <div class="form-group w-full md:col-span-2">
+                    <?= form_label(lang('Customers.discount_type'), 'discount_type', ['class' => 'label text-sm font-medium text-slate-700 mb-2 block']) ?>
+                    <div class="flex items-center gap-4">
+                        <label class="inline-flex items-center gap-2 cursor-pointer">
                             <?= form_radio([
                                 'name'    => 'discount_type',
                                 'type'    => 'radio',
                                 'id'      => 'discount_type',
                                 'value'   => 0,
-                                'checked' => $person_info->discount_type == PERCENT
-                            ]) ?> <?= lang('Customers.discount_percent') ?>
+                                'checked' => $person_info->discount_type == PERCENT,
+                                'class'   => 'text-indigo-600 focus:ring-indigo-500 border-gray-300'
+                            ]) ?> 
+                            <span class="text-sm text-slate-700"><?= lang('Customers.discount_percent') ?></span>
                         </label>
-                        <label class="radio-inline">
+                        <label class="inline-flex items-center gap-2 cursor-pointer">
                             <?= form_radio([
                                 'name'    => 'discount_type',
                                 'type'    => 'radio',
                                 'id'      => 'discount_type',
                                 'value'   => 1,
-                                'checked' => $person_info->discount_type == FIXED
-                            ]) ?> <?= lang('Customers.discount_fixed') ?>
+                                'checked' => $person_info->discount_type == FIXED,
+                                'class'   => 'text-indigo-600 focus:ring-indigo-500 border-gray-300'
+                            ]) ?>
+                            <span class="text-sm text-slate-700"><?= lang('Customers.discount_fixed') ?></span>
                         </label>
                     </div>
                 </div>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.discount'), 'discount', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-3">
-                        <div class="input-group input-group-sm">
-                            <?= form_input([
-                                'name'    => 'discount',
-                                'id'      => 'discount',
-                                'class'   => 'form-control input-sm',
-                                'onClick' => 'this.select();',
-                                'value'   => $person_info->discount_type === FIXED ? to_currency_no_money($person_info->discount) : to_decimals($person_info->discount)
-                            ]) ?>
-                        </div>
-                    </div>
+                <div class="form-group w-full">
+                    <?= form_label(lang('Customers.discount'), 'discount', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                    <?= form_input([
+                        'name'    => 'discount',
+                        'id'      => 'discount',
+                        'class'   => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                        'onClick' => 'this.select();',
+                        'value'   => $person_info->discount_type === FIXED ? to_currency_no_money($person_info->discount) : to_decimals($person_info->discount)
+                    ]) ?>
                 </div>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.company_name'), 'customer_company_name', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-8">
-                        <?= form_input([
-                            'name'  => 'company_name',
-                            'id'    => 'customer_company_name',
-                            'class' => 'form-control input-sm',
-                            'value' => $person_info->company_name
-                        ]) ?>
-                    </div>
+                <div class="form-group w-full">
+                    <?= form_label(lang('Customers.company_name'), 'customer_company_name', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                    <?= form_input([
+                        'name'  => 'company_name',
+                        'id'    => 'customer_company_name',
+                        'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                        'value' => $person_info->company_name
+                    ]) ?>
                 </div>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.account_number'), 'account_number', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-4">
-                        <?= form_input([
-                            'name'  => 'account_number',
-                            'id'    => 'account_number',
-                            'class' => 'form-control input-sm',
-                            'value' => $person_info->account_number
-                        ]) ?>
-                    </div>
+                <div class="form-group w-full">
+                    <?= form_label(lang('Customers.account_number'), 'account_number', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                    <?= form_input([
+                        'name'  => 'account_number',
+                        'id'    => 'account_number',
+                        'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                        'value' => $person_info->account_number
+                    ]) ?>
                 </div>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.tax_id'), 'tax_id', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-4">
-                        <?= form_input([
-                            'name'  => 'tax_id',
-                            'id'    => 'tax_id',
-                            'class' => 'form-control input-sm',
-                            'value' => $person_info->tax_id
-                        ]) ?>
-                    </div>
+                <div class="form-group w-full">
+                    <?= form_label(lang('Customers.tax_id'), 'tax_id', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                    <?= form_input([
+                        'name'  => 'tax_id',
+                        'id'    => 'tax_id',
+                        'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                        'value' => $person_info->tax_id
+                    ]) ?>
                 </div>
 
                 <?php if ($config['customer_reward_enable']): ?>
-                    <div class="form-group form-group-sm">
-                        <?= form_label(lang('Customers.rewards_package'), 'rewards', ['class' => 'control-label col-xs-3']) ?>
-                        <div class="col-xs-8">
-                            <?= form_dropdown(
-                                'package_id',
-                                $packages,
-                                $selected_package,
-                                'class="form-control input-sm"'
-                            ) ?>
-                        </div>
+                    <div class="form-group w-full">
+                        <?= form_label(lang('Customers.rewards_package'), 'rewards', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                        <?= form_dropdown(
+                            'package_id',
+                            $packages,
+                            $selected_package,
+                            'class="flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"'
+                        ) ?>
                     </div>
 
-                    <div class="form-group form-group-sm">
-                        <?= form_label(lang('Customers.available_points'), 'available_points', ['class' => 'control-label col-xs-3']) ?>
-                        <div class="col-xs-4">
-                            <?= form_input([
-                                'name'     => 'available_points',
-                                'id'       => 'available_points',
-                                'class'    => 'form-control input-sm',
-                                'value'    => $person_info->points,
-                                'disabled' => ''
-                            ]) ?>
-                        </div>
+                    <div class="form-group w-full">
+                        <?= form_label(lang('Customers.available_points'), 'available_points', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                        <?= form_input([
+                            'name'     => 'available_points',
+                            'id'       => 'available_points',
+                            'class'    => 'flex h-10 w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none cursor-not-allowed',
+                            'value'    => $person_info->points,
+                            'disabled' => ''
+                        ]) ?>
                     </div>
                 <?php endif; ?>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.taxable'), 'taxable', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-1">
-                        <?= form_checkbox('taxable', 1, $person_info->taxable == 1) ?>
-                    </div>
+                <div class="form-group w-full md:col-span-2 flex items-center gap-2">
+                    <?= form_checkbox([
+                        'name'    => 'taxable',
+                        'id'      => 'taxable',
+                        'value'   => 1,
+                        'checked' => $person_info->taxable == 1,
+                        'class'   => 'rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50'
+                    ]) ?>
+                    <?= form_label(lang('Customers.taxable'), 'taxable', ['class' => 'text-sm text-slate-700 cursor-pointer mb-0']) ?>
                 </div>
 
                 <?php if ($use_destination_based_tax) { ?>
-                    <div class="form-group form-group-sm">
-                        <?= form_label(lang('Customers.tax_code'), 'sales_tax_code_name', ['class' => 'control-label col-xs-3']) ?>
-                        <div class="col-xs-8">
-                            <div class="input-group input-group-sm">
-                                <?= form_input([
-                                    'name'  => 'sales_tax_code_name',
-                                    'id'    => 'sales_tax_code_name',
-                                    'class' => 'form-control input-sm',
-                                    'size'  => '50',
-                                    'value' => $sales_tax_code_label
-                                ]) ?>
-                                <?= form_hidden('sales_tax_code_id', $person_info->sales_tax_code_id) ?>
-                            </div>
+                    <div class="form-group w-full md:col-span-2">
+                        <?= form_label(lang('Customers.tax_code'), 'sales_tax_code_name', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                        <div class="relative">
+                            <?= form_input([
+                                'name'  => 'sales_tax_code_name',
+                                'id'    => 'sales_tax_code_name',
+                                'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                                'value' => $sales_tax_code_label
+                            ]) ?>
+                            <?= form_hidden('sales_tax_code_id', $person_info->sales_tax_code_id) ?>
                         </div>
                     </div>
                 <?php } ?>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.date'), 'date', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-8">
-                        <div class="input-group">
-                            <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-calendar"></span></span>
-                            <?= form_input([
-                                'name'     => 'date',
-                                'id'       => 'datetime',
-                                'class'    => 'form-control input-sm',
-                                'value'    => to_datetime(strtotime($person_info->date)),
-                                'readonly' => 'true'
-                            ]) ?>
+                <div class="form-group w-full">
+                    <?= form_label(lang('Customers.date'), 'date', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-slate-400">
+                            <i data-lucide="calendar" class="w-4 h-4"></i>
                         </div>
-                    </div>
-                </div>
-
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Customers.employee'), 'employee', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-8">
                         <?= form_input([
-                            'name'     => 'employee',
-                            'id'       => 'employee',
-                            'class'    => 'form-control input-sm',
-                            'value'    => $employee,
+                            'name'     => 'date',
+                            'id'       => 'datetime',
+                            'class'    => 'flex h-10 w-full rounded-md border border-slate-300 bg-slate-100 ps-10 pe-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none cursor-not-allowed',
+                            'value'    => to_datetime(strtotime($person_info->date)),
                             'readonly' => 'true'
                         ]) ?>
                     </div>
+                </div>
+
+                <div class="form-group w-full">
+                    <?= form_label(lang('Customers.employee'), 'employee', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                    <?= form_input([
+                        'name'     => 'employee',
+                        'id'       => 'employee',
+                        'class'    => 'flex h-10 w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none cursor-not-allowed',
+                        'value'    => $employee,
+                        'readonly' => 'true'
+                    ]) ?>
                 </div>
 
                 <?= form_hidden('employee_id', $person_info->employee_id) ?>

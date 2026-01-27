@@ -1,0 +1,31 @@
+/* 
+ * Legacy Bootstrap Dialog styles stripped to allow 
+ * for modern overrides in modern.css 
+ */
+
+.bootstrap-dialog .modal-header {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+
+.bootstrap-dialog .bootstrap-dialog-title {
+  display: inline-block;
+}
+
+.bootstrap-dialog .bootstrap-dialog-close-button {
+  float: right;
+}
+
+.bootstrap-dialog .icon-spin {
+  display: inline-block;
+  animation: spin 2s infinite linear;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}

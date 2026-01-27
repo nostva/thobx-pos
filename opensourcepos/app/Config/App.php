@@ -117,7 +117,7 @@ class App extends BaseConfig
     | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
     |
     */
-    public string $permittedURIChars = 'a-z 0-9~%.:_\-';
+    public string $permittedURIChars = '';
 
     /**
      * --------------------------------------------------------------------------
@@ -157,49 +157,8 @@ class App extends BaseConfig
      * @var list<string>
      */
     public array $supportedLocales = [
-        'ar-EG',
-        'ar-LB',
-        'az',
-        'bg',
-        'bs',
-        'ckb',
-        'cs',
-        'da',
-        'de-CH',
-        'de-DE',
-        'el',
         'en',
-        'en-GB',
-        'es-ES',
-        'es-MX',
-        'fa',
-        'fr',
-        'he',
-        'hr-HR',
-        'hu',
-        'hy',
-        'id',
-        'it',
-        'km',
-        'lo',
-        'ml',
-        'nb',
-        'nl-BE',
-        'nl-NL',
-        'pl',
-        'pt-BR',
-        'ro',
-        'ru',
-        'sv',
-        'ta',
-        'th',
-        'tl',
-        'tr',
-        'uk',
-        'ur',
-        'vi',
-        'zh-Hans',
-        'zh-Hant',
+        'ar-EG',
     ];
 
     /**

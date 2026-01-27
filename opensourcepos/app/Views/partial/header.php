@@ -12,13 +12,113 @@ $request = Services::request();
 ?>
 
 <!doctype html>
-<html lang="<?= $request->getLocale() ?>">
+<html lang="<?= current_language_code() ?>" dir="<?= (strpos(current_language_code(), 'ar') === 0) ? 'rtl' : 'ltr' ?>">
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="<?= base_url() ?>">
     <title><?= esc($config['company']) . ' | ' . lang('Common.powered_by') . ' OSPOS ' . esc(config('App')->application_version) ?></title>
     <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+
+    <script>
+    // Modern UI Configuration
+    window.tailwind = {
+        config: {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
+                    },
+                    fontSize: {
+                        'sm': '0.9375rem', // ~15px
+                        'xs': '0.8125rem', // ~13px
+                    }
+                }
+            }
+        }
+    };
+    </script>
+
+    <style>
+        /* Modern Modal Overrides */
+        .modal-content {
+            border: none;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            border-radius: 0.75rem; /* rounded-xl */
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid #f1f5f9; /* slate-100 */
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-start-start-radius: 0.75rem;
+            border-start-end-radius: 0.75rem;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.125rem; /* text-lg */
+            color: #0f172a; /* slate-900 */
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            color: #334155; /* slate-700 */
+        }
+
+        .modal-footer {
+            border-top: 1px solid #f1f5f9; /* slate-100 */
+            padding: 1.25rem 1.5rem;
+            background-color: #f8fafc; /* slate-50 */
+            border-end-start-radius: 0.75rem;
+            border-end-end-radius: 0.75rem;
+        }
+
+        .modal-backdrop.in {
+            opacity: 0.5;
+            background-color: #0f172a; /* slate-900 */
+        }
+        
+        /* Fix close button */
+        .bootstrap-dialog-close-button {
+            display: none !important; 
+        }
+
+        /* Legacy Print Hacks - Bulletproof suppression */
+        @media print {
+            @page {
+                margin: 0;
+            }
+            .no-print, .print_hide, #menubar, .sidebar, .top-nav, .topbar, #sidebar-toggle, #debug-icon, #debug-bar, #toolbarContainer {
+                display: none !important;
+                visibility: hidden !important;
+                height: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            .dashboard-container {
+                display: block !important;
+            }
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                background: #fff !important;
+            }
+            .main-content {
+                margin: 0 !important;
+                padding: 5mm !important;
+            }
+            .page-container {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+        }
+    </style>
+
     <link rel="stylesheet" href="<?= 'resources/bootswatch/' . (empty($config['theme']) ? 'flatly' : esc($config['theme'])) . '/bootstrap.min.css' ?>">
 
     <?php if (ENVIRONMENT == 'development' || get_cookie('debug') == 'true' || $request->getGet('debug') == 'true') : ?>
@@ -98,60 +198,153 @@ $request = Services::request();
     <?= view('partial/header_js') ?>
     <?= view('partial/lang_lines') ?>
 
-    <style>
-        html {
-            overflow: auto;
+    <!-- Modern UI Assets -->
+    <script src="resources/js/tailwind-cdn.js"></script>
+    <script src="resources/js/lucide.min.js"></script>
+    <link rel="stylesheet" href="resources/css/modern.css">
+
+    <script>
+    // BootstrapDialog Global Configuration
+    $(document).ready(function() {
+        if (typeof BootstrapDialog !== 'undefined') {
+            BootstrapDialog.DEFAULT_TEXTS[BootstrapDialog.TYPE_DEFAULT] = 'Information';
+            BootstrapDialog.defaultOptions.animate = true;
+            BootstrapDialog.defaultOptions.closeIcon = ''; // Handled by CSS
+            BootstrapDialog.defaultOptions.spinicon = 'animate-spin'; // Tailwind animate
         }
-    </style>
+    });
+    </script>
 </head>
 
 <body>
-    <div class="wrapper">
-        <div class="topbar">
-            <div class="container">
-                <div class="navbar-left">
-                    <div id="liveclock"><?= date($config['dateformat'] . ' ' . $config['timeformat']) ?></div>
-                </div>
-
-                <div class="navbar-right" style="margin: 0;">
-                    <?= anchor("home/changePassword/$user_info->person_id", "$user_info->first_name $user_info->last_name", ['class' => 'modal-dlg', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Employees.change_password')]) ?>
-                    <span>&nbsp;|&nbsp;</span>
-                    <?= anchor('home/logout', lang('Login.logout')) ?>
-                </div>
-
-                <div class="navbar-center" style="text-align: center;">
-                    <strong><?= esc($config['company']) ?></strong>
-                </div>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside id="menubar" class="sidebar no-print print_hide">
+            <div class="sidebar-header flex items-center justify-center py-6">
+                <a href="<?= site_url() ?>" class="flex items-center gap-2 no-underline group">
+                    <div class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-xl tracking-tight text-slate-900 leading-none">Anis <span class="text-emerald-500">Rose</span></span>
+                    </div>
+                </a>
             </div>
-        </div>
+            
+            <nav class="sidebar-nav">
+                <?php 
+                $icon_map = [
+                    'items' => 'box',
+                    'sales' => 'shopping-cart',
+                    'receivings' => 'truck',
+                    'customers' => 'users',
+                    'suppliers' => 'briefcase',
+                    'employees' => 'user-check',
+                    'reports' => 'bar-chart-2',
+                    'config' => 'settings',
+                    'giftcards' => 'credit-card',
+                    'messages' => 'mail',
+                    'expenses' => 'dollar-sign',
+                    'taxes' => 'percent',
+                    'home' => 'home',
+                    'office' => 'building'
+                ];
+                ?>
 
-        <div class="navbar navbar-default" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
+                <?php foreach ($allowed_modules as $module): ?>
+                    <a href="<?= base_url($module->module_id) ?>" 
+                       title="<?= lang("Module.$module->module_id") ?>" 
+                       class="sidebar-link <?= $module->module_id == $request->getUri()->getSegment(1) ? 'active' : '' ?>">
+                        <i data-lucide="<?= $icon_map[$module->module_id] ?? 'circle' ?>"></i>
+                        <span><?= lang('Module.' . $module->module_id) ?></span>
+                    </a>
+                <?php endforeach; ?>
+            </nav>
+
+            <!-- Sidebar Footer Removed/Minimal -->
+            <div class="p-4 text-center">
+                <div id="liveclock" class="text-[10px] text-slate-300 font-medium"><?= date($config['dateformat'] . ' ' . $config['timeformat']) ?></div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Navigation -->
+            <header class="top-nav no-print print_hide">
+                <div class="flex items-center gap-4">
+                    <button id="sidebar-toggle" class="lg:hidden p-2 hover:bg-slate-100 rounded-md">
+                        <i data-lucide="menu" class="w-5 h-5"></i>
                     </button>
-
-                    <a class="navbar-brand hidden-sm" href="<?= site_url() ?>">OSPOS</a>
-                </div>
-
-                <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <?php foreach ($allowed_modules as $module): ?>
-                            <li class="<?= $module->module_id == $request->getUri()->getSegment(1) ? 'active' : '' ?>">
-                                <a href="<?= base_url($module->module_id) ?>" title="<?= lang("Module.$module->module_id") ?>" class="menu-icon">
-                                    <img src="<?= base_url("images/menubar/$module->module_id.svg") ?>" style="border: none;" alt="Module Icon"><br>
-                                    <?= lang('Module.' . $module->module_id) ?>
+                    <nav class="flex items-center text-sm font-medium text-slate-500" aria-label="Breadcrumb">
+                        <ol class="flex items-center gap-2">
+                            <li>
+                                <a href="<?= site_url() ?>" class="hover:text-slate-900 transition-colors">
+                                    <i data-lucide="home" class="w-4 h-4"></i>
                                 </a>
                             </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
+                            <?php
+                            $uri = $request->getUri();
+                            $segments = $uri->getSegments();
+                            $accumulatedPath = '';
 
-        <div class="container">
-            <div class="row">
+                            // Only show the first segment if it exists
+                            if (!empty($segments)) {
+                                $segment = $segments[0];
+                                $accumulatedPath = $segment . '/';
+                                $label = lang('Module.' . $segment);
+                                
+                                // Fallback if no translation or it's an ID/Action
+                                if (strpos($label, 'Module.') === 0 || is_numeric($segment)) {
+                                    $label = ucfirst($segment);
+                                }
+                                ?>
+                                <li>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 rtl:rotate-180"></i>
+                                </li>
+                                <li>
+                                    <span class="text-slate-900 font-semibold"><?= $label ?></span>
+                                </li>
+                            <?php } ?>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <!-- User Dropdown / Profile -->
+                    <div class="dropdown">
+                        <div class="flex items-center gap-3 bg-white border border-slate-200 rounded-full pl-1 pr-4 py-1 shadow-sm hover:shadow-md transition-shadow cursor-pointer dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xs font-bold border border-emerald-200">
+                                <?= substr($user_info->first_name, 0, 1) . substr($user_info->last_name, 0, 1) ?>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-slate-800 leading-tight"><?= "$user_info->first_name $user_info->last_name" ?></span>
+                                <span class="text-[10px] text-slate-500 leading-tight"><?= lang('Common.employee') ?></span>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-3 h-3 text-slate-400 ml-2"></i>
+                        </div>
+                        <ul class="dropdown-menu dropdown-menu-right mt-2 min-w-[200px] border-0 shadow-xl rounded-xl p-2 animated fadeIn">
+                            <li class="dropdown-header text-xs font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
+                                <?= lang('Common.account') ?>
+                            </li>
+                            <li>
+                                <?= anchor("home/changePassword/$user_info->person_id", 
+                                    '<i data-lucide="key" class="w-4 h-4 mr-2"></i> ' . lang('Employees.change_password'), 
+                                    ['class' => 'modal-dlg flex items-center px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-colors', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Employees.change_password')]) 
+                                ?>
+                            </li>
+                            <li class="divider my-1 border-slate-100"></li>
+                            <li>
+                                <?= anchor('home/logout', 
+                                    '<i data-lucide="log-out" class="w-4 h-4 mr-2"></i> ' . lang('Login.logout'), 
+                                    ['class' => 'flex items-center px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg transition-colors']) 
+                                ?>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Container -->
+            <main class="page-container animate-page-entry">
+

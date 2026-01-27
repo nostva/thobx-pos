@@ -10,7 +10,6 @@
     <div id="config_wrapper">
         <fieldset id="config_info">
 
-            <div id="required_fields_message"><?= lang('Common.fields_required_message') ?></div>
             <ul id="info_error_message_box" class="error_message_box"></ul>
 
             <div class="form-group form-group-sm">

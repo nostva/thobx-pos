@@ -6,67 +6,56 @@
  */
 ?>
 
-<div id="required_fields_message"><?= lang('Common.fields_required_message') ?></div>
-<ul id="error_message_box" class="error_message_box"></ul>
+<ul id="error_message_box" class="error_message_box text-sm text-red-500 mb-4"></ul>
 
-<?= form_open("$controller_name/save/$person_info->person_id", ['id' => 'supplier_form', 'class' => 'form-horizontal']) ?>
-    <fieldset id="supplier_basic_info">
+<?= form_open("$controller_name/save/$person_info->person_id", ['id' => 'supplier_form', 'class' => 'space-y-6']) ?>
+    <fieldset id="supplier_basic_info" class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-        <div class="form-group form-group-sm">
-            <?= form_label(lang('Suppliers.company_name'), 'company_name', ['class' => 'required control-label col-xs-3']) ?>
-            <div class="col-xs-8">
-                <?= form_input([
-                    'name'  => 'company_name',
-                    'id'    => 'company_name_input',
-                    'class' => 'form-control input-sm',
-                    'value' => html_entity_decode($person_info->company_name)
-                ]) ?>
-            </div>
+        <div class="form-group w-full">
+            <?= form_label(lang('Suppliers.company_name'), 'company_name', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required']) ?>
+            <?= form_input([
+                'name'  => 'company_name',
+                'id'    => 'company_name_input',
+                'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                'value' => html_entity_decode($person_info->company_name)
+            ]) ?>
         </div>
 
-        <div class="form-group form-group-sm">
-            <?= form_label(lang('Suppliers.category'), 'category', ['class' => 'required control-label col-xs-3']) ?>
-            <div class="col-xs-6">
-                <?= form_dropdown('category', $categories, $person_info->category, ['class' => 'form-control', 'id' => 'category']) ?>
-            </div>
+        <div class="form-group w-full">
+            <?= form_label(lang('Suppliers.category'), 'category', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required']) ?>
+            <?= form_dropdown('category', $categories, $person_info->category, ['class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2', 'id' => 'category']) ?>
         </div>
 
-        <div class="form-group form-group-sm">
-            <?= form_label(lang('Suppliers.agency_name'), 'agency_name', ['class' => 'control-label col-xs-3']) ?>
-            <div class="col-xs-8">
-                <?= form_input([
-                    'name'  => 'agency_name',
-                    'id'    => 'agency_name_input',
-                    'class' => 'form-control input-sm',
-                    'value' => $person_info->agency_name
-                ]) ?>
-            </div>
+        <div class="form-group w-full md:col-span-2">
+            <?= form_label(lang('Suppliers.agency_name'), 'agency_name', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+            <?= form_input([
+                'name'  => 'agency_name',
+                'id'    => 'agency_name_input',
+                'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                'value' => $person_info->agency_name
+            ]) ?>
         </div>
 
         <?= view('people/form_basic_info') ?>
 
-        <div class="form-group form-group-sm">
-            <?= form_label(lang('Suppliers.account_number'), 'account_number', ['class' => 'control-label col-xs-3']) ?>
-            <div class="col-xs-8">
-                <?= form_input([
-                    'name'  => 'account_number',
-                    'id'    => 'account_number',
-                    'class' => 'form-control input-sm',
-                    'value' => $person_info->account_number
-                ]) ?>
-            </div>
+        <div class="form-group w-full">
+            <?= form_label(lang('Suppliers.account_number'), 'account_number', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+            <?= form_input([
+                'name'  => 'account_number',
+                'id'    => 'account_number',
+                'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                'value' => $person_info->account_number
+            ]) ?>
         </div>
 
-        <div class="form-group form-group-sm">
-            <?= form_label(lang('Suppliers.tax_id'), 'tax_id', ['class' => 'control-label col-xs-3']) ?>
-            <div class="col-xs-8">
-                <?= form_input([
-                    'name'  => 'tax_id',
-                    'id'    => 'tax_id',
-                    'class' => 'form-control input-sm',
-                    'value' => $person_info->tax_id
-                ]) ?>
-            </div>
+        <div class="form-group w-full">
+            <?= form_label(lang('Suppliers.tax_id'), 'tax_id', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+            <?= form_input([
+                'name'  => 'tax_id',
+                'id'    => 'tax_id',
+                'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                'value' => $person_info->tax_id
+            ]) ?>
         </div>
 
     </fieldset>

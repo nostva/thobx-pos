@@ -8,10 +8,9 @@
  */
 ?>
 
-<div id="required_fields_message"><?= lang('Common.fields_required_message') ?></div>
-<ul id="error_message_box" class="error_message_box"></ul>
+<ul id="error_message_box" class="error_message_box text-sm text-red-500 mb-4"></ul>
 
-<?= form_open("$controller_name/save/$person_info->person_id", ['id' => 'employee_form', 'class' => 'form-horizontal']) ?>
+<?= form_open("$controller_name/save/$person_info->person_id", ['id' => 'employee_form', 'class' => 'space-y-6']) ?>
 
     <ul class="nav nav-tabs nav-justified" data-tabs="tabs">
         <li class="active" role="presentation">
@@ -33,77 +32,73 @@
         </div>
 
         <div class="tab-pane" id="employee_login_info">
-            <fieldset>
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Employees.username'), 'username', ['class' => 'required control-label col-xs-3']) ?>
-                    <div class="col-xs-8">
-                        <div class="input-group">
-                            <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-user"></span></span>
-                            <?= form_input([
-                                'name'  => 'username',
-                                'id'    => 'username',
-                                'class' => 'form-control input-sm',
-                                'value' => $person_info->username
-                            ]) ?>
+            <fieldset class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                <div class="form-group w-full md:col-span-2">
+                    <?= form_label(lang('Employees.username'), 'username', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required']) ?>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-slate-400">
+                            <i data-lucide="user" class="w-4 h-4"></i>
                         </div>
+                        <?= form_input([
+                            'name'  => 'username',
+                            'id'    => 'username',
+                            'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white ps-10 pe-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2',
+                            'value' => $person_info->username
+                        ]) ?>
                     </div>
                 </div>
 
-                <?php $password_label_attributes = $person_info->person_id == "" ? ['class' => 'required'] : []; ?>
+                <?php $password_label_attributes = $person_info->person_id == "" ? ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required'] : ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']; ?>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Employees.password'), 'password', array_merge($password_label_attributes, ['class' => 'control-label col-xs-3'])) ?>
-                    <div class="col-xs-8">
-                        <div class="input-group">
-                            <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-lock"></span></span>
-                            <?= form_password([
-                                'name'  => 'password',
-                                'id'    => 'password',
-                                'class' => 'form-control input-sm'
-                            ]) ?>
+                <div class="form-group w-full">
+                    <?= form_label(lang('Employees.password'), 'password', $password_label_attributes) ?>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-slate-400">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
                         </div>
+                        <?= form_password([
+                            'name'  => 'password',
+                            'id'    => 'password',
+                            'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white ps-10 pe-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2'
+                        ]) ?>
                     </div>
                 </div>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Employees.repeat_password'), 'repeat_password', array_merge($password_label_attributes, ['class' => 'control-label col-xs-3'])) ?>
-                    <div class="col-xs-8">
-                        <div class="input-group">
-                            <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-lock"></span></span>
-                            <?= form_password([
-                                'name'  => 'repeat_password',
-                                'id'    => 'repeat_password',
-                                'class' => 'form-control input-sm'
-                            ]) ?>
+                <div class="form-group w-full">
+                    <?= form_label(lang('Employees.repeat_password'), 'repeat_password', $password_label_attributes) ?>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-slate-400">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
                         </div>
+                        <?= form_password([
+                            'name'  => 'repeat_password',
+                            'id'    => 'repeat_password',
+                            'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white ps-10 pe-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2'
+                        ]) ?>
                     </div>
                 </div>
 
-                <div class="form-group form-group-sm">
-                    <?= form_label(lang('Employees.language'), 'language', ['class' => 'control-label col-xs-3']) ?>
-                    <div class="col-xs-8">
-                        <div class="input-group">
-                            <?php
-                            $languages = get_languages();
-                            $languages[':'] = lang('Employees.system_language');
-                            $language_code = current_language_code();
-                            $language = current_language();
+                <div class="form-group w-full md:col-span-2">
+                    <?= form_label(lang('Employees.language'), 'language', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
+                    <?php
+                    $languages = get_languages();
+                    $languages[':'] = lang('Employees.system_language');
+                    $language_code = current_language_code();
+                    $language = current_language();
 
-                            // If No language is set then it will display "System Language"
-                            if ($language_code === current_language_code(true)) {
-                                $language_code = '';
-                                $language = '';
-                            }
+                    // If No language is set then it will display "System Language"
+                    if ($language_code === current_language_code(true)) {
+                        $language_code = '';
+                        $language = '';
+                    }
 
-                            echo form_dropdown(
-                                'language',
-                                $languages,
-                                "$language_code:$language",
-                                ['class' => 'form-control input-sm']
-                            );
-                            ?>
-                        </div>
-                    </div>
+                    echo form_dropdown(
+                        'language',
+                        $languages,
+                        "$language_code:$language",
+                        ['class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2']
+                    );
+                    ?>
                 </div>
             </fieldset>
         </div>

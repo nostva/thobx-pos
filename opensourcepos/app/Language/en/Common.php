@@ -22,6 +22,7 @@ return [
     "edit"                           => "edit",
     "email"                          => "Email",
     "email_invalid_format"           => "The email address is not in the correct format.",
+    "employee"                       => "Employee",
     "export_csv"                     => "CSV Export",
     "export_csv_no"                  => "No",
     "export_csv_yes"                 => "Yes",

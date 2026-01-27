@@ -1,7 +1,6 @@
 # Dependency directories
 node_modules
 vendor
-public/resources
 public/images/menubar/*
 !public/images/menubar/.gitkeep
 public/license/*
@@ -84,6 +83,5 @@ auth.json
 *copy*
 /writable/logs/*.log
 /writable/debugbar/*.json
-/app/Database/database.sql
 /writable/cache/settings
 /.env.bak

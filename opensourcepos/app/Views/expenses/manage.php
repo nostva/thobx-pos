@@ -50,21 +50,29 @@
 
 <?= view('partial/print_receipt', ['print_after_sale' => false, 'selected_printer' => 'takings_printer']) ?>
 
-<div id="title_bar" class="print_hide btn-toolbar">
-    <button onclick="javascript:printdoc()" class="btn btn-info btn-sm pull-right">
-        <span class="glyphicon glyphicon-print">&nbsp;</span><?= lang('Common.print') ?>
-    </button>
-    <button class="btn btn-info btn-sm pull-right modal-dlg" data-btn-submit="<?= lang('Common.submit') ?>" data-href="<?= "$controller_name/view" ?>" title="<?= lang(ucfirst($controller_name) . '.new') ?>">
-        <span class="glyphicon glyphicon-tags">&nbsp;</span><?= lang(ucfirst($controller_name) . '.new') ?>
-    </button>
+<div id="title_bar" class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-slate-800"><?= lang('Module.' . $controller_name) ?></h2>
+    <div class="flex gap-2">
+        <button onclick="javascript:printdoc()" class="btn btn-default btn-sm flex items-center gap-2">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span><?= lang('Common.print') ?></span>
+        </button>
+        <button class="btn btn-info btn-sm flex items-center gap-2 modal-dlg" data-btn-submit="<?= lang('Common.submit') ?>" data-href="<?= "$controller_name/view" ?>" title="<?= lang(ucfirst($controller_name) . '.new') ?>">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span><?= lang(ucfirst($controller_name) . '.new') ?></span>
+        </button>
+    </div>
 </div>
 
-<div id="toolbar">
-    <div class="pull-left form-inline" role="toolbar">
-        <button id="delete" class="btn btn-default btn-sm print_hide">
-            <span class="glyphicon glyphicon-trash">&nbsp;</span><?= lang('Common.delete') ?>
+<div id="toolbar" class="flex flex-wrap gap-3 mb-6 items-center">
+    <div class="flex gap-2" role="toolbar">
+        <button id="delete" class="btn btn-default btn-sm flex items-center gap-2 text-red-600 hover:bg-red-50 hover:border-red-200">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+            <span><?= lang('Common.delete') ?></span>
         </button>
-        <?= form_input(['name' => 'daterangepicker', 'class' => 'form-control input-sm', 'id' => 'daterangepicker']) ?>
+    </div>
+    <div class="flex gap-2 items-center">
+        <?= form_input(['name' => 'daterangepicker', 'class' => 'form-control input-sm max-w-[200px]', 'id' => 'daterangepicker']) ?>
         <?= form_multiselect('filters[]', esc($filters), [''], [
             'id'                        => 'filters',
             'data-none-selected-text'   => lang('Common.none_selected_text'),
