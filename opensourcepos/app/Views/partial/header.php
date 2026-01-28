@@ -21,7 +21,7 @@ $request = Services::request();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <base href="<?= base_url() ?>">
     <title>
-        <?= esc($config['company']) . ' | ' . lang('Common.powered_by') . ' OSPOS ' . esc(config('App')->application_version) ?>
+        <?= esc($config['company']) ?>
     </title>
     <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
 
@@ -305,7 +305,8 @@ $request = Services::request();
             <!-- Sidebar Footer Removed/Minimal -->
             <div class="p-4 text-center">
                 <div id="liveclock" class="text-[10px] text-slate-300 font-medium">
-                    <?= date($config['dateformat'] . ' ' . $config['timeformat']) ?></div>
+                    <?= date($config['dateformat'] . ' ' . $config['timeformat']) ?>
+                </div>
             </div>
         </aside>
 
