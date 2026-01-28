@@ -230,6 +230,7 @@ $request = Services::request();
     <script src="resources/js/tailwind-cdn.js"></script>
     <script src="resources/js/lucide.min.js"></script>
     <link rel="stylesheet" href="resources/css/modern.css">
+    <link rel="stylesheet" href="css/product-grid.css">
 
     <!-- <script>
     // Initialize Lucide icons on every page load (including Turbo navigation)

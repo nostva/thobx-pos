@@ -376,7 +376,7 @@ class Sale_lib
      */
     public function is_invoice_mode(): bool
     {
-        return ($this->session->get('sales_mode') == 'sale_invoice'    && $this->config['invoice_enable']);
+        return ($this->session->get('sales_mode') == 'sale_invoice' && $this->config['invoice_enable']);
     }
 
     /**
@@ -522,9 +522,9 @@ class Sale_lib
             // Add to existing array
             $payment = [
                 $payment_id => [
-                    'payment_type'    => $payment_id,
-                    'payment_amount'  => $payment_amount,
-                    'cash_refund'     => 0,
+                    'payment_type' => $payment_id,
+                    'payment_amount' => $payment_amount,
+                    'cash_refund' => 0,
                     'cash_adjustment' => $cash_adjustment
                 ]
             ];
@@ -691,7 +691,7 @@ class Sale_lib
         }
 
         // 0 decimal -> 1 / 2 = 0.5, 1 decimals -> 0.1 / 2 = 0.05, 2 decimals -> 0.01 / 2 = 0.005
-        $threshold = bcpow('10', (string)-totals_decimals()) / 2;
+        $threshold = bcpow('10', (string) -totals_decimals()) / 2;
 
         if ($this->get_mode() == 'return') {    // TODO: Convert to ternary notation.
             $totals['payments_cover_total'] = $current_due > -$threshold;
@@ -722,7 +722,7 @@ class Sale_lib
         $sales_total = $this->get_total();
         $amount_due = bcsub($sales_total, $payment_total);
         $precision = totals_decimals();
-        $rounded_due = bccomp((string)round((float)$amount_due, $precision, PHP_ROUND_HALF_UP), '0', $precision);    // TODO: Is round() currency safe?
+        $rounded_due = bccomp((string) round((float) $amount_due, $precision, PHP_ROUND_HALF_UP), '0', $precision);    // TODO: Is round() currency safe?
 
         // Take care of rounding error introduced by round tripping payment amount to the browser
         return $rounded_due == 0 ? '0' : $amount_due;    // TODO: ===
@@ -961,7 +961,7 @@ class Sale_lib
      * @param bool|null $line
      * @return bool
      */
-    public function add_item(string &$item_id, int $item_location, string $quantity = '1', string &$discount = '0.0', int $discount_type = 0, int $price_mode = PRICE_MODE_STANDARD, ?int $kit_price_option = null, ?int $kit_print_option = null, ?string $price_override = null, ?string $description = null, ?string $serialnumber = null, ?int $sale_id = null, bool $include_deleted = false, ?bool $print_option = null, ?bool $line = null): bool
+    public function add_item(string &$item_id, int $item_location, string $quantity = '1', string &$discount = '0.0', int $discount_type = 0, int $price_mode = PRICE_MODE_STANDARD, ?int $kit_price_option = null, ?int $kit_print_option = null, ?string $price_override = null, ?string $cost_price = null, ?string $description = null, ?string $serialnumber = null, ?int $sale_id = null, bool $include_deleted = false, ?bool $print_option = null, ?bool $line = null): bool
     {
         $item_info = $this->item->get_info_by_id_or_number($item_id, $include_deleted);
 
@@ -983,9 +983,11 @@ class Sale_lib
         }
 
         if ($price_mode == PRICE_MODE_KIT) {
-            if (!($kit_price_option == PRICE_OPTION_ALL
-                || $kit_price_option == PRICE_OPTION_KIT  && $item_type == ITEM_KIT
-                || $kit_price_option == PRICE_OPTION_KIT_STOCK && $stock_type == HAS_STOCK))    // TODO: === ?
+            if (
+                !($kit_price_option == PRICE_OPTION_ALL
+                    || $kit_price_option == PRICE_OPTION_KIT && $item_type == ITEM_KIT
+                    || $kit_price_option == PRICE_OPTION_KIT_STOCK && $stock_type == HAS_STOCK)
+            )    // TODO: === ?
             {
                 $price = '0.00';
                 $applied_discount = '0.00';
@@ -1007,9 +1009,13 @@ class Sale_lib
             }
         }
 
-        // Serialization and Description
+        if ($cost_price != null) {
+            $cost_price = $cost_price;
+        } else {
+            $cost_price = $item_info->cost_price;
+        }
 
-        // Get all items in the cart so far...
+        // We need to loop through all items in the cart.
         $items = $this->get_cart();
 
         // We need to loop through all items in the cart.
@@ -1073,31 +1079,31 @@ class Sale_lib
         if (!$itemalreadyinsale || $item_info->is_serialized) {
             $item = [
                 $insertkey => [
-                    'item_id'               => $item_id,
-                    'item_location'         => $item_location,
-                    'stock_name'            => $this->stock_location->get_location_name($item_location),
-                    'line'                  => $insertkey,
-                    'name'                  => $item_info->name,
-                    'item_number'           => $item_info->item_number,
-                    'attribute_values'      => $attribute_links->attribute_values,
-                    'attribute_dtvalues'    => $attribute_links->attribute_dtvalues,
-                    'description'           => $description != null ? $description : $item_info->description,
-                    'serialnumber'          => $serialnumber != null ? $serialnumber : '',
+                    'item_id' => $item_id,
+                    'item_location' => $item_location,
+                    'stock_name' => $this->stock_location->get_location_name($item_location),
+                    'line' => $insertkey,
+                    'name' => $item_info->name,
+                    'item_number' => $item_info->item_number,
+                    'attribute_values' => $attribute_links->attribute_values,
+                    'attribute_dtvalues' => $attribute_links->attribute_dtvalues,
+                    'description' => $description != null ? $description : $item_info->description,
+                    'serialnumber' => $serialnumber != null ? $serialnumber : '',
                     'allow_alt_description' => $item_info->allow_alt_description,
-                    'is_serialized'         => $item_info->is_serialized,
-                    'quantity'              => $quantity,
-                    'discount'              => $applied_discount,
-                    'discount_type'         => $discount_type,
-                    'in_stock'              => $this->item_quantity->get_item_quantity($item_id, $item_location)->quantity,
-                    'price'                 => $price,
-                    'cost_price'            => $cost_price,
-                    'total'                 => $total,
-                    'discounted_total'      => $discounted_total,
-                    'print_option'          => $print_option_selected,
-                    'stock_type'            => $stock_type,
-                    'item_type'             => $item_type,
-                    'hsn_code'              => $item_info->hsn_code,
-                    'tax_category_id'       => $item_info->tax_category_id
+                    'is_serialized' => $item_info->is_serialized,
+                    'quantity' => $quantity,
+                    'discount' => $applied_discount,
+                    'discount_type' => $discount_type,
+                    'in_stock' => $this->item_quantity->get_item_quantity($item_id, $item_location)->quantity,
+                    'price' => $price,
+                    'cost_price' => $cost_price,
+                    'total' => $total,
+                    'discounted_total' => $discounted_total,
+                    'print_option' => $print_option_selected,
+                    'stock_type' => $stock_type,
+                    'item_type' => $item_type,
+                    'hsn_code' => $item_info->hsn_code,
+                    'tax_category_id' => $item_info->tax_category_id
                 ]
             ];
 
@@ -1186,7 +1192,7 @@ class Sale_lib
      * @param string|null $discounted_total
      * @return bool
      */
-    public function edit_item(string $line, ?string $description, ?string $serialnumber, string $quantity, string $discount, ?string $discount_type, ?string $price, ?string $discounted_total = null): bool
+    public function edit_item(string $line, ?string $description, ?string $serialnumber, string $quantity, string $discount, ?string $discount_type, ?string $price, ?string $discounted_total = null, ?string $cost_price = null): bool
     {
         $items = $this->get_cart();
         if (isset($items[$line])) {
@@ -1205,6 +1211,9 @@ class Sale_lib
             }
 
             $line['price'] = $price;
+            if ($cost_price != null) {
+                $line['cost_price'] = $cost_price;
+            }
             $line['total'] = $this->get_item_total($quantity, $price, $discount, $line['discount_type']);
             $line['discounted_total'] = $this->get_item_total($quantity, $price, $discount, $line['discount_type'], true);
             $this->set_cart($items);
@@ -1559,7 +1568,7 @@ class Sale_lib
             $discount = bcmul($quantity, $discount);
         }
 
-        return (string)round((float)$discount, totals_decimals(), PHP_ROUND_HALF_UP);    // TODO: is this safe with monetary amounts?
+        return (string) round((float) $discount, totals_decimals(), PHP_ROUND_HALF_UP);    // TODO: is this safe with monetary amounts?
     }
 
     /**
@@ -1650,6 +1659,6 @@ class Sale_lib
         $cash_decimals = cash_decimals();
         $cash_rounding_code = $this->config['cash_rounding_code'];
 
-        return Rounding_mode::round_number($cash_rounding_code, (float)$total, $cash_decimals);
+        return Rounding_mode::round_number($cash_rounding_code, (float) $total, $cash_decimals);
     }
 }

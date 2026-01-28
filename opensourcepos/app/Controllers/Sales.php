@@ -90,11 +90,11 @@ class Sales extends Secure_Controller
             $data['table_headers'] = get_sales_manage_table_headers();
 
             $data['filters'] = [
-                'only_cash'         => lang('Sales.cash_filter'),
-                'only_due'          => lang('Sales.due_filter'),
-                'only_check'        => lang('Sales.check_filter'),
-                'only_creditcard'   => lang('Sales.credit_filter'),
-                'only_invoices'     => lang('Sales.invoice_filter'),
+                'only_cash' => lang('Sales.cash_filter'),
+                'only_due' => lang('Sales.due_filter'),
+                'only_check' => lang('Sales.check_filter'),
+                'only_creditcard' => lang('Sales.credit_filter'),
+                'only_invoices' => lang('Sales.invoice_filter'),
                 'selected_customer' => lang('Sales.selected_customer')
             ];
 
@@ -135,17 +135,17 @@ class Sales extends Secure_Controller
         $order = $this->request->getGet('order', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
         $filters = [
-            'sale_type'         => 'all',
-            'location_id'       => 'all',
-            'start_date'        => $this->request->getGet('start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'end_date'          => $this->request->getGet('end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'only_cash'         => false,
-            'only_due'          => false,
-            'only_check'        => false,
+            'sale_type' => 'all',
+            'location_id' => 'all',
+            'start_date' => $this->request->getGet('start_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'end_date' => $this->request->getGet('end_date', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'only_cash' => false,
+            'only_due' => false,
+            'only_check' => false,
             'selected_customer' => false,
-            'only_creditcard'   => false,
-            'only_invoices'     => $this->config['invoice_enable'] && $this->request->getGet('only_invoices', FILTER_SANITIZE_NUMBER_INT),
-            'is_valid_receipt'  => $this->sale->is_valid_receipt($search)
+            'only_creditcard' => false,
+            'only_invoices' => $this->config['invoice_enable'] && $this->request->getGet('only_invoices', FILTER_SANITIZE_NUMBER_INT),
+            'is_valid_receipt' => $this->sale->is_valid_receipt($search)
         ];
 
         // Check if any filter is set in the multiselect dropdown
@@ -207,6 +207,119 @@ class Sales extends Secure_Controller
     }
 
     /**
+     * Get all categories with item counts. Used in app/Views/sales/register.php for product grid.
+     *
+     * @return void
+     * @noinspection PhpUnused
+     */
+    public function getCategories(): void
+    {
+        $builder = $this->item->db->table('items');
+        $builder->select('category, COUNT(*) as item_count');
+        $builder->where('deleted', 0);
+        $builder->where('category !=', '');
+        $builder->groupBy('category');
+        $builder->orderBy('category', 'asc');
+
+        $categories = [];
+        foreach ($builder->get()->getResult() as $row) {
+            $categories[] = [
+                'name' => $row->category,
+                'count' => $row->item_count
+            ];
+        }
+
+        echo json_encode($categories);
+    }
+
+    /**
+     * Get all items by category. Used in app/Views/sales/register.php for product grid.
+     *
+     * @return void
+     * @noinspection PhpUnused
+     */
+    public function getItemsByCategory(): void
+    {
+        $category = $this->request->getGet('category', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        if (empty($category)) {
+            echo json_encode([]);
+            return;
+        }
+
+        $builder = $this->item->db->table('items');
+        $builder->select('item_id, name, item_number, unit_price, category, cost_price');
+        $builder->where('deleted', 0);
+        $builder->where('category', $category);
+        $builder->orderBy('name', 'asc');
+
+        $items = [];
+        foreach ($builder->get()->getResult() as $row) {
+            $items[] = [
+                'item_id' => $row->item_id,
+                'name' => $row->name,
+                'item_number' => $row->item_number,
+                'price' => to_currency($row->unit_price),
+                'price_raw' => $row->unit_price,
+                'category' => $row->category
+            ];
+        }
+
+        echo json_encode($items);
+    }
+
+    /**
+     * Get all categories with their items in one request. Used in app/Views/sales/register.php for product grid.
+     *
+     * @return void
+     * @noinspection PhpUnused
+     */
+    public function getAllCategoriesWithItems(): void
+    {
+        // Get all items grouped by category
+        $builder = $this->item->db->table('items');
+        $builder->select('item_id, name, item_number, unit_price, category');
+        $builder->where('deleted', 0);
+        $builder->where('category !=', '');
+        $builder->orderBy('category', 'asc');
+        $builder->orderBy('name', 'asc');
+
+        $categoriesData = [];
+
+        foreach ($builder->get()->getResult() as $row) {
+            $category = $row->category;
+
+            if (!isset($categoriesData[$category])) {
+                $categoriesData[$category] = [
+                    'name' => $category,
+                    'items' => []
+                ];
+            }
+
+            $categoriesData[$category]['items'][] = [
+                'item_id' => $row->item_id,
+                'name' => $row->name,
+                'item_number' => $row->item_number,
+                'price' => to_currency($row->unit_price),
+                'price_raw' => $row->unit_price,
+                'category' => $category
+            ];
+        }
+
+        // Convert to indexed array and add counts
+        $result = [];
+        foreach ($categoriesData as $category) {
+            $result[] = [
+                'name' => $category['name'],
+                'count' => count($category['items']),
+                'items' => $category['items']
+            ];
+        }
+
+        echo json_encode($result);
+    }
+
+    /**
      * Set a given customer. Used in app/Views/sales/register.php.
      *
      * @return void
@@ -214,7 +327,7 @@ class Sales extends Secure_Controller
      */
     public function postSelectCustomer(): void
     {
-        $customer_id = (int)$this->request->getPost('customer', FILTER_SANITIZE_NUMBER_INT);
+        $customer_id = (int) $this->request->getPost('customer', FILTER_SANITIZE_NUMBER_INT);
         if ($this->customer->exists($customer_id)) {
             $this->sale_lib->set_customer($customer_id);
             $discount = $this->customer->get_info($customer_id)->discount;
@@ -563,9 +676,10 @@ class Sales extends Secure_Controller
         $data = [];
 
         $rules = [
-            'price'    => 'trim|required|decimal_locale',
+            'price' => 'trim|required|decimal_locale',
             'quantity' => 'trim|required|decimal_locale',
             'discount' => 'trim|permit_empty|decimal_locale',
+            'cost_price' => 'trim|permit_empty|decimal_locale',
         ];
 
         if ($this->validate($rules)) {
@@ -582,9 +696,12 @@ class Sales extends Secure_Controller
             $discounted_total = $this->request->getPost('discounted_total') != ''
                 ? parse_decimals($this->request->getPost('discounted_total') ?? '')
                 : null;
+            $cost_price = $this->request->getPost('cost_price') != ''
+                ? parse_decimals($this->request->getPost('cost_price') ?? '')
+                : null;
 
 
-            $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $discount_type, $price, $discounted_total);
+            $this->sale_lib->edit_item($line, $description, $serialnumber, $quantity, $discount, $discount_type, $price, $discounted_total, $cost_price);
 
             $this->sale_lib->empty_payments();
 
@@ -604,13 +721,13 @@ class Sales extends Secure_Controller
      * @throws ReflectionException
      * @noinspection PhpUnused
      */
-    public function getDeleteItem(int $item_id): void
+    public function getDeleteItem(int $item_id)
     {
         $this->sale_lib->delete_item($item_id);
 
         $this->sale_lib->empty_payments();
 
-        $this->_reload();    // TODO: Hungarian notation
+        return redirect()->to('sales');
     }
 
     /**
@@ -646,7 +763,7 @@ class Sales extends Secure_Controller
 
         $data['cart'] = $this->sale_lib->get_cart();
 
-        $data['include_hsn'] = (bool)$this->config['include_hsn'];
+        $data['include_hsn'] = (bool) $this->config['include_hsn'];
         $__time = time();
         $data['transaction_time'] = to_datetime($__time);
         $data['transaction_date'] = to_date($__time);
@@ -720,9 +837,9 @@ class Sales extends Secure_Controller
             } else {
                 $payment = [
                     lang('Sales.cash') => [
-                        'payment_type'   => lang('Sales.cash'),
+                        'payment_type' => lang('Sales.cash'),
                         'payment_amount' => 0,
-                        'cash_refund'    => $data['amount_change']
+                        'cash_refund' => $data['amount_change']
                     ]
                 ];
 
@@ -872,14 +989,14 @@ class Sales extends Secure_Controller
 
         if (!empty($sale_data['customer_email'])) {
             $to = $sale_data['customer_email'];
-            $number = array_key_exists($type . "_number", $sale_data) ?  $sale_data[$type . "_number"] : "";
+            $number = array_key_exists($type . "_number", $sale_data) ? $sale_data[$type . "_number"] : "";
             $subject = lang('Sales.' . $type) . ' ' . $number;
 
             $text = $this->config['invoice_email_message'];
             $tokens = [
                 new Token_invoice_sequence($number),
                 new Token_invoice_count('POS ' . $sale_data['sale_id']),
-                new Token_customer((array)$sale_data)
+                new Token_customer((array) $sale_data)
             ];
             $text = $this->token_lib->render($text, $tokens);
             $sale_data['mimetype'] = mime_content_type(FCPATH . 'uploads/' . $this->config['company_logo']);
@@ -1032,7 +1149,7 @@ class Sales extends Secure_Controller
         $data['transaction_date'] = to_date(strtotime($sale_info['sale_time']));
         $data['show_stock_locations'] = $this->stock_location->show_locations('sales');
 
-        $data['include_hsn'] = (bool)$this->config['include_hsn'];
+        $data['include_hsn'] = (bool) $this->config['include_hsn'];
 
         // Returns 'subtotal', 'total', 'cash_total', 'payment_total', 'amount_due', 'cash_amount_due', 'payments_cover_total'
         $totals = $this->sale_lib->get_totals($tax_details[0]);
@@ -1312,7 +1429,7 @@ class Sales extends Secure_Controller
                 echo json_encode([
                     'success' => true,
                     'message' => lang('Sales.successfully_deleted') . ' ' . count($sale_ids) . ' ' . lang('Sales.one_or_multiple'),
-                    'ids'     => $sale_ids
+                    'ids' => $sale_ids
                 ]);
             } else {
                 echo json_encode(['success' => false, 'message' => lang('Sales.unsuccessfully_deleted')]);
@@ -1339,7 +1456,7 @@ class Sales extends Secure_Controller
                 echo json_encode([
                     'success' => true,
                     'message' => lang('Sales.successfully_restored') . ' ' . count($sale_ids) . ' ' . lang('Sales.one_or_multiple'),
-                    'ids'     => $sale_ids
+                    'ids' => $sale_ids
                 ]);
             } else {
                 echo json_encode(['success' => false, 'message' => lang('Sales.unsuccessfully_restored')]);
@@ -1362,10 +1479,10 @@ class Sales extends Secure_Controller
         $sale_time = $date_formatter->format('Y-m-d H:i:s');
 
         $sale_data = [
-            'sale_time'      => $sale_time,
-            'customer_id'    => $this->request->getPost('customer_id') != '' ? $this->request->getPost('customer_id', FILTER_SANITIZE_NUMBER_INT) : null,
-            'employee_id'    => $this->request->getPost('employee_id') != '' ? $this->request->getPost('employee_id', FILTER_SANITIZE_NUMBER_INT) : null,
-            'comment'        => $this->request->getPost('comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'sale_time' => $sale_time,
+            'customer_id' => $this->request->getPost('customer_id') != '' ? $this->request->getPost('customer_id', FILTER_SANITIZE_NUMBER_INT) : null,
+            'employee_id' => $this->request->getPost('employee_id') != '' ? $this->request->getPost('employee_id', FILTER_SANITIZE_NUMBER_INT) : null,
+            'comment' => $this->request->getPost('comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
             'invoice_number' => $this->request->getPost('invoice_number') != '' ? $this->request->getPost('invoice_number', FILTER_SANITIZE_FULL_SPECIAL_CHARS) : null
         ];
 
@@ -1394,12 +1511,12 @@ class Sales extends Secure_Controller
             }
 
             $sale_data['payments'][] = [
-                'payment_id'      => $payment_id,
-                'payment_type'    => $payment_type,
-                'payment_amount'  => $payment_amount,
-                'cash_refund'     => $cash_refund,
+                'payment_id' => $payment_id,
+                'payment_type' => $payment_type,
+                'payment_amount' => $payment_amount,
+                'cash_refund' => $cash_refund,
                 'cash_adjustment' => $cash_adjustment,
-                'employee_id'     => $employee_id
+                'employee_id' => $employee_id
             ];
         }
 
@@ -1423,12 +1540,12 @@ class Sales extends Secure_Controller
             }
 
             $sale_data['payments'][] = [
-                'payment_id'      => $payment_id,
-                'payment_type'    => $payment_type,
-                'payment_amount'  => $payment_amount,
-                'cash_refund'     => $cash_refund,
+                'payment_id' => $payment_id,
+                'payment_type' => $payment_type,
+                'payment_amount' => $payment_amount,
+                'cash_refund' => $cash_refund,
                 'cash_adjustment' => $cash_adjustment,
-                'employee_id'     => $employee_id
+                'employee_id' => $employee_id
             ];
         }
 
