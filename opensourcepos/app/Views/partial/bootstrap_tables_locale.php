@@ -9,7 +9,7 @@
 
     $.fn.bootstrapTable.locales['<?= current_language_code() ?>'] = {
         formatLoadingMessage: function() {
-            return "<?= lang('Bootstrap_tables.loading') ?>";
+            return '<div class="flex items-center justify-center gap-2 py-4"><div class="loading-spinner"></div><span class="text-slate-500 font-medium">Loading data...</span></div>';
         },
         formatRecordsPerPage: function(pageNumber) {
             return "<?= lang('Bootstrap_tables.rows_per_page') ?>".replace('{0}', pageNumber);

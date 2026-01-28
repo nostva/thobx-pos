@@ -59,101 +59,102 @@ if (isset($success)) {
 }
 ?>
 
-<div id="register_wrapper">
-
-    <!-- Top register controls -->
-    <?= form_open("$controller_name/changeMode", ['id' => 'mode_form', 'class' => 'form-horizontal panel panel-default']) ?>
-        <div class="panel-body form-group">
-            <ul>
-                <li class="pull-left first_li">
-                    <label class="control-label"><?= lang(ucfirst($controller_name) . '.mode') ?></label>
-                </li>
-                <li class="pull-left">
-                    <?= form_dropdown('mode', $modes, $mode, ['onchange' => "$('#mode_form').submit();", 'class' => 'selectpicker show-menu-arrow', 'data-style' => 'btn-default btn-sm', 'data-width' => 'fit']) ?>
-                </li>
-                <?php if ($config['dinner_table_enable']) { ?>
-                    <li class="pull-left first_li">
-                        <label class="control-label"><?= lang(ucfirst($controller_name) . '.table') ?></label>
-                    </li>
-                    <li class="pull-left">
-                        <?= form_dropdown('dinner_table', $empty_tables, $selected_table, ['onchange' => "$('#mode_form').submit();", 'class' => 'selectpicker show-menu-arrow', 'data-style' => 'btn-default btn-sm', 'data-width' => 'fit']) ?>
-                    </li>
-                <?php } ?>
-                <?php if (count($stock_locations) > 1) { ?>
-                    <li class="pull-left">
-                        <label class="control-label"><?= lang(ucfirst($controller_name) . '.stock_location') ?></label>
-                    </li>
-                    <li class="pull-left">
-                        <?= form_dropdown('stock_location', $stock_locations, $stock_location, ['onchange' => "$('#mode_form').submit();", 'class' => 'selectpicker show-menu-arrow', 'data-style' => 'btn-default btn-sm', 'data-width' => 'fit']) ?>
-                    </li>
-                <?php } ?>
-
-                <li class="pull-right">
-                    <button class="btn btn-default btn-sm modal-dlg" id="show_suspended_sales_button" data-href="<?= esc("$controller_name/suspended") ?>"
-                        title="<?= lang(ucfirst($controller_name) . '.suspended_sales') ?>">
-                        <span class="glyphicon glyphicon-align-justify">&nbsp;</span><?= lang(ucfirst($controller_name) . '.suspended_sales') ?>
-                    </button>
-                </li>
-
-                <?php
-                $employee = model(Employee::class);
-                if ($employee->has_grant('reports_sales', session('person_id'))) {
-                ?>
-                    <li class="pull-right">
-                        <?= anchor(
-                            "$controller_name/manage",
-                            '<span class="glyphicon glyphicon-list-alt">&nbsp;</span>' . lang(ucfirst($controller_name) . '.takings'),
-                            array('class' => 'btn btn-primary btn-sm', 'id' => 'sales_takings_button', 'title' => lang(ucfirst($controller_name) . '.takings'))
-                        ) ?>
-                    </li>
-                <?php } ?>
-            </ul>
-        </div>
-    <?= form_close() ?>
-
+<div class="register-layout animate-page-entry">
     <?php $tabindex = 0; ?>
+    <div class="flex flex-col gap-3">
+        <!-- Top register controls -->
+        <div class="register-card">
+            <?= form_open("$controller_name/changeMode", ['id' => 'mode_form', 'class' => 'flex flex-wrap items-center justify-between gap-3']) ?>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5">
+                        <label class="text-sm font-semibold text-slate-700"><?= lang(ucfirst($controller_name) . '.mode') ?>:</label>
+                        <?= form_dropdown('mode', $modes, $mode, ['onchange' => "$('#mode_form').submit();", 'class' => 'flex h-8 w-fit rounded-md border border-slate-300 bg-white px-2 py-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400']) ?>
+                    </div>
+                    
+                    <?php if ($config['dinner_table_enable']) { ?>
+                        <div class="flex items-center gap-1.5">
+                            <label class="text-sm font-semibold text-slate-700"><?= lang(ucfirst($controller_name) . '.table') ?>:</label>
+                            <?= form_dropdown('dinner_table', $empty_tables, $selected_table, ['onchange' => "$('#mode_form').submit();", 'class' => 'flex h-8 w-fit rounded-md border border-slate-300 bg-white px-2 py-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400']) ?>
+                        </div>
+                    <?php } ?>
 
-    <?= form_open("$controller_name/add", ['id' => 'add_item_form', 'class' => 'form-horizontal panel panel-default']) ?>
-        <div class="panel-body form-group">
-            <ul>
-                <li class="pull-left first_li">
-                    <label for="item" class="control-label"><?= lang(ucfirst($controller_name) . '.find_or_scan_item_or_receipt') ?></label>
-                </li>
-                <li class="pull-left">
-                    <?= form_input(['name' => 'item', 'id' => 'item', 'class' => 'form-control input-sm', 'size' => '50', 'tabindex' => ++$tabindex]) ?>
-                    <span class="ui-helper-hidden-accessible" role="status"></span>
-                </li>
-                <li class="pull-right">
-                    <button id="new_item_button" class="btn btn-info btn-sm pull-right modal-dlg" data-btn-new="<?= lang('Common.new') ?>" data-btn-submit="<?= lang('Common.submit') ?>" data-href="<?= "items/view" ?>" title="<?= lang(ucfirst($controller_name) . ".new_item") ?>">
-                        <span class="glyphicon glyphicon-tag">&nbsp;</span><?= lang(ucfirst($controller_name) . ".new_item") ?>
+                    <?php if (count($stock_locations) > 1) { ?>
+                        <div class="flex items-center gap-1.5">
+                            <label class="text-sm font-semibold text-slate-700"><?= lang(ucfirst($controller_name) . '.stock_location') ?>:</label>
+                            <?= form_dropdown('stock_location', $stock_locations, $stock_location, ['onchange' => "$('#mode_form').submit();", 'class' => 'flex h-8 w-fit rounded-md border border-slate-300 bg-white px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400']) ?>
+                        </div>
+                    <?php } ?>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button class="btn btn-default btn-sm modal-dlg inline-flex items-center gap-2" id="show_suspended_sales_button" data-href="<?= esc("$controller_name/suspended") ?>" title="<?= lang(ucfirst($controller_name) . '.suspended_sales') ?>">
+                        <i data-lucide="list" class="w-4 h-4"></i>
+                        <?= lang(ucfirst($controller_name) . '.suspended_sales') ?>
                     </button>
-                </li>
-            </ul>
+
+                    <?php
+                    $employee = model(Employee::class);
+                    if ($employee->has_grant('reports_sales', session('person_id'))) {
+                    ?>
+                        <a href="<?= site_url("$controller_name/manage") ?>" class="btn btn-primary btn-sm inline-flex items-center gap-2" id="sales_takings_button">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                            <?= lang(ucfirst($controller_name) . '.takings') ?>
+                        </a>
+                    <?php } ?>
+                </div>
+            <?= form_close() ?>
         </div>
-    <?= form_close() ?>
+
+        <!-- Find Item Area -->
+        <div class="register-card">
+            <?= form_open("$controller_name/add", ['id' => 'add_item_form', 'class' => 'flex items-center gap-2']) ?>
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-slate-400">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </div>
+                    <?= form_input([
+                        'name' => 'item', 
+                        'id' => 'item', 
+                        'class' => 'flex h-10 w-full min-w-0 rounded-lg border border-slate-300 bg-white ps-10 pe-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400',
+                        'placeholder' => lang(ucfirst($controller_name) . '.find_or_scan_item_or_receipt'),
+                        'tabindex' => ++$tabindex
+                    ]) ?>
+                </div>
+                <button id="new_item_button" class="btn btn-info action-btn w-fit modal-dlg inline-flex items-center gap-2 h-10 px-4" data-btn-new="<?= lang('Common.new') ?>" data-btn-submit="<?= lang('Common.submit') ?>" data-href="<?= "items/view" ?>" title="<?= lang(ucfirst($controller_name) . ".new_item") ?>">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline"><?= lang(ucfirst($controller_name) . ".new_item") ?></span>
+                </button>
+            <?= form_close() ?>
+        </div>
+
+        <!-- Cart Table inside a card -->
+        <div class="register-card overflow-hidden">
 
 
     <!-- Sale Items List -->
 
-    <table class="sales_table_100" id="register">
-        <thead>
-            <tr>
-                <th style="width: 5%;"><?= lang('Common.delete') ?></th>
-                <th style="width: 15%;"><?= lang(ucfirst($controller_name) . '.item_number') ?></th>
-                <th style="width: 30%;"><?= lang(ucfirst($controller_name) . '.item_name') ?></th>
-                <th style="width: 10%;"><?= lang(ucfirst($controller_name) . '.price') ?></th>
-                <th style="width: 10%;"><?= lang(ucfirst($controller_name) . '.quantity') ?></th>
-                <th style="width: 15%;"><?= lang(ucfirst($controller_name) . '.discount') ?></th>
-                <th style="width: 10%;"><?= lang(ucfirst($controller_name) . '.total') ?></th>
-                <th style="width: 5%;"><?= lang(ucfirst($controller_name) . '.update') ?></th>
-            </tr>
-        </thead>
+        <table class="table" id="register">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="w-[5%]"><?= lang('Common.delete') ?></th>
+                    <th class="w-[12%]"><?= lang(ucfirst($controller_name) . '.item_number') ?></th>
+                    <th class="w-[33%]"><?= lang(ucfirst($controller_name) . '.item_name') ?></th>
+                    <th class="w-[10%]"><?= lang(ucfirst($controller_name) . '.price') ?></th>
+                    <th class="w-[10%] text-center"><?= lang(ucfirst($controller_name) . '.quantity') ?></th>
+                    <th class="w-[15%]"><?= lang(ucfirst($controller_name) . '.discount') ?></th>
+                    <th class="w-[10%] text-end"><?= lang(ucfirst($controller_name) . '.total') ?></th>
+                    <th class="w-[5%] text-center"><?= lang(ucfirst($controller_name) . '.update') ?></th>
+                </tr>
+            </thead>
 
         <tbody id="cart_contents">
             <?php if (count($cart) == 0) { ?>
                 <tr>
                     <td colspan="8">
-                        <div class="alert alert-dismissible alert-info"><?= lang(ucfirst($controller_name) . '.no_items_in_cart') ?></div>
+                        <div class="flex flex-col items-center gap-2 text-slate-400">
+                            <i data-lucide="shopping-cart" class="w-12 h-12 opacity-20"></i>
+                            <span class="text-sm font-medium"><?= lang('Sales.no_items_in_cart') ?></span>
+                        </div>
                     </td>
                 </tr>
             <?php
@@ -161,10 +162,10 @@ if (isset($success)) {
                 foreach (array_reverse($cart, true) as $line => $item) {
             ?>
                     <?= form_open("$controller_name/editItem/$line", ['class' => 'form-horizontal', 'id' => "cart_$line"]) ?>
-                        <tr>
-                            <td>
+                        <tr class="group">
+                            <td class="text-center">
                                 <?php
-                                echo anchor("$controller_name/deleteItem/$line", '<span class="glyphicon glyphicon-trash"></span>');
+                                echo anchor("$controller_name/deleteItem/$line", '<i data-lucide="trash-2" class="w-4 h-4 text-rose-500 hover:text-rose-700 transition-colors"></i>');
                                 echo form_hidden('location', (string)$item['item_location']);
                                 echo form_input(['type' => 'hidden', 'name' => 'item_id', 'value' => $item['item_id']]);
                                 ?>
@@ -225,9 +226,9 @@ if (isset($success)) {
                                 ?>
                             </td>
 
-                            <td>
-                                <a href="javascript:document.getElementById('<?= "cart_$line" ?>').submit();" title="<?= lang(ucfirst($controller_name) . '.update') ?>">
-                                    <span class="glyphicon glyphicon-refresh"></span>
+                            <td class="text-center">
+                                <a href="javascript:document.getElementById('<?= "cart_$line" ?>').submit();" class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900 transition-colors" title="<?= lang(ucfirst($controller_name) . '.update') ?>">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                                 </a>
                             </td>
                         </tr>
@@ -285,143 +286,165 @@ if (isset($success)) {
             ?>
         </tbody>
     </table>
-</div>
+        </div> <!-- End Cart Card -->
+    </div> <!-- End Left Column -->
 
 <!-- Overall Sale -->
 
-<div id="overall_sale" class="panel panel-default">
-    <div class="panel-body">
-        <?= form_open("$controller_name/selectCustomer", ['id' => 'select_customer_form', 'class' => 'form-horizontal']) ?>
-            <?php if (isset($customer)) { ?>
-                <table class="sales_table_100">
-                    <tr>
-                        <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.customer') ?></th>
-                        <th style="width: 45%; text-align: right;"><?= anchor("customers/view/$customer_id", $customer, ['class' => 'modal-dlg', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Customers.update')]) ?></th>
-                    </tr>
-                    <?php if (!empty($customer_email)) { ?>
-                        <tr>
-                            <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.customer_email') ?></th>
-                            <th style="width: 45%; text-align: right;"><?= esc($customer_email) ?></th>
-                        </tr>
+    <div class="flex flex-col gap-3">
+        <!-- Customer Section -->
+        <div class="register-card">
+            <?= form_open("$controller_name/selectCustomer", ['id' => 'select_customer_form', 'class' => 'space-y-2']) ?>
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center gap-1.5 text-slate-400">
+                        <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                        <span class="text-sm font-bold uppercase tracking-wider"><?= lang(ucfirst($controller_name) . '.customer') ?></span>
+                    </div>
+                    <?php if (isset($customer)) { ?>
+                        <?= anchor(
+                            "$controller_name/removeCustomer",
+                            '<i data-lucide="user-minus" class="w-4 h-4"></i>',
+                            ['class' => 'text-rose-500 hover:text-rose-700 transition-colors', 'id' => 'remove_customer_button', 'title' => lang('Common.remove') . ' ' . lang('Customers.customer')]
+                        ) ?>
                     <?php } ?>
-                    <?php if (!empty($customer_address)) { ?>
-                        <tr>
-                            <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.customer_address') ?></th>
-                            <th style="width: 45%; text-align: right;"><?= esc($customer_address) ?></th>
-                        </tr>
-                    <?php } ?>
-                    <?php if (!empty($customer_location)) { ?>
-                        <tr>
-                            <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.customer_location') ?></th>
-                            <th style="width: 45%; text-align: right;"><?= esc($customer_location) ?></th>
-                        </tr>
-                    <?php } ?>
-                    <tr>
-                        <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.customer_discount') ?></th>
-                        <th style="width: 45%; text-align: right;"><?= ($customer_discount_type == FIXED) ? to_currency($customer_discount) : $customer_discount . '%' ?></th>
-                    </tr>
-                    <?php if ($config['customer_reward_enable']): ?>
-                        <?php if (!empty($customer_rewards)) { ?>
-                            <tr>
-                                <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.rewards_package') ?></th>
-                                <th style="width: 45%; text-align: right;"><?= esc($customer_rewards['package_name']) ?></th>
-                            </tr>
-                            <tr>
-                                <th style="width: 55%;"><?= lang('Customers.available_points') ?></th>
-                                <th style="width: 45%; text-align: right;"><?= esc($customer_rewards['points']) ?></th>
-                            </tr>
-                        <?php } ?>
-                    <?php endif; ?>
-                    <tr>
-                        <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.customer_total') ?></th>
-                        <th style="width: 45%; text-align: right;"><?= to_currency($customer_total) ?></th>
-                    </tr>
-                    <?php if (!empty($mailchimp_info)) { ?>
-                        <tr>
-                            <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.customer_mailchimp_status') ?></th>
-                            <th style="width: 45%; text-align: right;"><?= esc($mailchimp_info['status']) ?></th>
-                        </tr>
-                    <?php } ?>
-                </table>
-
-                <?= anchor(
-                    "$controller_name/removeCustomer",
-                    '<span class="glyphicon glyphicon-remove">&nbsp;</span>' . lang('Common.remove') . ' ' . lang('Customers.customer'),
-                    ['class' => 'btn btn-danger btn-sm', 'id' => 'remove_customer_button', 'title' => lang('Common.remove') . ' ' . lang('Customers.customer')]
-                )
-                ?>
-            <?php } else { ?>
-                <div class="form-group" id="select_customer">
-                    <label id="customer_label" for="customer" class="control-label" style="margin-bottom: 1em; margin-top: -1em;">
-                        <?= lang(ucfirst($controller_name) . '.select_customer') . esc(" $customer_required") ?>
-                    </label>
-                    <?= form_input(['name' => 'customer', 'id' => 'customer', 'class' => 'form-control input-sm', 'value' => lang(ucfirst($controller_name) . '.start_typing_customer_name')]) ?>
-
-                    <button class="btn btn-info btn-sm modal-dlg" data-btn-submit="<?= lang('Common.submit') ?>" data-href="<?= "customers/view" ?>" title="<?= lang(ucfirst($controller_name) . ".new_customer") ?>">
-                        <span class="glyphicon glyphicon-user">&nbsp;</span><?= lang(ucfirst($controller_name) . ".new_customer") ?>
-                    </button>
-                    <button class="btn btn-default btn-sm modal-dlg" id="show_keyboard_help" data-href="<?= esc("$controller_name/salesKeyboardHelp") ?>" title="<?= lang(ucfirst($controller_name) . '.key_title') ?>">
-                        <span class="glyphicon glyphicon-share-alt">&nbsp;</span><?= lang(ucfirst($controller_name) . '.key_help') ?>
-                    </button>
                 </div>
-            <?php } ?>
-        <?= form_close() ?>
 
-        <table class="sales_table_100" id="sale_totals">
-            <tr>
-                <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.quantity_of_items', [$item_count]) ?></th>
-                <th style="width: 45%; text-align: right;"><?= $total_units ?></th>
-            </tr>
-            <tr>
-                <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.sub_total') ?></th>
-                <th style="width: 45%; text-align: right;"><?= to_currency($subtotal) ?></th>
-            </tr>
-            <?php foreach ($taxes as $tax_group_index => $tax) { ?>
-                <tr>
-                    <th style="width: 55%;"><?= (float)$tax['tax_rate'] . '% ' . $tax['tax_group'] ?></th>
-                    <th style="width: 45%; text-align: right;"><?= to_currency_tax($tax['sale_tax_amount']) ?></th>
-                </tr>
-            <?php } ?>
-            <tr>
-                <th style="width: 55%; font-size: 150%"><?= lang(ucfirst($controller_name) . '.total') ?></th>
-                <th style="width: 45%; font-size: 150%; text-align: right;"><span id="sale_total"><?= to_currency($total) ?></span></th>
-            </tr>
-        </table>
+                <?php if (isset($customer)) { ?>
+                    <div class="space-y-2 pt-1 border-t border-slate-100">
+                        <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
+                            <div class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-sm">
+                                <?= substr(esc($customer), 0, 1) ?>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-bold text-slate-900 truncate">
+                                    <?= anchor("customers/view/$customer_id", $customer, ['class' => 'modal-dlg hover:text-emerald-600 transition-colors', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Customers.update')]) ?>
+                                </div>
+                            </div>
+                        </div>
 
-        <?php if (count($cart) > 0) { // Only show this part if there are Items already in the register ?>
-            <table class="sales_table_100" id="payment_totals">
-                <tr>
-                    <th style="width: 55%;"><?= lang(ucfirst($controller_name) . '.payments_total') ?></th>
-                    <th style="width: 45%; text-align: right;"><?= to_currency($payments_total) ?></th>
-                </tr>
-                <tr>
-                    <th style="width: 55%; font-size: 120%"><?= lang(ucfirst($controller_name) . '.amount_due') ?></th>
-                    <th style="width: 45%; font-size: 120%; text-align: right;"><span id="sale_amount_due"><?= to_currency($amount_due) ?></span></th>
-                </tr>
-            </table>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div class="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                                <span class="text-slate-500 block"><?= lang(ucfirst($controller_name) . '.customer_discount') ?></span>
+                                <span class="font-bold text-slate-900"><?= ($customer_discount_type == FIXED) ? to_currency($customer_discount) : $customer_discount . '%' ?></span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-slate-50 border border-slate-100">
+                                <span class="text-slate-500 block"><?= lang(ucfirst($controller_name) . '.customer_total') ?></span>
+                                <span class="font-bold text-slate-900"><?= to_currency($customer_total) ?></span>
+                            </div>
+                        </div>
+                    </div>
+                <?php } else { ?>
+                    <div class="space-y-2">
+                        <div class="relative">
+                            <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-slate-400">
+                                <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                            </div>
+                            <?= form_input([
+                                'name' => 'customer', 
+                                'id' => 'customer', 
+                                'class' => 'flex h-9 w-full rounded-lg border border-slate-300 bg-white ps-10 pe-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400',
+                                'placeholder' => lang(ucfirst($controller_name) . '.start_typing_customer_name')
+                            ]) ?>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn btn-emerald-soft flex-1 modal-dlg inline-flex items-center justify-center gap-1.5 h-8 text-sm" data-btn-submit="<?= lang('Common.submit') ?>" data-href="<?= "customers/view" ?>" title="<?= lang(ucfirst($controller_name) . ".new_customer") ?>">
+                                <i data-lucide="user-plus" class="w-3 h-3"></i>
+                                <?= lang(ucfirst($controller_name) . ".new_customer") ?>
+                            </button>
+                            <button class="btn btn-default flex-1 modal-dlg inline-flex items-center justify-center gap-1.5 h-8 text-sm" id="show_keyboard_help" data-href="<?= esc("$controller_name/salesKeyboardHelp") ?>" title="<?= lang(ucfirst($controller_name) . '.key_title') ?>">
+                                <i data-lucide="keyboard" class="w-3 h-3"></i>
+                                <?= lang(ucfirst($controller_name) . '.key_help') ?>
+                            </button>
+                        </div>
+                    </div>
+                <?php } ?>
+            <?= form_close() ?>
+        </div>
 
-            <div id="payment_details">
-                <?php if ($payments_cover_total) { // Show Complete sale button instead of Add Payment if there is no amount due left ?>
-                    <?= form_open("$controller_name/addPayment", ['id' => 'add_payment_form', 'class' => 'form-horizontal']) ?>
-                        <table class="sales_table_100">
-                            <tr>
-                                <td><?= lang(ucfirst($controller_name) . '.payment') ?></td>
-                                <td>
-                                    <?= form_dropdown('payment_type', $payment_options, $selected_payment_type, ['id' => 'payment_types', 'class' => 'selectpicker show-menu-arrow', 'data-style' => 'btn-default btn-sm', 'data-width' => 'fit', 'disabled' => 'disabled']) ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><span id="amount_tendered_label"><?= lang(ucfirst($controller_name) . '.amount_tendered') ?></span></td>
-                                <td>
-                                    <?= form_input(['name' => 'amount_tendered', 'id' => 'amount_tendered', 'class' => 'form-control input-sm disabled', 'disabled' => 'disabled', 'value' => '0', 'size' => '5', 'tabindex' => ++$tabindex, 'onClick' => 'this.select();']) ?>
-                                </td>
-                            </tr>
-                        </table>
-                    <?= form_close() ?>
+        <!-- Summary Section -->
+        <div class="register-card">
+            <div class="register-summary">
+                <div class="summary-row">
+                    <span class="text-slate-500"><?= lang(ucfirst($controller_name) . '.quantity_of_items', [$item_count]) ?></span>
+                    <span class="font-semibold text-slate-900"><?= $total_units ?></span>
+                </div>
+                <div class="summary-row">
+                    <span class="text-slate-500"><?= lang(ucfirst($controller_name) . '.sub_total') ?></span>
+                    <span class="font-semibold text-slate-900"><?= to_currency($subtotal) ?></span>
+                </div>
+                <?php foreach ($taxes as $tax_group_index => $tax) { ?>
+                    <div class="summary-row border-none !py-0.5">
+                        <span class="text-slate-500 text-sm"><?= (float)$tax['tax_rate'] . '% ' . $tax['tax_group'] ?></span>
+                        <span class="font-semibold text-slate-900 text-sm"><?= to_currency_tax($tax['sale_tax_amount']) ?></span>
+                    </div>
+                <?php } ?>
+                <div class="summary-row total !py-0.5 border-t border-slate-100 mt-1">
+                    <span class="text-sm font-bold"><?= lang(ucfirst($controller_name) . '.total') ?></span>
+                    <span id="sale_total" class="text-emerald-600 font-bold text-sm"><?= to_currency($total) ?></span>
+                </div>
 
-                    <?php
+                <?php if (count($cart) > 0) { ?>
+                    <div class="summary-row !py-0.5">
+                        <span class="text-slate-500 text-sm"><?= lang(ucfirst($controller_name) . '.payments_total') ?></span>
+                        <span class="font-semibold text-slate-900 text-sm"><?= to_currency($payments_total) ?></span>
+                    </div>
+                    <div class="summary-row total due !py-0.5 border-t border-slate-100 mt-1">
+                        <span class="text-rose-500 text-sm font-bold"><?= lang(ucfirst($controller_name) . '.amount_due') ?></span>
+                        <span id="sale_amount_due" class="text-rose-600 font-bold text-sm"><?= to_currency($amount_due) ?></span>
+                    </div>
+                <?php } ?>
+            </div>
+        </div>
+
+        <!-- Payment Section -->
+        <?php if (count($cart) > 0) { ?>
+            <div class="register-card">
+                <div id="payment_details" class="space-y-2">
+                    <?php if ($payments_cover_total) { ?>
+                        <div class="p-2 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center gap-2 text-emerald-700">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            <span class="text-sm font-semibold"><?= lang(ucfirst($controller_name) . '.payment_received') ?></span>
+                        </div>
+                    <?php } else { ?>
+                        <?= form_open("$controller_name/addPayment", ['id' => 'add_payment_form', 'class' => 'space-y-3']) ?>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-sm font-bold text-slate-500 uppercase"><?= lang(ucfirst($controller_name) . '.payment_type') ?></label>
+                                    <?= form_dropdown('payment_type', $payment_options,  $selected_payment_type, ['id' => 'payment_types', 'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400']) ?>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-sm font-bold text-slate-500 uppercase"><?= lang(ucfirst($controller_name) . '.amount') ?></label>
+                                    <?= form_input(['name' => 'amount_tendered', 'id' => 'amount_tendered', 'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-1 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-slate-400 non-giftcard-input', 'value' => to_currency_no_money($amount_due), 'onClick' => 'this.select();']) ?>
+                                    <?= form_input(['name' => 'amount_tendered', 'id' => 'amount_tendered', 'class' => 'hidden giftcard-input', 'disabled' => true, 'value' => to_currency_no_money($amount_due)]) ?>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-primary action-btn w-full inline-flex items-center justify-center gap-2" id="add_payment_button">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <?= lang(ucfirst($controller_name) . '.add_payment') ?>
+                            </button>
+                        <?= form_close() ?>
+                    <?php } ?>
+
+                    <?php if (count($payments) > 0) { ?>
+                        <div class="space-y-1.5 mt-2">
+                            <?php foreach ($payments as $payment_id => $payment) { ?>
+                                <div class="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-100 group">
+                                    <div class="flex items-center gap-2">
+                                        <?= anchor("$controller_name/deletePayment/". base64_encode($payment_id), '<i data-lucide="x-circle" class="w-3.5 h-3.5 text-slate-400 hover:text-rose-500 transition-colors"></i>') ?>
+                                        <span class="text-sm font-semibold text-slate-700"><?= $payment['payment_type'] ?></span>
+                                    </div>
+                                    <span class="text-sm font-bold text-slate-900"><?= to_currency($payment['payment_amount']) ?></span>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
+                </div>
+
+                <!-- Final Actions -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+    <?php
                     // Only show this part if in sale or return mode
-                    if ($pos_mode) {
+                    if ($pos_mode && $payments_cover_total) {
                         $due_payment = false;
 
                         if (count($payments) > 0) {
@@ -432,135 +455,60 @@ if (isset($success)) {
                             }
                         }
 
-                        if (!$due_payment || ($due_payment && isset($customer))) {    // TODO: $due_payment is not needed because the first clause insures that it will always be true if it gets to this point.  Can be shortened to if (!$due_payment || isset($customer))
+                        if (!$due_payment || ($due_payment && isset($customer))) {
                     ?>
-                            <div class="btn btn-sm btn-success pull-right" id="finish_sale_button" tabindex="<?= ++$tabindex ?>">
-                                <span class="glyphicon glyphicon-ok">&nbsp;</span><?= lang(ucfirst($controller_name) . '.complete_sale') ?>
-                            </div>
+                        <button class="btn btn-success action-btn mb-2 shadow-lg shadow-emerald-200 w-full inline-flex items-center justify-center gap-2" id="finish_sale_button" tabindex="<?= ++$tabindex ?>">
+                            <i data-lucide="check-check" class="w-5 h-5"></i>
+                            <?= lang(ucfirst($controller_name) . '.complete_sale') ?>
+                        </button>
                     <?php
                         }
-                    }
-                    ?>
-                <?php } else { ?>
-                    <?= form_open("$controller_name/addPayment", ['id' => 'add_payment_form', 'class' => 'form-horizontal']) ?>
-                        <table class="sales_table_100">
-                            <tr>
-                                <td><?= lang(ucfirst($controller_name) . '.payment') ?></td>
-                                <td>
-                                    <?= form_dropdown('payment_type', $payment_options,  $selected_payment_type, ['id' => 'payment_types', 'class' => 'selectpicker show-menu-arrow', 'data-style' => 'btn-default btn-sm', 'data-width' => 'fit']) ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><span id="amount_tendered_label"><?= lang(ucfirst($controller_name) . '.amount_tendered') ?></span></td>
-                                <td>
-                                    <?= form_input(['name' => 'amount_tendered', 'id' => 'amount_tendered', 'class' => 'form-control input-sm non-giftcard-input', 'value' => to_currency_no_money($amount_due), 'size' => '5', 'tabindex' => ++$tabindex, 'onClick' => 'this.select();']) ?>
-                                    <?= form_input(['name' => 'amount_tendered', 'id' => 'amount_tendered', 'class' => 'form-control input-sm giftcard-input', 'disabled' => true, 'value' => to_currency_no_money($amount_due), 'size' => '5', 'tabindex' => ++$tabindex]) ?>
-                                </td>
-                            </tr>
-                        </table>
+                    } elseif (!$pos_mode && isset($customer)) { ?>
+                        <button class="btn btn-success action-btn mb-2 shadow-lg shadow-emerald-200 w-full inline-flex items-center justify-center gap-2" id="finish_invoice_quote_button">
+                            <i data-lucide="file-check" class="w-5 h-5"></i>
+                            <?= esc($mode_label) ?>
+                        </button>
+                    <?php } ?>
+
+                    <?= form_open("$controller_name/cancel", ['id' => 'buttons_form']) ?>
+                    <div class="grid grid-cols-2 gap-3" id="buttons_sale">
+                        <div class="btn btn-default action-btn w-full inline-flex items-center justify-center gap-2" id="suspend_sale_button">
+                            <i data-lucide="pause-circle" class="w-4 h-4"></i>
+                            <?= lang(ucfirst($controller_name) . '.suspend_sale') ?>
+                        </div>
+                        <div class="btn bg-rose-50 text-rose-600 border border-rose-100 hover:bg-rose-100 hover:border-rose-200 transition-all action-btn w-full inline-flex items-center justify-center gap-2" id="cancel_sale_button">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                            <?= lang(ucfirst($controller_name) . '.cancel_sale') ?>
+                        </div>
+                    </div>
                     <?= form_close() ?>
 
-                    <div class="btn btn-sm btn-success pull-right" id="add_payment_button" tabindex="<?= ++$tabindex ?>">
-                        <span class="glyphicon glyphicon-credit-card">&nbsp;</span><?= lang(ucfirst($controller_name) . '.add_payment') ?>
-                    </div>
-                <?php } ?>
-
-                <?php if (count($payments) > 0) { // Only show this part if there is at least one payment entered. ?>
-                    <table class="sales_table_100" id="register">
-                        <thead>
-                            <tr>
-                                <th style="width: 10%;"><?= lang('Common.delete') ?></th>
-                                <th style="width: 60%;"><?= lang(ucfirst($controller_name) . '.payment_type') ?></th>
-                                <th style="width: 20%;"><?= lang(ucfirst($controller_name) . '.payment_amount') ?></th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="payment_contents">
-                            <?php foreach ($payments as $payment_id => $payment) { ?>
-                                <tr>
-                                    <td><?= anchor("$controller_name/deletePayment/". base64_encode($payment_id), '<span class="glyphicon glyphicon-trash"></span>') ?></td>
-                                    <td><?= $payment['payment_type'] ?></td>
-                                    <td style="text-align: right;"><?= to_currency($payment['payment_amount']) ?></td>
-                                </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table>
-                <?php } ?>
-            </div>
-
-            <?= form_open("$controller_name/cancel", ['id' => 'buttons_form']) ?>
-            <div class="form-group" id="buttons_sale">
-                <div class="btn btn-sm btn-default pull-left" id="suspend_sale_button"><span class="glyphicon glyphicon-align-justify">&nbsp;</span><?= lang(ucfirst($controller_name) . '.suspend_sale') ?></div>
-                <?php if (!$pos_mode && isset($customer)) { // Only show this part if the payment covers the total ?>
-                    <div class="btn btn-sm btn-success" id="finish_invoice_quote_button"><span class="glyphicon glyphicon-ok">&nbsp;</span><?= esc($mode_label) ?></div>
-                <?php } ?>
-
-                <div class="btn btn-sm btn-danger pull-right" id="cancel_sale_button"><span class="glyphicon glyphicon-remove">&nbsp;</span><?= lang(ucfirst($controller_name) . '.cancel_sale') ?></div>
-            </div>
-            <?= form_close() ?>
-
-            <?php if ($payments_cover_total || !$pos_mode) { // Only show this part if the payment cover the total ?>
-                <div class="container-fluid">
-                    <div class="no-gutter row">
-                        <div class="form-group form-group-sm">
-                            <div class="col-xs-12">
-                                <?= form_label(lang('Common.comments'), 'comments', ['class' => 'control-label', 'id' => 'comment_label', 'for' => 'comment']) ?>
-                                <?= form_textarea(['name' => 'comment', 'id' => 'comment', 'class' => 'form-control input-sm', 'value' => $comment, 'rows' => '2']) ?>
-                            </div>
+                    <!-- Comments & Settings -->
+                    <div class="mt-4 space-y-3">
+                        <div class="space-y-1">
+                            <?= form_label(lang('Common.comments'), 'comments', ['class' => 'text-sm font-bold text-slate-500 uppercase']) ?>
+                            <?= form_textarea(['name' => 'comment', 'id' => 'comment', 'class' => 'flex w-full rounded-md border border-slate-300 bg-white px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400', 'value' => $comment, 'rows' => '1']) ?>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group form-group-sm">
-                            <div class="col-xs-6">
-                                <label for="sales_print_after_sale" class="control-label checkbox">
-                                    <?= form_checkbox(['name' => 'sales_print_after_sale', 'id' => 'sales_print_after_sale', 'value' => 1, 'checked' => $print_after_sale]) ?>
-                                    <?= lang(ucfirst($controller_name) . '.print_after_sale') ?>
-                                </label>
-                            </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center gap-1.5 cursor-pointer p-1.5 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-slate-100 transition-colors">
+                                <?= form_checkbox(['name' => 'sales_print_after_sale', 'id' => 'sales_print_after_sale', 'class' => 'w-3.5 h-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500', 'value' => 1, 'checked' => $print_after_sale]) ?>
+                                <span class="text-sm font-semibold text-slate-600"><?= lang(ucfirst($controller_name) . '.print_after_sale') ?></span>
+                            </label>
 
                             <?php if (!empty($customer_email)) { ?>
-                                <div class="col-xs-6">
-                                    <label for="email_receipt" class="control-label checkbox">
-                                        <?= form_checkbox(['name' => 'email_receipt', 'id' => 'email_receipt', 'value' => 1, 'checked' => $email_receipt]) ?>
-                                        <?= lang(ucfirst($controller_name) . '.email_receipt') ?>
-                                    </label>
-                                </div>
-                            <?php } ?>
-                            <?php if ($mode == 'sale_work_order') { ?>
-                                <div class="col-xs-6">
-                                    <label for="price_work_orders" class="control-label checkbox">
-                                        <?= form_checkbox(['name' => 'price_work_orders', 'id' => 'price_work_orders', 'value' => 1, 'checked' => $price_work_orders]) ?>
-                                        <?= lang(ucfirst($controller_name) . '.include_prices') ?>
-                                    </label>
-                                </div>
+                                <label class="flex items-center gap-2 cursor-pointer p-2 rounded-lg border border-slate-100 bg-slate-50/50 hover:bg-slate-100 transition-colors">
+                                    <?= form_checkbox(['name' => 'email_receipt', 'id' => 'email_receipt', 'class' => 'w-4 h-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500', 'value' => 1, 'checked' => $email_receipt]) ?>
+                                    <span class="text-sm font-semibold text-slate-600"><?= lang(ucfirst($controller_name) . '.email_receipt') ?></span>
+                                </label>
                             <?php } ?>
                         </div>
                     </div>
-                    <?php if (($mode == 'sale_invoice') && $config['invoice_enable']) { ?>
-                        <div class="row">
-                            <div class="form-group form-group-sm">
-                                <div class="col-xs-6">
-                                    <label for="sales_invoice_number" class="control-label checkbox">
-                                        <?= lang(ucfirst($controller_name) . '.invoice_enable') ?>
-                                    </label>
-                                </div>
-
-                                <div class="col-xs-6">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-addon input-sm">#</span>
-                                        <?= form_input(['name' => 'sales_invoice_number', 'id' => 'sales_invoice_number', 'class' => 'form-control input-sm', 'value' => $invoice_number]) ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php } ?>
                 </div>
-        <?php
-            }
-        }
-        ?>
+            </div>
+        <?php } ?>
     </div>
-</div>
+</div> <!-- End Register Layout Grid -->
 
 <script type="text/javascript">
     $(document).ready(function() {

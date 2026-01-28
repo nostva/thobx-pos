@@ -62,6 +62,15 @@ if (isset($error)) {
             <h3 class="font-bold text-slate-800"><?= lang('Reports.summary_reports') ?></h3>
         </div>
         <div class="p-2">
+
+            <!-- Financial Summary Report (Manual Link) -->
+            <?php if (in_array('reports_sales', $permission_ids, true)): ?>
+                <a class="flex items-center gap-3 px-3 py-3 rounded-xl text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition-all font-medium" href="<?= site_url('reports/financial_summary') ?>">
+                    <i data-lucide="calculator" class="w-4 h-4 text-slate-400"></i>
+                    <?= lang('Reports.financial_summary') ?>
+                </a>
+            <?php endif; ?>
+
             <?php foreach ($permission_ids as $permission_id) {
                 if (can_show_report($permission_id, ['inventory', 'receiving'])) {
                     $link = get_report_link($permission_id, 'summary');

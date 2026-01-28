@@ -16,7 +16,6 @@
     <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
         <div class="mb-6 border-b border-slate-50 pb-4">
             <h2 class="text-xl font-bold text-slate-800"><?= lang('Reports.report_input') ?></h2>
-            <p class="text-sm text-slate-400 mt-1"><?= lang('Common.fill_required_fields') ?></p>
         </div>
 
         <?= form_open('#', ['id' => 'item_form', 'enctype' => 'multipart/form-data', 'class' => 'space-y-6']) ?>

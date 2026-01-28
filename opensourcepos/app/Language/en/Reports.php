@@ -146,4 +146,9 @@ return [
     "used"                                    => "Points Used",
     "work_orders"                             => "Work Orders",
     "zero_and_less"                           => "Zero and less",
+    "financial_summary"                       => "Financial Summary",
+    "margin"                                  => "Margin",
+    "net_profit"                              => "Net Profit",
+    "no_expenses_to_display"                  => "There are no expenses to display.",
+    "total_expenses"                          => "Total Expenses",
 ];

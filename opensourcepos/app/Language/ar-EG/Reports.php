@@ -146,4 +146,9 @@ return [
     "used"                                    => "النقاط المستخدمة",
     "work_orders"                             => "طلبات عمل",
     "zero_and_less"                           => "صفر و أقل",
+    "financial_summary"                       => "الملخص المالي",
+    "margin"                                  => "هامش الربح",
+    "net_profit"                              => "صافي الربح",
+    "no_expenses_to_display"                  => "لا توجد مصاريف لعرضها.",
+    "total_expenses"                          => "إجمالي المصاريف",
 ];

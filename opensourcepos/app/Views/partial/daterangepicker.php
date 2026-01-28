@@ -5,7 +5,7 @@
 ?>
 
 <?php if (empty($config['date_or_time_format'])) { ?>
-    $('#daterangepicker').css("width", "180");
+    $('#daterangepicker');
     var start_date = "<?= date('Y-m-d') ?>";
     var end_date = "<?= date('Y-m-d') ?>";
 

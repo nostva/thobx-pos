@@ -14,6 +14,10 @@ $routes->post('login', 'Login::index');
 $routes->add('no_access/index/(:segment)', 'No_access::index/$1');
 $routes->add('no_access/index/(:segment)/(:segment)', 'No_access::index/$1/$2');
 
+// Financial Summary (must be before summary catch-all)
+$routes->add('reports/financial_summary/(:any)/(:any)/(:any)', 'Reports::financial_summary/$1/$2/$3');
+$routes->add('reports/financial_summary', 'Reports::financial_summary_input');
+
 $routes->add('reports/summary_(:any)/(:any)/(:any)', 'Reports::Summary_$1/$2/$3/$4');
 $routes->add('reports/summary_expenses_categories', 'Reports::date_input_only');
 $routes->add('reports/summary_payments', 'Reports::date_input_only');
@@ -39,3 +43,4 @@ $routes->add('reports/specific_customers', 'Reports::specific_customer_input');
 $routes->add('reports/specific_employees', 'Reports::specific_employee_input');
 $routes->add('reports/specific_discounts', 'Reports::specific_discount_input');
 $routes->add('reports/specific_suppliers', 'Reports::specific_supplier_input');
+

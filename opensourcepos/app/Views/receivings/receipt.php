@@ -26,11 +26,12 @@ if (isset($error_message)) {
 
 echo view('partial/print_receipt', ['print_after_sale', $print_after_sale, 'selected_printer' => 'receipt_printer']) ?>
 
-<div class="print_hide" id="control_buttons" style="text-align: right;">
-    <a href="javascript:printdoc();">
-        <div class="btn btn-info btn-sm" id="show_print_button"><?= '<span class="glyphicon glyphicon-print">&nbsp;</span>' . lang('Common.print') ?></div>
-    </a>
-    <?= anchor("receivings", '<span class="glyphicon glyphicon-save">&nbsp;</span>' . lang('Receivings.register'), ['class' => 'btn btn-info btn-sm', 'id' => 'show_sales_button']) ?>
+<div class="print_hide flex items-center justify-end gap-3 p-4 bg-slate-50 border-b border-slate-200" id="control_buttons">
+    <button onclick="printdoc();" class="btn btn-default btn-sm inline-flex items-center gap-2" id="show_print_button">
+        <i data-lucide="printer" class="w-4 h-4 text-emerald-600"></i>
+        <?= lang('Common.print') ?>
+    </button>
+    <?= anchor("receivings", '<i data-lucide="shopping-basket" class="w-4 h-4"></i>' . lang('Receivings.register'), ['class' => 'btn btn-primary btn-sm inline-flex items-center gap-2', 'id' => 'show_sales_button']) ?>
 </div>
 
 <div id="receipt_wrapper">

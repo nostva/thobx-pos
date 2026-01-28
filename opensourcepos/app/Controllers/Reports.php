@@ -78,13 +78,16 @@ class Reports extends Secure_Controller
         $this->inventory_summary = model(Inventory_summary::class);
 
         if (sizeof($exploder) > 1) {
-            preg_match('/(?:inventory)|([^_.]*)(?:_graph|_row)?$/', $method_name, $matches);
-            preg_match('/^(.*?)([sy])?$/', array_pop($matches), $matches);
-            $submodule_id = $matches[1] . ((count($matches) > 2) ? $matches[2] : 's');
+            // Skip permission check for financial_summary (uses reports_sales permission instead)
+            if ($method_name !== 'financial_summary' && $method_name !== 'financial_summary_input') {
+                preg_match('/(?:inventory)|([^_.]*)(?:_graph|_row)?$/', $method_name, $matches);
+                preg_match('/^(.*?)([sy])?$/', array_pop($matches), $matches);
+                $submodule_id = $matches[1] . ((count($matches) > 2) ? $matches[2] : 's');
 
-            // Check access to report submodule
-            if (!$this->employee->has_grant('reports_' . $submodule_id, $this->employee->get_logged_in_employee_info()->person_id)) {
-                redirect('no_access/reports/reports_' . $submodule_id);
+                // Check access to report submodule
+                if (!$this->employee->has_grant('reports_' . $submodule_id, $this->employee->get_logged_in_employee_info()->person_id)) {
+                    redirect('no_access/reports/reports_' . $submodule_id);
+                }
             }
         }
 
@@ -2117,5 +2120,74 @@ class Reports extends Secure_Controller
             ->appendHeader('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT')
             ->appendHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
             ->appendHeader('Cache-Control', 'post-check=0, pre-check=0');
+    }
+
+    /**
+     * Financial Summary Report (Sales vs Expenses)
+     * @param string $start_date
+     * @param string $end_date
+     * @param string $sale_type
+     * @return void
+     */
+    public function financial_summary(string $start_date, string $end_date, string $sale_type = 'all'): void
+    {
+        $this->clearCache();
+
+        $inputs = [
+            'start_date' => $start_date,
+            'end_date'   => $end_date,
+            'sale_type'  => $sale_type,
+            'location_id'=> 'all'
+        ];
+
+        // 1. Get Sales Data (Sales, Cost, Tax, Profit)
+        $sales_summary = $this->summary_sales->getSummaryData($inputs);
+
+        // 2. Get Expenses Data (Total Amount, Tax)
+        $expenses_summary = $this->summary_expenses_categories->getSummaryData($inputs);
+
+        // 3. Get Detailed Expenses by Category
+        $expenses_by_category = $this->summary_expenses_categories->getData($inputs);
+
+        // 4. Calculations
+        // 'profit' from Summary_sales is Gross Profit (Revenue - Cost of Goods)
+        $total_sales = $sales_summary['total'] ?? 0;
+        $total_cost  = $sales_summary['cost'] ?? 0;
+        $gross_profit= $sales_summary['profit'] ?? 0; 
+        $total_expenses = $expenses_summary['expenses_total_amount'] ?? 0;
+        $net_profit  = $gross_profit - $total_expenses;
+
+        // Calculate Margin Percentage
+        $profit_margin = ($total_sales > 0) ? round(($gross_profit / $total_sales) * 100, 2) : 0;
+
+        $data = [
+            'title'        => lang('Reports.financial_summary'), 
+            'subtitle'     => $this->_get_subtitle_report(['start_date' => $start_date, 'end_date' => $end_date]),
+            'start_date'   => $start_date,
+            'end_date'     => $end_date,
+            'total_sales'  => $total_sales,
+            'total_cost'   => $total_cost,
+            'gross_profit' => $gross_profit,
+            'profit_margin'=> $profit_margin,
+            'total_expenses' => $total_expenses,
+            'expenses_data'  => $expenses_by_category,
+            'net_profit'     => $net_profit
+        ];
+
+        echo view('reports/financial_summary', $data);
+    }
+
+    /**
+     * Input for Financial Summary Report
+     */
+    public function financial_summary_input(): void
+    {
+        $this->clearCache();
+        
+        $data = [];
+        $data['mode'] = 'sale'; 
+        $data['sale_type_options'] = $this->get_sale_type_options();
+        
+        echo view('reports/date_input', $data);
     }
 }

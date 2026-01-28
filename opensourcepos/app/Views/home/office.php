@@ -40,7 +40,6 @@ $color_map = [
     <!-- Welcome Header -->
     <div class="flex flex-col gap-1">
         <h2 class="text-3xl font-bold tracking-tight text-slate-900"><?= lang('Common.welcome_message') ?></h2>
-        <p class="text-slate-500">Back office overview and management.</p>
     </div>
 
     <!-- Statistics Grid (Same for UI consistency) -->
@@ -52,7 +51,7 @@ $color_map = [
                 </div>
             </div>
             <div class="text-2xl font-bold text-slate-900"><?= number_format($stats['total_items']) ?></div>
-            <div class="text-sm text-slate-500 mt-1">Total Items</div>
+            <div class="text-sm text-slate-500 mt-1"><?= lang('Common.total_items') ?></div>
         </div>
 
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
@@ -62,7 +61,7 @@ $color_map = [
                 </div>
             </div>
             <div class="text-2xl font-bold text-slate-900"><?= number_format($stats['sales_today']) ?></div>
-            <div class="text-sm text-slate-500 mt-1">Today's Sales</div>
+            <div class="text-sm text-slate-500 mt-1"><?= lang('Common.todays_sales') ?></div>
         </div>
 
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
@@ -72,7 +71,7 @@ $color_map = [
                 </div>
             </div>
             <div class="text-2xl font-bold text-slate-900"><?= number_format($stats['total_customers']) ?></div>
-            <div class="text-sm text-slate-500 mt-1">Total Customers</div>
+            <div class="text-sm text-slate-500 mt-1"><?= lang('Common.total_customers') ?></div>
         </div>
 
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
@@ -82,13 +81,48 @@ $color_map = [
                 </div>
             </div>
             <div class="text-2xl font-bold text-slate-900"><?= number_format($stats['total_sales']) ?></div>
-            <div class="text-sm text-slate-500 mt-1">Global Sales</div>
+            <div class="text-sm text-slate-500 mt-1"><?= lang('Common.global_sales') ?></div>
+        </div>
+    </div>
+
+        <!-- Financial Summary Card -->
+    <div class="space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="text-xl font-semibold text-slate-900"><?= lang('Common.current_month_summary') ?></h3>
+            <a href="<?= site_url('reports/financial_summary') ?>" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-1">
+                <?= lang('Reports.financial_summary') ?>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-2 font-medium"><?= lang('Reports.sales') ?></div>
+                    <div class="text-xl font-bold text-slate-900"><?= to_currency($financial_summary['total_sales']) ?></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-500 mb-2 font-medium"><?= lang('Reports.cost') ?></div>
+                    <div class="text-xl font-bold text-slate-900"><?= to_currency($financial_summary['total_cost']) ?></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-emerald-600 mb-2 font-medium"><?= lang('Reports.profit') ?></div>
+                    <div class="text-xl font-bold text-emerald-600"><?= to_currency($financial_summary['gross_profit']) ?></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-rose-600 mb-2 font-medium"><?= lang('Reports.expenses') ?></div>
+                    <div class="text-xl font-bold text-rose-600"><?= to_currency($financial_summary['total_expenses']) ?></div>
+                </div>
+                <div class="text-center">
+                    <div class="text-xs text-slate-700 mb-2 font-bold"><?= lang('Reports.net_profit') ?></div>
+                    <div class="text-2xl font-black <?= $financial_summary['net_profit'] >= 0 ? 'text-emerald-600' : 'text-rose-600' ?>"><?= to_currency($financial_summary['net_profit']) ?></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Modules Grid -->
     <div class="space-y-4">
-        <h3 class="text-xl font-semibold text-slate-900">Office Modules</h3>
+        <h3 class="text-xl font-semibold text-slate-900"><?= lang('Common.office_modules') ?></h3>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
             <?php foreach($allowed_modules as $module) { 
                 $mid = $module->module_id;

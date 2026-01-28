@@ -50,7 +50,7 @@
 
 <?= view('partial/print_receipt', ['print_after_sale' => false, 'selected_printer' => 'takings_printer']) ?>
 
-<div id="title_bar" class="flex justify-between items-center mb-6">
+<div id="title_bar" class="flex justify-between items-center mb-6 print:hidden">
     <h2 class="text-2xl font-bold text-slate-800"><?= lang('Module.' . $controller_name) ?></h2>
     <div class="flex gap-2">
         <button onclick="javascript:printdoc()" class="btn btn-default btn-sm flex items-center gap-2">
@@ -64,7 +64,7 @@
     </div>
 </div>
 
-<div id="toolbar" class="flex flex-wrap gap-3 mb-6 items-center">
+<div id="toolbar" class="flex flex-wrap gap-3 mb-6 items-center print:hidden">
     <div class="flex gap-2" role="toolbar">
         <button id="delete" class="btn btn-default btn-sm flex items-center gap-2 text-red-600 hover:bg-red-50 hover:border-red-200">
             <i data-lucide="trash-2" class="w-4 h-4"></i>
