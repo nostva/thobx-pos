@@ -15,13 +15,13 @@ CREATE TABLE `ospos_app_config` (
 
 INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('address', '123 Nowhere street'),
-    ('company', 'Open Source Point of Sale'),
+    ('company', 'Anis Rose'),
     ('default_tax_rate', '8'),
     ('email', 'changeme@example.com'),
     ('fax', ''),
     ('phone', '555-555-5555'),
     ('return_policy', 'Test'),
-    ('timezone', 'America/New_York'),
+    ('timezone', 'Asia/Riyadh'),
     ('website', ''),
     ('company_logo', ''),
     ('tax_included', '0'),
@@ -60,12 +60,12 @@ INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('dateformat', 'm/d/Y'),
     ('timeformat', 'H:i:s'),
     ('currency_symbol', '$'),
-    ('number_locale', 'en_US'),
+    ('number_locale', 'ar_SA'),
     ('thousands_separator', '1'),
     ('currency_decimals', '2'),
     ('tax_decimals', '2'),
     ('quantity_decimals', '0'),
-    ('country_codes', 'us'),
+    ('country_codes', 'sa'),
     ('msg_msg', ''),
     ('msg_uid', ''),
     ('msg_src', ''),
@@ -81,8 +81,8 @@ INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('receipt_template', 'receipt_default'),
     ('theme', 'flatly'),
     ('statistics', '1'),
-    ('language', 'english'),
-    ('language_code', 'en');
+    ('language', 'arabic'),
+    ('language_code', 'ar');
 
 
 -- --------------------------------------------------------
@@ -309,17 +309,17 @@ CREATE TABLE `ospos_modules` (
 --
 
 INSERT INTO `ospos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `module_id`) VALUES
-    ('module_config', 'module_config_desc', 110, 'config'),
-    ('module_customers', 'module_customers_desc', 10, 'customers'),
+    ('module_sales', 'module_sales_desc', 10, 'sales'),
+    ('module_items', 'module_items_desc', 20, 'items'),
+    ('module_customers', 'module_customers_desc', 30, 'customers'),
+    ('module_item_kits', 'module_item_kits_desc', 40, 'item_kits'),
+    ('module_suppliers', 'module_suppliers_desc', 50, 'suppliers'),
+    ('module_reports', 'module_reports_desc', 60, 'reports'),
+    ('module_receivings', 'module_receivings_desc', 70, 'receivings'),
     ('module_employees', 'module_employees_desc', 80, 'employees'),
     ('module_giftcards', 'module_giftcards_desc', 90, 'giftcards'),
-    ('module_items', 'module_items_desc', 20, 'items'),
-    ('module_item_kits', 'module_item_kits_desc', 30, 'item_kits'),
     ('module_messages', 'module_messages_desc', 100, 'messages'),
-    ('module_receivings', 'module_receivings_desc', 60, 'receivings'),
-    ('module_reports', 'module_reports_desc', 50, 'reports'),
-    ('module_sales', 'module_sales_desc', 70, 'sales'),
-    ('module_suppliers', 'module_suppliers_desc', 40, 'suppliers');
+    ('module_config', 'module_config_desc', 110, 'config');
 
 -- --------------------------------------------------------
 

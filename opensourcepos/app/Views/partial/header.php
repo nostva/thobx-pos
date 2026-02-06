@@ -12,8 +12,7 @@ $request = Services::request();
 ?>
 
 <!doctype html>
-<html lang="<?= current_language_code() ?>">
-<!-- <html lang="<?= current_language_code() ?>" dir="<?= (strpos(current_language_code(), 'ar') === 0) ? 'rtl' : 'ltr' ?>"> -->
+<html lang="<?= current_language_code() ?>" dir="<?= (strpos(current_language_code(), 'ar') === 0) ? 'rtl' : 'ltr' ?>">
 
 
 <head>

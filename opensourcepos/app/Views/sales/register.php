@@ -688,9 +688,9 @@ if (isset($success)) {
 
         $('#item').focus();
 
-        $('#item').blur(function () {
-            $(this).val("<?= lang(ucfirst($controller_name) . '.start_typing_item_name') ?>");
-        });
+        // $('#item').blur(function () {
+        //     $(this).val("<?= lang(ucfirst($controller_name) . '.start_typing_item_name') ?>");
+        // });
 
         $('#item').autocomplete({
             source: "<?= esc("$controller_name/itemSearch") ?>",

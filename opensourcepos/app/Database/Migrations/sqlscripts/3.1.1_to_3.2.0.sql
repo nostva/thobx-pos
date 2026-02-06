@@ -11,15 +11,16 @@ INSERT INTO `ospos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `module_i
 
 INSERT INTO `ospos_permissions` (`permission_id`, `module_id`) VALUES
 ('office', 'office'),
-('home', 'home');
+('home', 'home'),
+('item_kits', '--');
 
 INSERT INTO `ospos_grants` (`permission_id`, `person_id`, `menu_group`) VALUES
 ('office', 1, 'home'),
-('home', 1, 'office');
+('home', 1, 'both');
 
 UPDATE `ospos_grants`
 SET menu_group = 'office'
-WHERE permission_id in ('config', 'home', 'employees', 'taxes', 'migrate')
+WHERE permission_id in ('config', 'employees', 'taxes', 'migrate')
 AND person_id = 1;
 
 --

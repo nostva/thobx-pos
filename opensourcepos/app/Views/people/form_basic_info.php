@@ -35,8 +35,6 @@
         </div>
     </div>
 
-
-
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
         <div class="form-group w-full">
             <?= form_label(lang('Common.email'), 'email', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>

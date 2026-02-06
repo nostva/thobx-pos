@@ -35,15 +35,15 @@ defined('COMPOSER_PATH') || define('COMPOSER_PATH', ROOTPATH . 'vendor/autoload.
  */
 defined('SECOND') || define('SECOND', 1);
 defined('MINUTE') || define('MINUTE', 60);
-defined('HOUR')   || define('HOUR', 3600);
-defined('DAY')    || define('DAY', 86400);
-defined('WEEK')   || define('WEEK', 604800);
-defined('MONTH')  || define('MONTH', 2_592_000);
-defined('YEAR')   || define('YEAR', 31_536_000);
+defined('HOUR') || define('HOUR', 3600);
+defined('DAY') || define('DAY', 86400);
+defined('WEEK') || define('WEEK', 604800);
+defined('MONTH') || define('MONTH', 2_592_000);
+defined('YEAR') || define('YEAR', 31_536_000);
 defined('DECADE') || define('DECADE', 315_360_000);
-defined('DEFAULT_DATE')     || define('DEFAULT_DATE', mktime(0, 0, 0, 1, 1, 2010));
+defined('DEFAULT_DATE') || define('DEFAULT_DATE', mktime(0, 0, 0, 1, 1, 2010));
 defined('DEFAULT_DATETIME') || define('DEFAULT_DATETIME', mktime(0, 0, 0, 1, 1, 2010));
-defined('NOW')    || define('NOW', time());
+defined('NOW') || define('NOW', time());
 
 /*
  | --------------------------------------------------------------------------
@@ -70,16 +70,16 @@ defined('NOW')    || define('NOW', time());
  |       http://tldp.org/LDP/abs/html/exitcodes.html
  |
  */
-defined('EXIT_SUCCESS')        || define('EXIT_SUCCESS', 0);        // no errors
-defined('EXIT_ERROR')          || define('EXIT_ERROR', 1);          // generic error
-defined('EXIT_CONFIG')         || define('EXIT_CONFIG', 3);         // configuration error
-defined('EXIT_UNKNOWN_FILE')   || define('EXIT_UNKNOWN_FILE', 4);   // file not found
-defined('EXIT_UNKNOWN_CLASS')  || define('EXIT_UNKNOWN_CLASS', 5);  // unknown class
+defined('EXIT_SUCCESS') || define('EXIT_SUCCESS', 0);        // no errors
+defined('EXIT_ERROR') || define('EXIT_ERROR', 1);          // generic error
+defined('EXIT_CONFIG') || define('EXIT_CONFIG', 3);         // configuration error
+defined('EXIT_UNKNOWN_FILE') || define('EXIT_UNKNOWN_FILE', 4);   // file not found
+defined('EXIT_UNKNOWN_CLASS') || define('EXIT_UNKNOWN_CLASS', 5);  // unknown class
 defined('EXIT_UNKNOWN_METHOD') || define('EXIT_UNKNOWN_METHOD', 6); // unknown class member
-defined('EXIT_USER_INPUT')     || define('EXIT_USER_INPUT', 7);     // invalid user input
-defined('EXIT_DATABASE')       || define('EXIT_DATABASE', 8);       // database error
-defined('EXIT__AUTO_MIN')      || define('EXIT__AUTO_MIN', 9);      // lowest automatically-assigned error code
-defined('EXIT__AUTO_MAX')      || define('EXIT__AUTO_MAX', 125);    // highest automatically-assigned error code
+defined('EXIT_USER_INPUT') || define('EXIT_USER_INPUT', 7);     // invalid user input
+defined('EXIT_DATABASE') || define('EXIT_DATABASE', 8);       // database error
+defined('EXIT__AUTO_MIN') || define('EXIT__AUTO_MIN', 9);      // lowest automatically-assigned error code
+defined('EXIT__AUTO_MAX') || define('EXIT__AUTO_MAX', 125);    // highest automatically-assigned error code
 
 /**
  * Global Constants.
@@ -167,5 +167,5 @@ const COST_SUPPLIER = 1;
  */
 const MAX_PRECISION = 1e14;
 const DEFAULT_PRECISION = 2;
-const DEFAULT_LANGUAGE = 'english';
-const DEFAULT_LANGUAGE_CODE = 'en';
+const DEFAULT_LANGUAGE = 'arabic';
+const DEFAULT_LANGUAGE_CODE = 'ar';

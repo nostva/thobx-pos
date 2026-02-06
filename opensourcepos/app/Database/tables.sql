@@ -15,13 +15,13 @@ CREATE TABLE `ospos_app_config` (
 
 INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('address', '123 Nowhere street'),
-    ('company', 'Open Source Point of Sale'),
+    ('company', 'Anis Rose'),
     ('default_tax_rate', '8'),
     ('email', 'changeme@example.com'),
     ('fax', ''),
     ('phone', '555-555-5555'),
     ('return_policy', 'Test'),
-    ('timezone', 'America/New_York'),
+    ('timezone', 'Asia/Riyadh'),
     ('website', ''),
     ('company_logo', ''),
     ('tax_included', '0'),
@@ -81,8 +81,8 @@ INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('receipt_template', 'receipt_default'),
     ('theme', 'flatly'),
     ('statistics', '1'),
-    ('language', 'english'),
-    ('language_code', 'en');
+    ('language', 'arabic'),
+    ('language_code', 'ar');
 
 
 -- --------------------------------------------------------
