@@ -280,11 +280,11 @@ if (isset($success)) {
                                 </td>
 
                                 <td>
-                                    <div class="input-group">
-                                        <?= form_input(['name' => 'discount', 'class' => 'form-control input-sm', 'value' => $item['discount_type'] ? to_currency_no_money($item['discount']) : to_decimals($item['discount']), 'tabindex' => ++$tabindex, 'onClick' => 'this.select();']) ?>
-                                        <span class="input-group-btn">
+                                    <div class="flex items-center gap-1 min-w-[120px]">
+                                        <?= form_input(['name' => 'discount', 'class' => 'flex h-8 w-16 rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-slate-400', 'value' => $item['discount_type'] ? to_currency_no_money($item['discount']) : to_decimals($item['discount']), 'tabindex' => ++$tabindex, 'onClick' => 'this.select();']) ?>
+                                        <div class="discount-toggle-wrapper flex-shrink-0">
                                             <?= form_checkbox(['id' => 'discount_toggle', 'name' => 'discount_toggle', 'value' => 1, 'data-toggle' => "toggle", 'data-size' => 'small', 'data-onstyle' => 'success', 'data-on' => '<b>' . $config['currency_symbol'] . '</b>', 'data-off' => '<b>%</b>', 'data-line' => $line, 'checked' => $item['discount_type'] == 1]) ?>
-                                        </span>
+                                        </div>
                                     </div>
                                 </td>
 
@@ -505,7 +505,7 @@ if (isset($success)) {
                         </div>
                     <?php } else { ?>
                         <?= form_open("$controller_name/addPayment", ['id' => 'add_payment_form', 'class' => 'space-y-3']) ?>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-2 gap-3 mb-4">
                             <div class="space-y-1">
                                 <label
                                     class="text-sm font-bold text-slate-500 uppercase"><?= lang(ucfirst($controller_name) . '.payment_type') ?></label>
@@ -545,7 +545,7 @@ if (isset($success)) {
                 </div>
 
                 <!-- Final Actions -->
-                <div class="mt-4 pt-4 border-t border-slate-100">
+                <div>
                     <?php
                     // Only show this part if in sale or return mode
                     if ($pos_mode && $payments_cover_total) {
@@ -561,8 +561,7 @@ if (isset($success)) {
 
                         if (!$due_payment || ($due_payment && isset($customer))) {
                             ?>
-                            <button
-                                class="btn btn-success action-btn mb-2 shadow-lg shadow-emerald-200 w-full inline-flex items-center justify-center gap-2"
+                            <button class="btn btn-success action-btn mb-2 w-full inline-flex items-center justify-center gap-2"
                                 id="finish_sale_button" tabindex="<?= ++$tabindex ?>">
                                 <i data-lucide="check-check" class="w-5 h-5"></i>
                                 <?= lang(ucfirst($controller_name) . '.complete_sale') ?>
@@ -570,8 +569,7 @@ if (isset($success)) {
                             <?php
                         }
                     } elseif (!$pos_mode && isset($customer)) { ?>
-                        <button
-                            class="btn btn-success action-btn mb-2 shadow-lg shadow-emerald-200 w-full inline-flex items-center justify-center gap-2"
+                        <button class="btn btn-success action-btn mb-2 w-full inline-flex items-center justify-center gap-2"
                             id="finish_invoice_quote_button">
                             <i data-lucide="file-check" class="w-5 h-5"></i>
                             <?= esc($mode_label) ?>
@@ -579,7 +577,7 @@ if (isset($success)) {
                     <?php } ?>
 
                     <?= form_open("$controller_name/cancel", ['id' => 'buttons_form']) ?>
-                    <div class="grid grid-cols-2 gap-3" id="buttons_sale">
+                    <div class="grid grid-cols-2 gap-3 mb-4" id="buttons_sale">
                         <div class="btn btn-default action-btn w-full inline-flex items-center justify-center gap-2"
                             id="suspend_sale_button">
                             <i data-lucide="pause-circle" class="w-4 h-4"></i>
@@ -995,7 +993,6 @@ if (isset($success)) {
                 .html(`
                     <div class="product-name">${escapeHtml(item.name)}</div>
                     <div class="product-details">
-                        <span class="product-number">#${escapeHtml(itemNumber)}</span>
                         <span class="product-price">${item.price}</span>
                     </div>
                 `)

@@ -27,17 +27,32 @@ html {
 }
 
 body {
+  background-color: #f8fafc;
+  color: #0f172a;
+  font-size: 1rem !important; /* Maps to 16px */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6 {
   font-family:
     "Outfit",
     "Inter",
     system-ui,
     -apple-system,
     sans-serif !important;
-  background-color: #f8fafc;
-  color: #0f172a;
-  font-size: 1rem !important; /* Maps to 16px */
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* Base resets */
@@ -906,7 +921,6 @@ label.required::after {
 /* Specific Fix for Register Action Buttons */
 #suspend_sale_button,
 #cancel_sale_button,
-#finish_sale_button,
 #finish_invoice_quote_button,
 #add_payment_button {
   width: 100% !important;

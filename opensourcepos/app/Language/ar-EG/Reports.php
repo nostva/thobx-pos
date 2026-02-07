@@ -151,4 +151,10 @@ return [
     "net_profit" => "صافي الربح",
     "no_expenses_to_display" => "لا توجد مصاريف لعرضها.",
     "total_expenses" => "إجمالي المصاريف",
+    "report_filters" => "فلاتر التقرير",
+    "generate_report" => "إنشاء التقرير",
+    "loading_report" => "جاري تحميل التقرير...",
+    "error_loading_report" => "خطأ في تحميل التقرير",
+    "please_try_again" => "يرجى المحاولة مرة أخرى.",
+    "summary" => "ملخص",
 ];

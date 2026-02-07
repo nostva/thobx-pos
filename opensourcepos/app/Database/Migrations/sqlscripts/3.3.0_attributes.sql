@@ -48,11 +48,11 @@ ALTER TABLE `ospos_attribute_links`
 INSERT INTO `ospos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `module_id`) VALUES
  ('module_attributes', 'module_attributes_desc', 107, 'attributes');
 
-INSERT INTO `ospos_permissions` (`permission_id`, `module_id`) VALUES
- ('attributes', 'attributes');
+-- INSERT INTO `ospos_permissions` (`permission_id`, `module_id`) VALUES
+--  ('attributes', 'attributes');
 
-INSERT INTO `ospos_grants` (`permission_id`, `person_id`, `menu_group`) VALUES
- ('attributes', 1, 'office');
+-- INSERT INTO `ospos_grants` (`permission_id`, `person_id`, `menu_group`) VALUES
+--  ('attributes', 1, 'office');
 
 -- migrate custom fields to text attributes
 -- NOTE: items with custom attributes won't keep their selected category!!

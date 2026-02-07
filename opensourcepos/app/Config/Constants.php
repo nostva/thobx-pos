@@ -168,4 +168,4 @@ const COST_SUPPLIER = 1;
 const MAX_PRECISION = 1e14;
 const DEFAULT_PRECISION = 2;
 const DEFAULT_LANGUAGE = 'arabic';
-const DEFAULT_LANGUAGE_CODE = 'ar';
+const DEFAULT_LANGUAGE_CODE = 'ar-EG';

@@ -428,7 +428,7 @@ class Item extends Model
 
         if ($item_id < 1 || !$this->exists($item_id, true)) {
             if ($builder->insert($item_data)) {
-                $item_data['item_id'] = (int)$this->db->insertID();
+                $item_data['item_id'] = (int) $this->db->insertID();
                 if ($item_id < 1) {
                     $builder = $this->db->table('items');
                     $builder->where('item_id', $item_data['item_id']);
@@ -693,9 +693,11 @@ class Item extends Model
             foreach ($builder->get()->getResult() as $row) {
                 $entry = ['value' => $row->item_id, 'label' => $this->get_search_suggestion_label($row)];
 
-                if (!array_walk($suggestions, function ($value, $label) use ($entry) {
-                    return $entry['label'] != $label;
-                })) {
+                if (
+                    !array_walk($suggestions, function ($value, $label) use ($entry) {
+                        return $entry['label'] != $label;
+                    })
+                ) {
                     $suggestions[] = $entry;
                 }
             }
@@ -801,9 +803,11 @@ class Item extends Model
 
             foreach ($builder->get()->getResult() as $row) {
                 $entry = ['value' => $row->item_id, 'label' => $this->get_search_suggestion_label($row)];
-                if (!array_walk($suggestions, function ($value, $label) use ($entry) {
-                    return $entry['label'] != $label;
-                })) {
+                if (
+                    !array_walk($suggestions, function ($value, $label) use ($entry) {
+                        return $entry['label'] != $label;
+                    })
+                ) {
                     $suggestions[] = $entry;
                 }
             }
@@ -904,9 +908,11 @@ class Item extends Model
 
             foreach ($builder->get()->getResult() as $row) {
                 $entry = ['value' => $row->item_id, 'label' => $row->name];
-                if (!array_walk($suggestions, function ($value, $label) use ($entry) {
-                    return $entry['label'] != $label;
-                })) {
+                if (
+                    !array_walk($suggestions, function ($value, $label) use ($entry) {
+                        return $entry['label'] != $label;
+                    })
+                ) {
                     $suggestions[] = $entry;
                 }
             }
@@ -1041,7 +1047,7 @@ class Item extends Model
         $old_total_quantity = $builder->get()->getRow()->quantity;
 
         $total_quantity = $old_total_quantity + $items_received;
-        $average_price = bcdiv(bcadd(bcmul((string)$items_received, (string)$new_price), bcmul((string)$old_total_quantity, (string)$old_price)), (string)$total_quantity);
+        $average_price = bcdiv(bcadd(bcmul((string) $items_received, (string) $new_price), bcmul((string) $old_total_quantity, (string) $old_price)), (string) $total_quantity);
 
         $data = ['cost_price' => $average_price];
 

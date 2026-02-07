@@ -151,4 +151,10 @@ return [
     "net_profit" => "Net Profit",
     "no_expenses_to_display" => "There are no expenses to display.",
     "total_expenses" => "Total Expenses",
+    "report_filters" => "Report Filters",
+    "generate_report" => "Generate Report",
+    "loading_report" => "Loading report...",
+    "error_loading_report" => "Error Loading Report",
+    "please_try_again" => "Please try again later.",
+    "summary" => "Summary",
 ];

@@ -11,8 +11,8 @@ INSERT INTO `ospos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `module_i
 
 INSERT INTO `ospos_permissions` (`permission_id`, `module_id`) VALUES
 ('office', 'office'),
-('home', 'home'),
-('item_kits', '--');
+('home', 'home');
+
 
 INSERT INTO `ospos_grants` (`permission_id`, `person_id`, `menu_group`) VALUES
 ('office', 1, 'home'),
@@ -124,13 +124,13 @@ INSERT INTO `ospos_modules` (`name_lang_key`, `desc_lang_key`, `sort`, `module_i
 ('module_expenses_categories', 'module_expenses_categories_desc', 109, 'expenses_categories');
 
 INSERT INTO `ospos_permissions` (`permission_id`, `module_id`) VALUES
-('expenses_categories', 'expenses_categories'),
+-- ('expenses_categories', 'expenses_categories'),
 ('expenses', 'expenses'),
 ('reports_expenses_categories', 'reports');
 
 INSERT INTO `ospos_grants` (`permission_id`, `person_id`) VALUES
 ('expenses', 1),
-('expenses_categories', 1),
+-- ('expenses_categories', 1),
 ('reports_expenses_categories', 1);
 
 

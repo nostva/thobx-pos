@@ -59,7 +59,7 @@ INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('lines_per_page', '25'),
     ('dateformat', 'm/d/Y'),
     ('timeformat', 'H:i:s'),
-    ('currency_symbol', '$'),
+    ('currency_symbol', '⃁'),
     ('number_locale', 'ar_SA'),
     ('thousands_separator', '1'),
     ('currency_decimals', '2'),
@@ -82,7 +82,7 @@ INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('theme', 'flatly'),
     ('statistics', '1'),
     ('language', 'arabic'),
-    ('language_code', 'ar');
+    ('language_code', 'ar-EG');
 
 
 -- --------------------------------------------------------
@@ -383,9 +383,9 @@ INSERT INTO `ospos_permissions` (`permission_id`, `module_id`) VALUES
     ('reports_payments', 'reports'),
     ('customers', 'customers'),
     ('employees', 'employees'),
-    ('giftcards', 'giftcards'),
+    -- ('giftcards', 'giftcards'),
     ('items', 'items'),
-    ('item_kits', 'item_kits'),
+    -- ('item_kits', 'item_kits'),
     ('messages', 'messages'),
     ('receivings', 'receivings'),
     ('reports', 'reports'),
@@ -429,9 +429,9 @@ INSERT INTO `ospos_grants` (`permission_id`, `person_id`) VALUES
     ('reports_payments', 1),
     ('customers', 1),
     ('employees', 1),
-    ('giftcards', 1),
+    -- ('giftcards', 1),
     ('items', 1),
-    ('item_kits', 1),
+    -- ('item_kits', 1),
     ('messages', 1),
     ('receivings', 1),
     ('reports', 1),
