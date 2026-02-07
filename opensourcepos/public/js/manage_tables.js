@@ -108,6 +108,9 @@
             $.extend(
               {
                 title: $link.attr("title"),
+                closeByBackdrop: false,
+                closeByKeyboard: false,
+                closable: false,
                 message: function () {
                   var node = $("<div></div>");
                   var url = $link.attr("href") || $link.data("href");

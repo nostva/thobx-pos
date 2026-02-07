@@ -93,4 +93,6 @@ return [
     "global_sales" => "المبيعات الإجمالية",
     "office_modules" => "وحدات المكتب",
     "current_month_summary" => "ملخص الشهر الحالي",
+    "name" => "الاسم",
+    "loading" => "جاري التحميل",
 ];

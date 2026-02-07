@@ -30,22 +30,25 @@ class Detailed_receivings extends Report
     {
         return [
             'summary' => [
-                ['id'             => lang('Reports.receiving_id')],
+                ['id' => lang('Reports.receiving_id')],
                 ['receiving_time' => lang('Reports.date'), 'sortable' => false],
-                ['quantity'       => lang('Reports.quantity')],
-                ['employee_name'  => lang('Reports.received_by')],
-                ['supplier_name'  => lang('Reports.supplied_by')],
-                ['total'          => lang('Reports.total'), 'sorter' => 'number_sorter'],
-                ['payment_type'   => lang('Reports.payment_type')],
-                ['comment'        => lang('Reports.comments')],
-                ['reference'      => lang('Receivings.reference')]
+                ['quantity' => lang('Reports.quantity')],
+                ['employee_name' => lang('Reports.received_by')],
+                ['supplier_name' => lang('Reports.supplied_by')],
+                ['total' => lang('Reports.total'), 'sorter' => 'number_sorter'],
+                ['payment_type' => lang('Reports.payment_type')],
+                ['comment' => lang('Reports.comments')],
+                ['reference' => lang('Receivings.reference')]
             ],
             'details' => [
-                lang('Reports.item_number'),
                 lang('Reports.name'),
                 lang('Reports.category'),
+                lang('Reports.item_number'),
+                lang('Reports.description'),
                 lang('Reports.quantity'),
+                lang('Reports.subtotal'),
                 lang('Reports.total'),
+                lang('Reports.profit'),
                 lang('Reports.discount')
             ]
         ];
@@ -116,16 +119,19 @@ class Detailed_receivings extends Report
         $data['summary'] = $builder->get()->getResultArray();
         $data['details'] = [];
 
-        $builder = $this->db->table('receivings_items_temp');
+        $builder = $this->db->table('receivings_items_temp AS receivings_items_temp');
 
         foreach ($data['summary'] as $key => $value) {
             $builder->select('
                 MAX(name) AS name,
                 MAX(item_number) AS item_number,
                 MAX(category) AS category,
+                MAX(receivings_items_temp.description) AS description,
                 MAX(quantity_purchased) AS quantity_purchased,
                 MAX(serialnumber) AS serialnumber,
+                MAX(subtotal) AS subtotal,
                 MAX(total) AS total,
+                MAX(profit) AS profit,
                 MAX(discount) AS discount,
                 MAX(discount_type) AS discount_type,
                 MAX(item_location) AS item_location,

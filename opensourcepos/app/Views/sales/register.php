@@ -142,11 +142,11 @@ if (isset($success)) {
                 <div class="product-grid-header">
                     <div class="product-grid-title">
                         <i data-lucide="grid-3x3" class="w-5 h-5"></i>
-                        <span id="grid-title">Product Categories</span>
+                        <span id="grid-title"><?= lang('Sales.product_categories') ?></span>
                     </div>
                     <button class="back-to-categories-btn hidden" id="back-to-categories">
                         <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                        Back to Categories
+                        <?= lang('Sales.back_to_categories') ?>
                     </button>
                 </div>
 
@@ -172,11 +172,11 @@ if (isset($success)) {
 
         <!-- Floating Buttons -->
         <button class="floating-clear-selection" id="floating-clear-selection">
-            <span>Clear Selection</span>
+            <span><?= lang('Sales.clear_cart') ?></span>
         </button>
 
         <button class="floating-add-cart" id="floating-add-cart">
-            <span>Add to Cart</span>
+            <span><?= lang('Sales.add_to_cart') ?></span>
             <span class="selection-badge" id="selection-count">0</span>
         </button>
 
@@ -184,7 +184,7 @@ if (isset($success)) {
         <div class="register-card overflow-hidden">
 
 
-            <!-- Sale Items List -->
+            <!-- <?= lang('Sales.sale_items_list') ?> -->
 
             <table class="table" id="register">
                 <thead class="bg-slate-50">
@@ -226,7 +226,7 @@ if (isset($success)) {
                                         ?>
                                         <?= form_input(['name' => 'item_number', 'id' => 'item_number', 'class' => 'form-control input-sm', 'value' => $item['item_number'], 'tabindex' => ++$tabindex]) ?>
                                     </td>
-                                    <td style="align: center;">
+                                    <td>
                                         <?= form_input(['name' => 'name', 'id' => 'name', 'class' => 'form-control input-sm', 'value' => $item['name'], 'tabindex' => ++$tabindex]) ?>
                                     </td>
                                 <?php } else { ?>
@@ -237,7 +237,7 @@ if (isset($success)) {
                                         ?>
                                         <?= esc($item['item_number']) ?>
                                     </td>
-                                    <td style="align: center;">
+                                    <td class="text-start">
                                         <?= esc($item['name']) . ' ' . implode(' ', [$item['attribute_values'], $item['attribute_dtvalues']]) ?>
                                         <br>
                                         <?php if ($item['stock_type'] == '0'):
@@ -391,16 +391,29 @@ if (isset($success)) {
 
             <?php if (isset($customer)) { ?>
                 <div class="space-y-2 pt-1 border-t border-slate-100">
-                    <div class="flex items-center gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                        <div
-                            class="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center text-white font-bold text-sm">
-                            <?= substr(esc($customer), 0, 1) ?>
+                    <div class="flex flex-col gap-2 p-3 rounded-lg bg-slate-50 border border-slate-100">
+                        <div class="flex items-center justify-between w-full">
+                            <span
+                                class="text-sm font-bold text-slate-900 truncate"><?= anchor("customers/view/$customer_id", $customer, ['class' => 'modal-dlg hover:text-emerald-600 transition-colors', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Customers.update')]) ?></span>
+                            <?= anchor("customers/view/$customer_id", '<i data-lucide="edit-2" class="w-3.5 h-3.5 me-1"></i> ' . lang('Common.edit'), ['class' => 'btn btn-sm btn-outline-secondary modal-dlg inline-flex items-center', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Customers.update')]) ?>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-bold text-slate-900 truncate">
-                                <?= anchor("customers/view/$customer_id", $customer, ['class' => 'modal-dlg hover:text-emerald-600 transition-colors', 'data-btn-submit' => lang('Common.submit'), 'title' => lang('Customers.update')]) ?>
+
+                        <?php if (!empty($customer_phone) || !empty($customer_email)) { ?>
+                            <div class="flex flex-col gap-1 text-xs text-slate-500">
+                                <?php if (!empty($customer_phone)) { ?>
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="phone" class="w-3.5 h-3.5"></i>
+                                        <span><?= esc($customer_phone) ?></span>
+                                    </div>
+                                <?php } ?>
+                                <?php if (!empty($customer_email)) { ?>
+                                    <div class="flex items-center gap-2">
+                                        <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                                        <span><?= esc($customer_email) ?></span>
+                                    </div>
+                                <?php } ?>
                             </div>
-                        </div>
+                        <?php } ?>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 text-sm">
@@ -419,31 +432,18 @@ if (isset($success)) {
                 </div>
             <?php } else { ?>
                 <div class="space-y-2">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-slate-400">
-                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
-                        </div>
-                        <?= form_input([
-                            'name' => 'customer',
-                            'id' => 'customer',
-                            'class' => 'flex h-9 w-full rounded-lg border border-slate-300 bg-white ps-10 pe-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400',
-                            'placeholder' => lang(ucfirst($controller_name) . '.start_typing_customer_name')
-                        ]) ?>
-                    </div>
-                    <div class="flex gap-2">
+                    <button type="button" id="open-customer-dialog"
+                        class="btn btn-default w-full inline-flex items-center justify-center gap-2 h-9 text-sm">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <?= lang('Sales.select_customer_dialog') ?>
+                    </button>
+                    <div class="flex gap-2 mt-2">
                         <button
-                            class="btn btn-emerald-soft flex-1 modal-dlg inline-flex items-center justify-center gap-1.5 h-8 text-sm"
+                            class="btn btn-emerald-soft w-full modal-dlg inline-flex items-center justify-center gap-1.5 h-8 text-sm"
                             data-btn-submit="<?= lang('Common.submit') ?>" data-href="<?= "customers/view" ?>"
                             title="<?= lang(ucfirst($controller_name) . ".new_customer") ?>">
                             <i data-lucide="user-plus" class="w-3 h-3"></i>
                             <?= lang(ucfirst($controller_name) . ".new_customer") ?>
-                        </button>
-                        <button
-                            class="btn btn-default flex-1 modal-dlg inline-flex items-center justify-center gap-1.5 h-8 text-sm"
-                            id="show_keyboard_help" data-href="<?= esc("$controller_name/salesKeyboardHelp") ?>"
-                            title="<?= lang(ucfirst($controller_name) . '.key_title') ?>">
-                            <i data-lucide="keyboard" class="w-3 h-3"></i>
-                            <?= lang(ucfirst($controller_name) . '.key_help') ?>
                         </button>
                     </div>
                 </div>
@@ -933,25 +933,48 @@ if (isset($success)) {
         $grid.empty().removeClass('hidden');
         $('#product-grid').addClass('hidden');
         $('#back-to-categories').addClass('hidden');
-        $('#grid-title').text('Product Categories');
+        $('#grid-title').text('<?= lang('Sales.product_categories') ?>');
         currentCategory = null;
 
         allCategoriesData.forEach(function (category) {
+            const $wrapper = $('<div>').addClass('category-wrapper');
+
             const $card = $('<div>')
                 .addClass('category-card')
-                .attr('data-category', category.name)
-                .html(`
+                .attr('data-category', category.name);
+
+            const $content = $(`
+                <div class="category-content">
                     <div class="category-name">
                         <i data-lucide="folder" class="w-5 h-5"></i>
                         <span>${escapeHtml(category.name)}</span>
                     </div>
                     <div class="category-count">${category.count} item${category.count !== 1 ? 's' : ''}</div>
-                `)
-                .on('click', function () {
-                    selectCategory(category.name);
-                });
+                </div>
+            `);
 
-            $grid.append($card);
+            $card.append($content);
+
+            const $editBtn = $(`
+                <button class="category-edit-btn" data-category="${escapeHtml(category.name)}" title="<?= lang('Sales.rename_category') ?>">
+                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                </button>
+            `);
+
+            // Category selection on card click
+            $card.on('click', function () {
+                selectCategory(category.name);
+            });
+
+            // Edit button click handler
+            $editBtn.on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                openRenameCategoryDialog(category.name);
+            });
+
+            $wrapper.append($card, $editBtn);
+            $grid.append($wrapper);
         });
 
         // Re-initialize Lucide icons
@@ -989,16 +1012,43 @@ if (isset($success)) {
 
             const $card = $('<div>')
                 .addClass('product-card')
-                .attr('data-item-id', item.item_id)
-                .html(`
+                .attr('data-item-id', item.item_id);
+
+            const $content = $(`
+                <div class="product-content">
                     <div class="product-name">${escapeHtml(item.name)}</div>
                     <div class="product-details">
                         <span class="product-price">${item.price}</span>
                     </div>
-                `)
-                .on('click', function () {
-                    toggleItemSelection(item.item_id, $(this));
-                });
+                </div>
+                <div class="product-actions">
+                    <button class="product-edit-btn" data-item-id="${item.item_id}" title="<?= lang('Sales.edit_item') ?>">
+                        <i data-lucide="edit-2" class="w-4 h-4"></i>
+                    </button>
+                    <button class="product-delete-btn" data-item-id="${item.item_id}" title="<?= lang('Sales.delete_item') ?>">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `);
+
+            $card.append($content);
+
+            // Item selection on content click (but not on action buttons)
+            $card.find('.product-content').on('click', function () {
+                toggleItemSelection(item.item_id, $card);
+            });
+
+            // Edit button click handler
+            $card.find('.product-edit-btn').on('click', function (e) {
+                e.stopPropagation();
+                openEditItemDialog(item.item_id);
+            });
+
+            // Delete button click handler
+            $card.find('.product-delete-btn').on('click', function (e) {
+                e.stopPropagation();
+                deleteItemFromGrid(item.item_id);
+            });
 
             // Restore selection state if item was previously selected
             if (isSelected) {
@@ -1029,6 +1079,312 @@ if (isset($success)) {
         }
 
         updateFloatingButton();
+    }
+
+    // Open rename category dialog
+    function openRenameCategoryDialog(categoryName) {
+        const $dialog = $('<div>');
+        const $label = $('<label>').addClass('block text-sm font-medium text-slate-700 mb-2').text('<?= lang('Sales.category_name') ?>');
+        const $input = $('<input>').attr({
+            'type': 'text',
+            'id': 'new-category-name',
+            'value': categoryName
+        }).addClass('flex h-9 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400');
+
+        $dialog.append($('<div>').addClass('space-y-4').append(
+            $('<div>').append($label, $input)
+        ));
+
+        BootstrapDialog.show({
+            title: '<?= lang('Sales.rename_category') ?>',
+            message: $dialog,
+            closeByBackdrop: false,
+            closeByKeyboard: false,
+            buttons: [{
+                label: '<?= lang('Sales.close_dialog') ?>',
+                cssClass: 'btn btn-default',
+                action: function (dialog) {
+                    dialog.close();
+                }
+            }, {
+                label: '<?= lang('Common.submit') ?>',
+                cssClass: 'btn btn-primary',
+                action: function (dialog) {
+                    const newName = $('#new-category-name').val().trim();
+                    if (newName) {
+                        renameCategory(categoryName, newName, dialog);
+                    }
+                }
+            }]
+        });
+    }
+
+    // Rename category via AJAX
+    function renameCategory(oldName, newName, dialog) {
+        $.post('<?= site_url('sales/renameCategory') ?>', {
+            old_name: oldName,
+            new_name: newName
+        }, function (response) {
+            if (response.success) {
+                // Update cached data
+                const category = allCategoriesData.find(cat => cat.name === oldName);
+                if (category) {
+                    category.name = newName;
+                    category.items.forEach(item => item.category = newName);
+                }
+
+                // Refresh display
+                if (currentCategory === oldName) {
+                    currentCategory = newName;
+                    const category = allCategoriesData.find(cat => cat.name === newName);
+                    if (category) {
+                        displayProducts(category.items, newName);
+                    }
+                } else {
+                    displayCategories();
+                }
+
+                dialog.close();
+                show_feedback('success', response.message, '<?= lang('Common.success') ?>');
+            } else {
+                show_feedback('error', response.message, '<?= lang('Common.error') ?>');
+            }
+        }, 'json').fail(function () {
+            show_feedback('error', '<?= lang('Sales.rename_category_error') ?>', '<?= lang('Common.error') ?>');
+        });
+    }
+
+    // Open edit item dialog using modal-dlg approach
+    function openEditItemDialog(itemId) {
+        // Create a temporary link element to trigger the modal
+        const $link = $('<a>').attr({
+            'href': '<?= site_url('items/view') ?>/' + itemId,
+            'data-btn-submit': '<?= lang('Common.submit') ?>',
+            'class': 'modal-dlg'
+        }).hide();
+
+        $('body').append($link);
+
+        // Initialize the modal dialog on this link
+        dialog_support.init($link);
+
+        // Trigger click to open the dialog
+        $link.click();
+
+        // Remove the link after a short delay
+        setTimeout(function () {
+            $link.remove();
+        }, 100);
+    }
+
+    // Delete item from grid
+    function deleteItemFromGrid(itemId) {
+        if (confirm(<?= json_encode(lang('Sales.confirm_delete_item')) ?>)) {
+            $.post(<?= json_encode(site_url('items/delete')) ?>, {
+                'ids': [itemId]
+            }, function (response) {
+                if (response.success) {
+                    loadAllData();
+                }
+                $.notify(response.message, {
+                    type: response.success ? 'success' : 'danger'
+                });
+            }, 'json');
+        }
+    }
+
+    // Customer selection dialog
+    let currentCustomerPage = 0;
+    const customersPerPage = 20;
+    let allCustomers = [];
+    let filteredCustomers = [];
+
+    // Initialize product grid on page load
+    loadAllData();
+
+    $('#open-customer-dialog').on('click', function () {
+        openCustomerSelectionDialog();
+    });
+
+    function openCustomerSelectionDialog() {
+        const $dialog = $('<div>').addClass('customer-selection-dialog');
+
+        const $searchInput = $('<input>').attr({
+            'type': 'text',
+            'id': 'customer-search',
+            'placeholder': <?= json_encode(lang('Sales.search_customers')) ?>
+        }).addClass('flex h-9 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400');
+
+        const $customerList = $('<div>').attr('id', 'customer-list').addClass('space-y-2').css({
+            'max-height': '400px',
+            'overflow-y': 'auto'
+        }).html('<div class="text-center py-4"><div class="spinner-border" role="status"></div></div>');
+
+        const $pagination = $('<div>').attr('id', 'customer-pagination').addClass('flex justify-between items-center mt-4 pt-4 border-t');
+        const $prevBtn = $('<button>').attr('id', 'prev-customers').addClass('btn btn-default btn-sm').prop('disabled', true)
+            .html('<i data-lucide="chevron-left" class="w-4 h-4"></i> Previous');
+        const $pageInfo = $('<span>').attr('id', 'customer-page-info');
+        const $nextBtn = $('<button>').attr('id', 'next-customers').addClass('btn btn-default btn-sm')
+            .html('Next <i data-lucide="chevron-right" class="w-4 h-4"></i>');
+
+        $pagination.append($prevBtn, $pageInfo, $nextBtn);
+        $dialog.append(
+            $('<div>').addClass('mb-4').append($searchInput),
+            $customerList,
+            $pagination
+        );
+
+        const dialog = BootstrapDialog.show({
+            title: <?= json_encode(lang('Sales.select_customer_dialog')) ?>,
+            message: $dialog,
+            size: BootstrapDialog.SIZE_WIDE,
+            closeByBackdrop: false,
+            closeByKeyboard: false,
+            closable: false,
+            buttons: [{
+                label: '<?= lang('Sales.close_dialog') ?>',
+                cssClass: 'btn btn-default',
+                action: function (dialog) {
+                    dialog.close();
+                }
+            }],
+            onshown: function () {
+                loadCustomers(0, '');
+
+                // Search functionality
+                $('#customer-search').on('input', function () {
+                    const search = $(this).val();
+                    currentCustomerPage = 0;
+                    loadCustomers(0, search);
+                });
+
+                // Pagination
+                $('#prev-customers').on('click', function () {
+                    if (currentCustomerPage > 0) {
+                        currentCustomerPage--;
+                        loadCustomers(currentCustomerPage, $('#customer-search').val());
+                    }
+                });
+
+                $('#next-customers').on('click', function () {
+                    currentCustomerPage++;
+                    loadCustomers(currentCustomerPage, $('#customer-search').val());
+                });
+            }
+        });
+
+        window.customerDialog = dialog;
+    }
+
+    function loadCustomers(page, search) {
+        const offset = page * customersPerPage;
+        const $list = $('#customer-list');
+
+        // Show loading state
+        $list.html(`
+            <div class="text-center py-8">
+                <div class="spinner-border text-emerald-500" role="status"></div>
+                <div class="mt-2 text-slate-500"><?= lang('Common.loading') ?>...</div>
+            </div>
+        `);
+
+        $.get('<?= site_url('sales/customers') ?>', {
+            search: search,
+            limit: customersPerPage,
+            offset: offset
+        }, function (response) {
+            $list.empty();
+
+            if (response.customers.length === 0) {
+                $list.html(`
+                    <div class="text-center py-12">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 mb-3">
+                            <i data-lucide="search" class="w-6 h-6 text-slate-400"></i>
+                        </div>
+                        <div class="text-slate-500"><?= lang('Sales.no_customers_found') ?></div>
+                    </div>
+                `);
+            } else {
+                const $table = $(`
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-start border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200">
+                                    <th class="py-2 px-3 text-sm font-semibold text-slate-600 text-start"><?= lang('Common.name') ?></th>
+                                    <th class="py-2 px-3 text-sm font-semibold text-slate-600 text-start"><?= lang('Common.phone_number') ?></th>
+                                    <th class="py-2 px-3 text-sm font-semibold text-slate-600 text-start"><?= lang('Common.email') ?></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                `);
+
+                const $tbody = $table.find('tbody');
+
+                response.customers.forEach(function (customer) {
+                    const $row = $(`
+                        <tr class="hover:bg-slate-50 cursor-pointer transition-colors" data-customer-id="${customer.person_id}">
+                            <td class="py-2 px-3 text-slate-900 font-medium text-start">${escapeHtml(customer.display_name)}</td>
+                            <td class="py-2 px-3 text-slate-500 text-sm text-start">${customer.phone_number ? escapeHtml(customer.phone_number) : '-'}</td>
+                            <td class="py-2 px-3 text-slate-500 text-sm text-start">${customer.email ? escapeHtml(customer.email) : '-'}</td>
+                        </tr>
+                    `);
+
+                    $row.on('click', function () {
+                        selectCustomerFromDialog(customer.person_id);
+                    });
+
+                    $tbody.append($row);
+                });
+
+                $list.append($table);
+            }
+
+            // Update pagination
+            const totalPages = Math.ceil(response.total / customersPerPage);
+            $('#customer-page-info').text(`Page ${page + 1} of ${totalPages || 1}`);
+
+            // Stylize pagination buttons
+            const prevDisabled = page === 0;
+            const nextDisabled = page >= totalPages - 1 || totalPages === 0;
+
+            $('#prev-customers').prop('disabled', prevDisabled)
+                .toggleClass('opacity-50 cursor-not-allowed', prevDisabled);
+
+            $('#next-customers').prop('disabled', nextDisabled)
+                .toggleClass('opacity-50 cursor-not-allowed', nextDisabled);
+
+            // Re-initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }, 'json').fail(function () {
+            $list.html(`
+                <div class="text-center py-8 text-rose-500">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-100 mb-3">
+                        <i data-lucide="alert-circle" class="w-6 h-6 text-rose-500"></i>
+                    </div>
+                    <div><?= lang('Common.error') ?></div>
+                </div>
+            `);
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    }
+
+    function selectCustomerFromDialog(customerId) {
+        if (!customerId) return;
+
+        $.post('<?= site_url('sales/selectCustomer') ?>', {
+            '<?= csrf_token() ?>': '<?= csrf_hash() ?>',
+            customer: customerId
+        })
+            .done(function () {
+                window.location.reload();
+            })
+            .fail(function () {
+                alert('<?= lang('Sales.customer_selection_failed') ?>'); // Fallback error
+            });
     }
 
     // Update floating button visibility and count

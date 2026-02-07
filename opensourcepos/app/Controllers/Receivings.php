@@ -110,7 +110,8 @@ class Receivings extends Secure_Controller
         $stock_destination = $this->request->getPost('stock_destination', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $stock_source = $this->request->getPost('stock_source', FILTER_SANITIZE_NUMBER_INT);
 
-        if ((!$stock_source || $stock_source == $this->receiving_lib->get_stock_source()) &&
+        if (
+            (!$stock_source || $stock_source == $this->receiving_lib->get_stock_source()) &&
             (!$stock_destination || $stock_destination == $this->receiving_lib->get_stock_destination())
         ) {
             $this->receiving_lib->clear_reference();
@@ -179,7 +180,7 @@ class Receivings extends Secure_Controller
             $this->receiving_lib->return_entire_receiving($item_id_or_number_or_item_kit_or_receipt);
         } elseif ($this->item_kit->is_valid_item_kit($item_id_or_number_or_item_kit_or_receipt)) {
             $this->receiving_lib->add_item_kit($item_id_or_number_or_item_kit_or_receipt, $item_location, $discount, $discount_type);
-        } elseif (!$this->receiving_lib->add_item($item_id_or_number_or_item_kit_or_receipt, $quantity, $item_location, $discount,  $discount_type)) {
+        } elseif (!$this->receiving_lib->add_item($item_id_or_number_or_item_kit_or_receipt, $quantity, $item_location, $discount, $discount_type)) {
             $data['error'] = lang('Receivings.unable_to_add_item');
         }
 
@@ -193,12 +194,12 @@ class Receivings extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function postEditItem($item_id): void
+    public function postEditItem($item_id)
     {
         $data = [];
 
         $validation_rule = [
-            'price'    => 'trim|required|decimal_locale',
+            'price' => 'trim|required|decimal_locale',
             'quantity' => 'trim|required|decimal_locale',
             'discount' => 'trim|permit_empty|decimal_locale',
         ];
@@ -207,7 +208,7 @@ class Receivings extends Secure_Controller
         $quantity = parse_quantity($this->request->getPost('quantity'));
         $raw_receiving_quantity = parse_quantity($this->request->getPost('receiving_quantity'));
 
-        $description = $this->request->getPost('description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);    // TODO: Duplicated code
+        $description = $this->request->getPost('description', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
         $serialnumber = $this->request->getPost('serialnumber', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
         $discount_type = $this->request->getPost('discount_type', FILTER_SANITIZE_NUMBER_INT);
         $discount = $discount_type
@@ -217,12 +218,12 @@ class Receivings extends Secure_Controller
         $receiving_quantity = filter_var($raw_receiving_quantity, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
 
         if ($this->validate($validation_rule)) {
-            $this->receiving_lib->edit_item($item_id, $description, $serialnumber, $quantity, $discount, $discount_type, $price, $receiving_quantity);
+            $this->receiving_lib->edit_item($item_id, $description, $serialnumber, (float) $quantity, (float) $discount, $discount_type, (float) $price, (float) $receiving_quantity);
         } else {
-            $data['error'] = lang('Receivings.error_editing_item');
+            return redirect()->to('receivings')->with('error', lang('Receivings.error_editing_item'));
         }
 
-        $this->_reload($data);    // TODO: Hungarian notation
+        return redirect()->to('receivings');
     }
 
     /**
@@ -280,7 +281,7 @@ class Receivings extends Secure_Controller
             echo json_encode([
                 'success' => true,
                 'message' => lang('Receivings.successfully_deleted') . ' ' . count($receiving_ids) . ' ' . lang('Receivings.one_or_multiple'),
-                'ids'     => $receiving_ids
+                'ids' => $receiving_ids
             ]);
         } else {
             echo json_encode(['success' => false, 'message' => lang('Receivings.cannot_be_deleted')]);
@@ -435,6 +436,13 @@ class Receivings extends Secure_Controller
      */
     private function _reload(array $data = []): void    // TODO: Hungarian notation
     {
+        // Check for flashdata and merge into data if not already present
+        foreach (['error', 'warning', 'success'] as $msgType) {
+            if (!isset($data[$msgType]) && session()->getFlashdata($msgType)) {
+                $data[$msgType] = session()->getFlashdata($msgType);
+            }
+        }
+
         $data['cart'] = $this->receiving_lib->get_cart();
         $data['modes'] = ['receive' => lang('Receivings.receiving'), 'return' => lang('Receivings.return')];
         $data['mode'] = $this->receiving_lib->get_mode();
@@ -485,10 +493,10 @@ class Receivings extends Secure_Controller
 
         $receiving_data = [
             'receiving_time' => $receiving_time,
-            'supplier_id'    => $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id', FILTER_SANITIZE_NUMBER_INT) : null,
-            'employee_id'    => $this->request->getPost('employee_id', FILTER_SANITIZE_NUMBER_INT),
-            'comment'        => $this->request->getPost('comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
-            'reference'      => $this->request->getPost('reference') != '' ? $this->request->getPost('reference', FILTER_SANITIZE_FULL_SPECIAL_CHARS) : null
+            'supplier_id' => $this->request->getPost('supplier_id') ? $this->request->getPost('supplier_id', FILTER_SANITIZE_NUMBER_INT) : null,
+            'employee_id' => $this->request->getPost('employee_id', FILTER_SANITIZE_NUMBER_INT),
+            'comment' => $this->request->getPost('comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS),
+            'reference' => $this->request->getPost('reference') != '' ? $this->request->getPost('reference', FILTER_SANITIZE_FULL_SPECIAL_CHARS) : null
         ];
 
         $this->inventory->update('RECV ' . $receiving_id, ['trans_date' => $receiving_time]);
@@ -496,13 +504,13 @@ class Receivings extends Secure_Controller
             echo json_encode([
                 'success' => true,
                 'message' => lang('Receivings.successfully_updated'),
-                'id'      => $receiving_id
+                'id' => $receiving_id
             ]);
         } else {
             echo json_encode([
                 'success' => false,
                 'message' => lang('Receivings.unsuccessfully_updated'),
-                'id'      => $receiving_id
+                'id' => $receiving_id
             ]);
         }
     }

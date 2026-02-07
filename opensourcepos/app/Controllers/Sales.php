@@ -320,6 +320,91 @@ class Sales extends Secure_Controller
     }
 
     /**
+     * Rename a category and update all items in that category. Used in app/Views/sales/register.php for product grid.
+     *
+     * @return void
+     * @noinspection PhpUnused
+     */
+    public function postRenameCategory(): void
+    {
+        $old_name = $this->request->getPost('old_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $new_name = $this->request->getPost('new_name', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+        // Validate inputs
+        if (empty($new_name)) {
+            echo json_encode(['success' => false, 'message' => lang('Sales.category_name_required')]);
+            return;
+        }
+
+        if (empty($old_name)) {
+            echo json_encode(['success' => false, 'message' => lang('Sales.rename_category_error')]);
+            return;
+        }
+
+        // Check if new category name already exists (and is different from old name)
+        if ($old_name !== $new_name) {
+            $builder = $this->item->db->table('items');
+            $builder->where('deleted', 0);
+            $builder->where('category', $new_name);
+            $existing = $builder->countAllResults();
+
+            if ($existing > 0) {
+                echo json_encode(['success' => false, 'message' => lang('Sales.category_already_exists')]);
+                return;
+            }
+        }
+
+        // Update all items with the old category name to the new category name
+        $builder = $this->item->db->table('items');
+        $builder->where('category', $old_name);
+        $builder->where('deleted', 0);
+        $updated = $builder->update(['category' => $new_name]);
+
+        if ($updated) {
+            echo json_encode(['success' => true, 'message' => lang('Sales.rename_category_success')]);
+        } else {
+            echo json_encode(['success' => false, 'message' => lang('Sales.rename_category_error')]);
+        }
+    }
+
+    /**
+     * Get paginated customer list with search. Used in app/Views/sales/register.php for customer selection dialog.
+     *
+     * @return void
+     * @noinspection PhpUnused
+     */
+    public function getCustomers(): void
+    {
+        $search = $this->request->getGet('search', FILTER_SANITIZE_FULL_SPECIAL_CHARS) ?? '';
+        $limit = (int) ($this->request->getGet('limit', FILTER_SANITIZE_NUMBER_INT) ?? 20);
+        $offset = (int) ($this->request->getGet('offset', FILTER_SANITIZE_NUMBER_INT) ?? 0);
+
+        if (empty($search)) {
+            $customers_result = $this->customer->get_all($limit, $offset);
+            $total = $this->customer->get_total_rows();
+        } else {
+            $customers_result = $this->customer->search($search, $limit, $offset, 'last_name', 'asc');
+            $total = $this->customer->get_found_rows($search);
+        }
+
+        $customers = [];
+        foreach ($customers_result->getResult() as $row) {
+            $customers[] = [
+                'person_id' => $row->person_id,
+                'first_name' => $row->first_name,
+                'last_name' => $row->last_name,
+                'email' => $row->email,
+                'phone_number' => $row->phone_number,
+                'company_name' => $row->company_name,
+                'display_name' => trim($row->first_name . ' ' . $row->last_name)
+            ];
+        }
+
+        echo json_encode(['customers' => $customers, 'total' => $total]);
+    }
+
+
+    /**
      * Set a given customer. Used in app/Views/sales/register.php.
      *
      * @return void
@@ -481,85 +566,50 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function postAddPayment(): void
+    public function postAddPayment()
     {
         $data = [];
-        $giftcard = model(Giftcard::class);
+
         $payment_type = $this->request->getPost('payment_type', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        if ($payment_type !== lang('Sales.giftcard')) {
-            $rules = ['amount_tendered' => 'trim|required|decimal_locale',];
-            $messages = ['amount_tendered' => lang('Sales.must_enter_numeric')];
+        if ($payment_type != lang('Sales.giftcard') && $payment_type != lang('Sales.rewards')) {
+            $rules = [
+                'amount_tendered' => 'trim|required|decimal_locale',
+                'payment_type' => 'trim|required|max_length[255]'
+            ];
         } else {
-            $rules = ['amount_tendered' => 'trim|required',];
-            $messages = ['amount_tendered' => lang('Sales.must_enter_numeric_giftcard')];
+            $rules = ['payment_type' => 'trim|required|max_length[255]'];
         }
 
-        if (!$this->validate($rules, $messages)) {
-            $data['error'] = $payment_type === lang('Sales.giftcard')
-                ? lang('Sales.must_enter_numeric_giftcard')
-                : lang('Sales.must_enter_numeric');
+        if (!$this->validate($rules)) {
+            return redirect()->to('sales')->with('error', lang('Sales.amount_tendered_required'));
+        }
+
+        if ($payment_type == lang('Sales.giftcard')) {
+            if (!$this->sale_lib->add_payment($payment_type, $this->request->getPost('amount_tendered'))) {
+                return redirect()->to('sales')->with('error', lang('Sales.unable_to_add_payment'));
+            }
+        } elseif ($payment_type == lang('Sales.rewards')) {
+            $customer_id = $this->sale_lib->get_customer();
+            if ($customer_id == -1) {
+                return redirect()->to('sales')->with('error', lang('Sales.customer_required_for_rewards'));
+            }
+
+            $amount_tendered = $this->sale_lib->get_rewards_remainder();
+            if (!$this->sale_lib->add_payment($payment_type, $amount_tendered)) {
+                return redirect()->to('sales')->with('error', lang('Sales.unable_to_add_payment'));
+            }
         } else {
-            if ($payment_type === lang('Sales.giftcard')) {
-                // In the case of giftcard payment the register input amount_tendered becomes the giftcard number
-                $amount_tendered = parse_decimals($this->request->getPost('amount_tendered'));
-                $giftcard_num = $amount_tendered;
-
-                $payments = $this->sale_lib->get_payments();
-                $payment_type = $payment_type . ':' . $giftcard_num;
-                $current_payments_with_giftcard = isset($payments[$payment_type]) ? $payments[$payment_type]['payment_amount'] : 0;
-                $cur_giftcard_value = $giftcard->get_giftcard_value($giftcard_num);
-                $cur_giftcard_customer = $giftcard->get_giftcard_customer($giftcard_num);
-                $customer_id = $this->sale_lib->get_customer();
-
-                if (isset($cur_giftcard_customer) && $cur_giftcard_customer != $customer_id) {
-                    $data['error'] = lang('Giftcards.cannot_use', [$giftcard_num]);
-                } elseif (($cur_giftcard_value - $current_payments_with_giftcard) <= 0 && $this->sale_lib->get_mode() === 'sale') {
-                    $data['error'] = lang('Giftcards.remaining_balance', [$giftcard_num, $cur_giftcard_value]);
-                } else {
-                    $new_giftcard_value = $giftcard->get_giftcard_value($giftcard_num) - $this->sale_lib->get_amount_due();
-                    $new_giftcard_value = max($new_giftcard_value, 0);
-                    $this->sale_lib->set_giftcard_remainder($new_giftcard_value);
-                    $new_giftcard_value = str_replace('$', '\$', to_currency($new_giftcard_value));
-                    $data['warning'] = lang('Giftcards.remaining_balance', [$giftcard_num, $new_giftcard_value]);
-                    $amount_tendered = min($this->sale_lib->get_amount_due(), $giftcard->get_giftcard_value($giftcard_num));
-
-                    $this->sale_lib->add_payment($payment_type, $amount_tendered);
-                }
-            } elseif ($payment_type === lang('Sales.rewards')) {
-                $customer_id = $this->sale_lib->get_customer();
-                $package_id = $this->customer->get_info($customer_id)->package_id;
-                if (!empty($package_id)) {
-                    $package_name = $this->customer_rewards->get_name($package_id);    // TODO: this variable is never used.
-                    $points = $this->customer->get_info($customer_id)->points;
-                    $points = ($points == null ? 0 : $points);
-
-                    $payments = $this->sale_lib->get_payments();
-                    $current_payments_with_rewards = isset($payments[$payment_type]) ? $payments[$payment_type]['payment_amount'] : 0;
-                    $cur_rewards_value = $points;
-
-                    if (($cur_rewards_value - $current_payments_with_rewards) <= 0) {
-                        $data['error'] = lang('Sales.rewards_remaining_balance') . to_currency($cur_rewards_value);
-                    } else {
-                        $new_reward_value = $points - $this->sale_lib->get_amount_due();
-                        $new_reward_value = max($new_reward_value, 0);
-                        $this->sale_lib->set_rewards_remainder($new_reward_value);
-                        $new_reward_value = str_replace('$', '\$', to_currency($new_reward_value));
-                        $data['warning'] = lang('Sales.rewards_remaining_balance') . $new_reward_value;
-                        $amount_tendered = min($this->sale_lib->get_amount_due(), $points);
-
-                        $this->sale_lib->add_payment($payment_type, $amount_tendered);
+            if ($payment_type == lang('Sales.points')) {
+                if ($this->config['customer_reward_enable']) {
+                    $customer_id = $this->sale_lib->get_customer();
+                    if ($customer_id == -1) {
+                        return redirect()->to('sales')->with('error', lang('Sales.customer_required_for_rewards'));
                     }
-                }
-            } elseif ($payment_type === lang('Sales.cash')) {
-                $amount_due = $this->sale_lib->get_total();
-                $sales_total = $this->sale_lib->get_total(false);
-                $amount_tendered = parse_decimals($this->request->getPost('amount_tendered'));
-                $this->sale_lib->add_payment($payment_type, $amount_tendered);
-                $cash_adjustment_amount = $amount_due - $sales_total;
-                if ($cash_adjustment_amount <> 0) {
-                    $this->session->set('cash_mode', CASH_MODE_TRUE);
-                    $this->sale_lib->add_payment(lang('Sales.cash_adjustment'), $cash_adjustment_amount, CASH_ADJUSTMENT_TRUE);
+                    $points_payment = $this->request->getPost('amount_tendered');
+                    if (!$this->sale_lib->add_payment($payment_type, $points_payment)) {
+                        return redirect()->to('sales')->with('error', lang('Sales.unable_to_add_payment'));
+                    }
                 }
             } else {
                 $amount_tendered = parse_decimals($this->request->getPost('amount_tendered'));
@@ -567,7 +617,7 @@ class Sales extends Secure_Controller
             }
         }
 
-        $this->_reload($data);
+        return redirect()->to('sales');
     }
 
     /**
@@ -590,7 +640,7 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function postAdd(): void
+    public function postAdd()
     {
         $data = [];
 
@@ -661,7 +711,15 @@ class Sales extends Secure_Controller
             }
         }
 
-        $this->_reload($data);
+        $redirect = redirect()->to('sales');
+        if (isset($data['error'])) {
+            $redirect->with('error', $data['error']);
+        }
+        if (isset($data['warning'])) {
+            $redirect->with('warning', $data['warning']);
+        }
+
+        return $redirect;
     }
 
     /**
@@ -671,7 +729,7 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function postEditItem(string $line): void
+    public function postEditItem(string $line)
     {
         $data = [];
 
@@ -705,12 +763,15 @@ class Sales extends Secure_Controller
 
             $this->sale_lib->empty_payments();
 
-            $data['warning'] = $this->sale_lib->out_of_stock($this->sale_lib->get_item_id($line), $item_location);
+            $warning = $this->sale_lib->out_of_stock($this->sale_lib->get_item_id($line), $item_location);
+            if ($warning) {
+                return redirect()->to('sales')->with('warning', $warning);
+            }
         } else {
-            $data['error'] = lang('Sales.error_editing_item');
+            return redirect()->to('sales')->with('error', lang('Sales.error_editing_item'));
         }
 
-        $this->_reload($data);
+        return redirect()->to('sales');
     }
 
     /**
@@ -736,7 +797,7 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function getRemoveCustomer(): void
+    public function getRemoveCustomer()
     {
         $this->sale_lib->clear_giftcard_remainder();
         $this->sale_lib->clear_rewards_remainder();
@@ -745,7 +806,7 @@ class Sales extends Secure_Controller
         $this->sale_lib->clear_quote_number();
         $this->sale_lib->remove_customer();
 
-        $this->_reload();    // TODO: Hungarian notation
+        return redirect()->to('sales');
     }
 
     /**
@@ -1080,6 +1141,7 @@ class Sales extends Secure_Controller
             $data['first_name'] = $customer_info->first_name;
             $data['last_name'] = $customer_info->last_name;
             $data['customer_email'] = $customer_info->email;
+            $data['customer_phone'] = $customer_info->phone_number;
             $data['customer_address'] = $customer_info->address_1;
 
             if (!empty($customer_info->zip) || !empty($customer_info->city)) {
@@ -1227,6 +1289,13 @@ class Sales extends Secure_Controller
      */
     private function _reload(array $data = []): void    // TODO: Hungarian notation
     {
+        // Check for flashdata and merge into data if not already present
+        foreach (['error', 'warning', 'success'] as $msgType) {
+            if (!isset($data[$msgType]) && session()->getFlashdata($msgType)) {
+                $data[$msgType] = session()->getFlashdata($msgType);
+            }
+        }
+
         $sale_id = $this->session->get('sale_id');    // TODO: This variable is never used
 
         if ($sale_id == '') {

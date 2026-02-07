@@ -184,7 +184,7 @@
         <?= form_dropdown('supplier_id', $suppliers, $selected_supplier, ['class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 text-start']) ?>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
         <div class="form-group w-full">
             <?= form_label(lang('Items.cost_price'), 'cost_price', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required']) ?>
             <div class="relative">
@@ -201,7 +201,7 @@
                 ]) ?>
                 <?php if (is_right_side_currency_symbol()): ?>
                     <span
-                        class="absolute inset-y-0 end-0 flex items-center pr-3 text-slate-500 text-sm font-medium"><?= esc($config['currency_symbol']) ?></span>
+                        class="absolute inset-y-0 end-0 flex items-center pe-3 text-slate-500 text-sm font-medium"><?= esc($config['currency_symbol']) ?></span>
                 <?php endif; ?>
             </div>
         </div>
@@ -222,14 +222,12 @@
                 ]) ?>
                 <?php if (is_right_side_currency_symbol()): ?>
                     <span
-                        class="absolute inset-y-0 end-0 flex items-center pr-3 text-slate-500 text-sm font-medium"><?= esc($config['currency_symbol']) ?></span>
+                        class="absolute inset-y-0 end-0 flex items-center pe-3 text-slate-500 text-sm font-medium"><?= esc($config['currency_symbol']) ?></span>
                 <?php endif; ?>
             </div>
         </div>
-    </div>
 
-    <?php if (!$use_destination_based_tax) { ?>
-        <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <?php if (!$use_destination_based_tax) { ?>
             <!-- Tax 1 -->
             <div class="form-group w-full">
                 <?= form_label(lang('Items.tax_1'), 'tax_percent_1', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
@@ -250,13 +248,13 @@
                             'value' => isset($item_tax_info[0]['percent']) ? to_tax_decimals($item_tax_info[0]['percent']) : to_tax_decimals($default_tax_1_rate)
                         ]) ?>
                         <span
-                            class="absolute inset-y-0 end-0 flex items-center pr-3 text-slate-500 text-sm font-medium">%</span>
+                            class="absolute inset-y-0 end-0 flex items-center pe-3 text-slate-500 text-sm font-medium">%</span>
                     </div>
                 </div>
             </div>
 
             <!-- Tax 2 -->
-            <div class="form-group w-full">
+            <div class="form-group w-full hidden">
                 <?= form_label(lang('Items.tax_2'), 'tax_percent_2', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block']) ?>
                 <div class="flex gap-2">
                     <div class="w-1/2">
@@ -275,12 +273,15 @@
                             'value' => isset($item_tax_info[1]['percent']) ? to_tax_decimals($item_tax_info[1]['percent']) : to_tax_decimals($default_tax_2_rate)
                         ]) ?>
                         <span
-                            class="absolute inset-y-0 end-0 flex items-center pr-3 text-slate-500 text-sm font-medium">%</span>
+                            class="absolute inset-y-0 end-0 flex items-center pe-3 text-slate-500 text-sm font-medium">%</span>
                     </div>
                 </div>
             </div>
-        </div>
-    <?php } ?>
+        <?php } ?>
+
+    </div>
+
+
 
     <?php if ($use_destination_based_tax): ?>
         <div class="form-group w-full md:col-span-2">
@@ -312,21 +313,23 @@
         </div>
     <?php endif; ?>
 
-    <?php foreach ($stock_locations as $key => $location_detail) { ?>
-        <div class="form-group w-full">
-            <?= form_label(lang('Items.quantity') . ' ' . $location_detail['location_name'], "quantity_$key", ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required']) ?>
-            <?= form_input([
-                'name' => "quantity_$key",
-                'id' => "quantity_$key",
-                'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 required quantity',
-                'onClick' => 'this.select();',
-                'value' => isset($item_info->item_id) ? to_quantity_decimals($location_detail['quantity']) : to_quantity_decimals(0)
-            ]) ?>
-        </div>
-    <?php } ?>
 
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+
+        <?php foreach ($stock_locations as $key => $location_detail) { ?>
+            <div class="form-group w-full">
+                <?= form_label(lang('Items.quantity') . ' ' . $location_detail['location_name'], "quantity_$key", ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required']) ?>
+                <?= form_input([
+                    'name' => "quantity_$key",
+                    'id' => "quantity_$key",
+                    'class' => 'flex h-10 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 required quantity',
+                    'onClick' => 'this.select();',
+                    'value' => isset($item_info->item_id) ? to_quantity_decimals($location_detail['quantity']) : to_quantity_decimals(0)
+                ]) ?>
+            </div>
+        <?php } ?>
 
         <div class="form-group w-full">
             <?= form_label(lang('Items.receiving_quantity'), 'receiving_quantity', ['class' => 'label text-sm font-medium text-slate-700 mb-1 block required']) ?>
@@ -574,7 +577,7 @@
                         remote: "<?= esc("$controller_name/checkNumeric") ?>"
                     },
                     <?php foreach ($stock_locations as $key => $location_detail) { ?>
-                                                                                <?= 'quantity_' . $key ?>: {
+                                                                                                <?= 'quantity_' . $key ?>: {
                             required: true,
                             remote: "<?= esc("$controller_name/checkNumeric") ?>"
                         },
@@ -606,7 +609,7 @@
                         number: "<?= lang('Items.unit_price_number') ?>"
                     },
                     <?php foreach ($stock_locations as $key => $location_detail) { ?>
-                                                                                <?= esc("quantity_$key", 'js') ?>: {
+                                                                                                <?= esc("quantity_$key", 'js') ?>: {
                             required: "<?= lang('Items.quantity_required') ?>",
                             number: "<?= lang('Items.quantity_number') ?>"
                         },

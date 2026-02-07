@@ -95,4 +95,6 @@ return [
     "current_month_summary" => "Current Month Summary",
     "business_overview" => "Business Overview",
     "explore_modules" => "Explore Modules",
+    "name" => "Name",
+    "loading" => "Loading",
 ];

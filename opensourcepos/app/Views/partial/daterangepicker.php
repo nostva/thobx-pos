@@ -6,8 +6,8 @@
 
 <?php if (empty($config['date_or_time_format'])) { ?>
     $('#daterangepicker');
-    var start_date = "<?= date('Y-m-d') ?>";
-    var end_date = "<?= date('Y-m-d') ?>";
+    start_date = "<?= date('Y-m-d') ?>";
+    end_date = "<?= date('Y-m-d') ?>";
 
     $('#daterangepicker').daterangepicker({
     "ranges": {
@@ -112,8 +112,8 @@
     });
 <?php } else { ?>
     $('#daterangepicker').css("width", "305");
-    var start_date = "<?= date('Y-m-d H:i:s', mktime(0, 0, 0, date("m"), date("d"), date("Y"))) ?>";
-    var end_date = "<?= date('Y-m-d H:i:s', mktime(23, 59, 59, date("m"), date("d"), date("Y"))) ?>";
+    start_date = "<?= date('Y-m-d H:i:s', mktime(0, 0, 0, date("m"), date("d"), date("Y"))) ?>";
+    end_date = "<?= date('Y-m-d H:i:s', mktime(23, 59, 59, date("m"), date("d"), date("Y"))) ?>";
     $('#daterangepicker').daterangepicker({
     "ranges": {
     "<?= lang('Datepicker.today') ?>": [
@@ -209,10 +209,13 @@
     "timePicker": true,
     "timePickerSeconds": true,
     "alwaysShowCalendars": true,
-    "startDate": "<?= date($config['dateformat'] . ' ' . $config['timeformat'], mktime(0, 0, 0, date("m"), date("d"), date("Y"))) ?>",
-    "endDate": "<?= date($config['dateformat'] . ' ' . $config['timeformat'], mktime(23, 59, 59, date("m"), date("d"), date("Y"))) ?>",
+    "startDate":
+    "<?= date($config['dateformat'] . ' ' . $config['timeformat'], mktime(0, 0, 0, date("m"), date("d"), date("Y"))) ?>",
+    "endDate":
+    "<?= date($config['dateformat'] . ' ' . $config['timeformat'], mktime(23, 59, 59, date("m"), date("d"), date("Y"))) ?>",
     "minDate": "<?= date($config['dateformat'] . ' ' . $config['timeformat'], mktime(0, 0, 0, 01, 01, 2010)) ?>",
-    "maxDate": "<?= date($config['dateformat'] . ' ' . $config['timeformat'], mktime(23, 59, 59, date("m"), date("d"), date("Y"))) ?>"
+    "maxDate":
+    "<?= date($config['dateformat'] . ' ' . $config['timeformat'], mktime(23, 59, 59, date("m"), date("d"), date("Y"))) ?>"
     }, function(start, end, label) {
     start_date = start.format('YYYY-MM-DD HH:mm:ss');
     end_date = end.format('YYYY-MM-DD HH:mm:ss');
