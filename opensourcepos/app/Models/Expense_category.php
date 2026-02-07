@@ -44,6 +44,21 @@ class Expense_category extends Model
     }
 
     /**
+     * Gets information about a particular category by name
+     */
+    public function get_info_by_name(string $category_name, bool $include_deleted = false): ?object
+    {
+        $builder = $this->db->table('expense_categories');
+        $builder->where('category_name', $category_name);
+        if (!$include_deleted) {
+            $builder->where('deleted', 0);
+        }
+        $query = $builder->get();
+
+        return ($query->getNumRows() == 1) ? $query->getRow() : null;
+    }
+
+    /**
      * Gets information about a particular category
      */
     public function get_info(int $expense_category_id): object
@@ -136,22 +151,27 @@ class Expense_category extends Model
     /**
      * Gets rows
      */
-    public function get_found_rows(string $search): int
+    public function get_found_rows(string $search, bool $include_deleted = false): int
     {
-        return $this->search($search, 0, 0, 'category_name', 'asc', true);
+        return $this->search($search, 0, 0, 'category_name', 'asc', true, $include_deleted);
     }
 
     /**
      * Perform a search on expense_category
      */
-    public function search(string $search, ?int $rows = 0, ?int $limit_from = 0, ?string $sort = 'category_name', ?string $order = 'asc', ?bool $count_only = false)
+    public function search(string $search, ?int $rows = 0, ?int $limit_from = 0, ?string $sort = 'category_name', ?string $order = 'asc', ?bool $count_only = false, bool $include_deleted = false)
     {
         // Set default values
-        if ($rows == null) $rows = 0;
-        if ($limit_from == null) $limit_from = 0;
-        if ($sort == null) $sort = 'category_name';
-        if ($order == null) $order = 'asc';
-        if ($count_only == null) $count_only = false;
+        if ($rows == null)
+            $rows = 0;
+        if ($limit_from == null)
+            $limit_from = 0;
+        if ($sort == null)
+            $sort = 'category_name';
+        if ($order == null)
+            $order = 'asc';
+        if ($count_only == null)
+            $count_only = false;
 
         $builder = $this->db->table('expense_categories AS expense_categories');
 
@@ -164,7 +184,10 @@ class Expense_category extends Model
         $builder->like('category_name', $search);
         $builder->orLike('category_description', $search);
         $builder->groupEnd();
-        $builder->where('deleted', 0);
+
+        if (!$include_deleted) {
+            $builder->where('deleted', 0);
+        }
 
         // get_found_rows case
         if ($count_only) {

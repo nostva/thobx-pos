@@ -68,7 +68,11 @@
         }
       });
 
-      !buttons.length &&
+      var has_close_btn = buttons.some(function (btn) {
+        return btn.id === "close";
+      });
+
+      if (!has_close_btn) {
         buttons.push({
           id: "close",
           label: lang.line("common_close"),
@@ -77,10 +81,9 @@
             dialog_ref.close();
           },
         });
+      }
       return {
-        buttons: buttons.sort(function (a, b) {
-          return $(b).text() < $(a).text() ? -1 : 1;
-        }),
+        buttons: buttons,
         cssClass: dialog_class,
       };
     };

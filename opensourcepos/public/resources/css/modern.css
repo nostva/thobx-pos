@@ -1169,3 +1169,8 @@ select {
     border-collapse: collapse !important;
   }
 }
+
+.bootstrap-dialog-footer-buttons {
+  display: flex !important;
+  gap: 0.5rem !important;
+}

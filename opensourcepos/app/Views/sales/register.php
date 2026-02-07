@@ -1221,10 +1221,10 @@ if (isset($success)) {
         }).html('<div class="text-center py-4"><div class="spinner-border" role="status"></div></div>');
 
         const $pagination = $('<div>').attr('id', 'customer-pagination').addClass('flex justify-between items-center mt-4 pt-4 border-t');
-        const $prevBtn = $('<button>').attr('id', 'prev-customers').addClass('btn btn-default btn-sm').prop('disabled', true)
+        const $prevBtn = $('<button>').attr('id', 'prev-customers').addClass('btn btn-default btn-sm flex flex-row gap-2 justify-center items-center').prop('disabled', true)
             .html('<i data-lucide="chevron-left" class="w-4 h-4"></i> Previous');
         const $pageInfo = $('<span>').attr('id', 'customer-page-info');
-        const $nextBtn = $('<button>').attr('id', 'next-customers').addClass('btn btn-default btn-sm')
+        const $nextBtn = $('<button>').attr('id', 'next-customers').addClass('btn btn-default btn-sm flex flex-row gap-2 justify-center items-center')
             .html('Next <i data-lucide="chevron-right" class="w-4 h-4"></i>');
 
         $pagination.append($prevBtn, $pageInfo, $nextBtn);
