@@ -59,7 +59,7 @@ INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('lines_per_page', '25'),
     ('dateformat', 'm/d/Y'),
     ('timeformat', 'H:i:s'),
-    ('currency_symbol', '⃁'),
+    ('currency_symbol', 'SAR'),
     ('number_locale', 'ar_SA'),
     ('thousands_separator', '1'),
     ('currency_decimals', '2'),
@@ -82,7 +82,7 @@ INSERT INTO `ospos_app_config` (`key`, `value`) VALUES
     ('theme', 'flatly'),
     ('statistics', '1'),
     ('language', 'arabic'),
-    ('language_code', 'ar-EG');
+    ('language_code', 'ar');
 
 
 -- --------------------------------------------------------

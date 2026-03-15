@@ -6,6 +6,10 @@
 :: Service name
 set SERVICE_NAME=RosePOSApache
 
+:: Check for silent mode flag
+set SILENT_MODE=0
+if /I "%~1"=="--silent" set SILENT_MODE=1
+
 :: Detect script folder (trailing backslash removed)
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
@@ -28,7 +32,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "$phpDir = '%PHP_DIR%'; $
 :: Check if Apache executable exists
 if not exist "%HTTPD_EXE%" (
     echo ERROR: Apache executable not found at "%HTTPD_EXE%"
-    pause
+    if %SILENT_MODE%==0 pause
     exit /b 1
 )
 
@@ -37,7 +41,7 @@ echo Configuring httpd.conf paths...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "$c = Get-Content -LiteralPath '%CONF%' -Raw; $c = $c -replace '(?m)^Define SRVROOT .*$', 'Define SRVROOT \"%SRVROOT%\"'; $c = $c -replace '(?m)^Define PHPROOT .*$', 'Define PHPROOT \"%PHPROOT%\"'; $c = $c -replace '(?m)^Define DOCROOT .*$', 'Define DOCROOT \"%DOCROOT%\"'; Set-Content -LiteralPath '%CONF%' -Value $c -NoNewline"
 if %ERRORLEVEL% neq 0 (
     echo ERROR: Failed to configure paths in httpd.conf
-    pause
+    if %SILENT_MODE%==0 pause
     exit /b 1
 )
 echo Paths configured.
@@ -55,7 +59,7 @@ echo Installing Apache service "%SERVICE_NAME%"...
 "%HTTPD_EXE%" -k install -n "%SERVICE_NAME%"
 if %ERRORLEVEL% neq 0 (
     echo Failed to install Apache service
-    pause
+    if %SILENT_MODE%==0 pause
     exit /b 1
 )
 echo Service installed successfully.
@@ -65,9 +69,9 @@ echo Starting service "%SERVICE_NAME%"...
 net start "%SERVICE_NAME%"
 if %ERRORLEVEL% neq 0 (
     echo Failed to start service. Check logs or permissions.
-    pause
+    if %SILENT_MODE%==0 pause
     exit /b 1
 )
 echo Service started successfully.
 
-pause
+if %SILENT_MODE%==0 pause

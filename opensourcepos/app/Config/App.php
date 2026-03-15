@@ -40,7 +40,7 @@ class App extends BaseConfig
      *
      * @var bool
      */
-    public bool $https_on;    // Set in the constructor
+    public bool $https_on; // Set in the constructor
 
     /**
      * --------------------------------------------------------------------------
@@ -52,7 +52,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL;    // Defined in the constructor
+    public string $baseURL; // Defined in the constructor
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -96,27 +96,27 @@ class App extends BaseConfig
     public string $uriProtocol = 'REQUEST_URI';
 
     /*
-    |--------------------------------------------------------------------------
-    | Allowed URL Characters
-    |--------------------------------------------------------------------------
-    |
-    | This lets you specify which characters are permitted within your URLs.
-    | When someone tries to submit a URL with disallowed characters they will
-    | get a warning message.
-    |
-    | As a security measure you are STRONGLY encouraged to restrict URLs to
-    | as few characters as possible.
-    |
-    | By default, only these are allowed: `a-z 0-9~%.:_-`
-    |
-    | Set an empty string to allow all characters -- but only if you are insane.
-    |
-    | The configured value is actually a regular expression character group
-    | and it will be used as: '/\A[<permittedURIChars>]+\z/iu'
-    |
-    | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
-    |
-    */
+     |--------------------------------------------------------------------------
+     | Allowed URL Characters
+     |--------------------------------------------------------------------------
+     |
+     | This lets you specify which characters are permitted within your URLs.
+     | When someone tries to submit a URL with disallowed characters they will
+     | get a warning message.
+     |
+     | As a security measure you are STRONGLY encouraged to restrict URLs to
+     | as few characters as possible.
+     |
+     | By default, only these are allowed: `a-z 0-9~%.:_-`
+     |
+     | Set an empty string to allow all characters -- but only if you are insane.
+     |
+     | The configured value is actually a regular expression character group
+     | and it will be used as: '/\A[<permittedURIChars>]+\z/iu'
+     |
+     | DO NOT CHANGE THIS UNLESS YOU FULLY UNDERSTAND THE REPERCUSSIONS!!
+     |
+     */
     public string $permittedURIChars = '';
 
     /**
@@ -158,7 +158,7 @@ class App extends BaseConfig
      */
     public array $supportedLocales = [
         'en',
-        'ar-EG',
+        'ar',
     ];
 
     /**
@@ -237,7 +237,7 @@ class App extends BaseConfig
      * @see http://www.html5rocks.com/en/tutorials/security/content-security-policy/
      * @see http://www.w3.org/TR/CSP/
      */
-    public bool $CSPEnabled = false;    // TODO: Currently CSP3 tags are not supported so enabling this causes problems with script-src-elem, style-src-attr and style-src-elem
+    public bool $CSPEnabled = false; // TODO: Currently CSP3 tags are not supported so enabling this causes problems with script-src-elem, style-src-attr and style-src-elem
 
     public function __construct()
     {

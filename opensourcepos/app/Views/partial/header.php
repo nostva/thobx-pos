@@ -252,6 +252,9 @@ $request = Services::request();
                 BootstrapDialog.defaultOptions.closeIcon = ''; // Handled by CSS
                 BootstrapDialog.defaultOptions.spinicon = 'animate-spin'; // Tailwind animate
             }
+            if (typeof dialog_support !== 'undefined') {
+                dialog_support.init('a.modal-dlg');
+            }
         });
     </script>
 </head>

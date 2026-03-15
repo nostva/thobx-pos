@@ -13,4 +13,8 @@ return [
     "required_username" => "The username field is required.",
     "username" => "Username",
     "welcome" => "Welcome!",
+    "signin_continue" => "Sign in to continue to your account",
+    "enter_username" => "Enter your username",
+    "enter_password" => "Enter your password",
+    "all_rights_reserved" => "All rights reserved.",
 ];

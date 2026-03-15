@@ -15,6 +15,6 @@ UPDATE `ospos_app_config`
 SET `value` = REPLACE(value, '|', ',')
 WHERE `key` = 'image_allowed_types';
 
--- due to language rename, reset to english
-UPDATE `ospos_app_config` SET `value` = 'en' WHERE `key` = 'language_code' ;
-UPDATE `ospos_app_config` SET `value` = 'english' WHERE `key` = 'language' ;
+-- due to language rename, reset to arabic
+UPDATE `ospos_app_config` SET `value` = 'ar' WHERE `key` = 'language_code' ;
+UPDATE `ospos_app_config` SET `value` = 'arabic' WHERE `key` = 'language' ;

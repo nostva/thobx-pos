@@ -12,5 +12,9 @@ return [
     "password"                      => "كلمة السر",
     "required_username"             => "",
     "username"                      => "اسم المستخدم",
-    "welcome"                       => "مرحباً بك في{0}!",
+    "welcome"                       => "مرحباً بك!",
+    "signin_continue"               => "تسجيل الدخول للمتابعة إلى حسابك",
+    "enter_username"                => "أدخل اسم المستخدم",
+    "enter_password"                => "أدخل كلمة المرور",
+    "all_rights_reserved"           => "جميع الحقوق محفوظة.",
 ];

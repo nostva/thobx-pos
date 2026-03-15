@@ -56,7 +56,7 @@ function current_language(bool $load_system_language = false): string
 function get_languages(): array
 {
     $languages = [
-        'ar-EG:arabic' => 'Arabic',
+        'ar:arabic' => 'Arabic',
         'en:english' => 'English',
     ];
     asort($languages);

@@ -69,7 +69,7 @@
             <div class="login-container">
                 <div class="login-header">
                     <h2 class="login-title"><?= lang('Login.welcome', ['']) ?></h2>
-                    <p class="login-subtitle">Sign in to continue to your account</p>
+                    <p class="login-subtitle"><?= lang('Login.signin_continue') ?></p>
                 </div>
 
                 <?= form_open('login', ['class' => 'login-form']) ?>
@@ -100,7 +100,7 @@
                         id="input-username" 
                         name="username" 
                         class="form-input" 
-                        placeholder="Enter your username"
+                        placeholder="<?= lang('Login.enter_username') ?>"
                         <?php if (ENVIRONMENT == "testing") echo 'value="admin"'; ?>
                         autofocus
                     >
@@ -116,8 +116,8 @@
                         id="input-password" 
                         name="password" 
                         class="form-input" 
-                        placeholder="Enter your password"
-                        <?php if (ENVIRONMENT == "testing") echo 'value="pointofsale"'; ?>
+                        placeholder="<?= lang('Login.enter_password') ?>"
+                        <?php if (ENVIRONMENT == "testing") echo 'value="admin"'; ?>
                     >
                 </div>
 
@@ -138,7 +138,7 @@
                 <?= form_close() ?>
 
                 <div class="login-footer">
-                    <p>&copy; <?= date('Y') ?> <?= $config['company'] ?>. All rights reserved.</p>
+                    <p>&copy; <?= date('Y') ?> <?= $config['company'] ?>. <?= lang('Login.all_rights_reserved') ?></p>
                 </div>
             </div>
         </div>

@@ -35,7 +35,7 @@ body {
 /* Left Side - Branding */
 .login-left {
   flex: 1;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -213,7 +213,7 @@ body {
 .form-label svg {
   width: 16px;
   height: 16px;
-  color: #10b981;
+  color: #e11d48;
 }
 
 .form-input {
@@ -236,8 +236,8 @@ body {
 .form-input:focus {
   outline: none;
   background: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  border-color: #e11d48;
+  box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.1);
 }
 
 /* Submit Button */
@@ -248,7 +248,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
   color: white;
   font-size: 1rem;
   font-weight: 600;
@@ -256,13 +256,13 @@ body {
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
   margin-top: 0.5rem;
 }
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 8px 20px rgba(225, 29, 72, 0.35);
 }
 
 .btn-submit:active {
@@ -376,7 +376,7 @@ body {
 
 .form-input:focus-visible,
 .btn-submit:focus-visible {
-  outline: 2px solid #10b981;
+  outline: 2px solid #e11d48;
   outline-offset: 2px;
 }
 
