@@ -947,9 +947,9 @@ if (isset($success)) {
                 <div class="category-content">
                     <div class="category-name">
                         <i data-lucide="folder" class="w-5 h-5"></i>
+                        <div class="category-count"> (${category.count}) </div>
                         <span>${escapeHtml(category.name)}</span>
                     </div>
-                    <div class="category-count">${category.count} item${category.count !== 1 ? 's' : ''}</div>
                 </div>
             `);
 

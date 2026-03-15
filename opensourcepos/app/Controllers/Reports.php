@@ -2925,6 +2925,7 @@ class Reports extends Secure_Controller
             'subtitle' => $this->_get_subtitle_report(['start_date' => $start_date, 'end_date' => $end_date]),
             'start_date' => $start_date,
             'end_date' => $end_date,
+            'sale_type' => $sale_type,
             'total_sales' => $total_sales,
             'total_cost' => $total_cost,
             'gross_profit' => $gross_profit,

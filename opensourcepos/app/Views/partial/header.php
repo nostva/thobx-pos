@@ -267,7 +267,7 @@ $request = Services::request();
                         <i data-lucide="layers" class="w-6 h-6"></i>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-bold text-xl tracking-tight text-slate-900 leading-none">Anis <span
+                        <span class="font-bold text-xl tracking-tight text-white leading-none">Anis <span
                                 class="text-emerald-500">Rose</span></span>
                     </div>
                 </a>

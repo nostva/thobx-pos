@@ -13,7 +13,7 @@
     </div>
 
     <!-- Filters Card -->
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6 print_hide">
         <?= form_open('#', ['id' => 'report_form', 'class' => 'space-y-4']) ?>
         <div
             class="grid grid-cols-1 md:grid-cols-<?= isset($stock_locations) && count($stock_locations) > 2 ? '3' : '2' ?> gap-4">

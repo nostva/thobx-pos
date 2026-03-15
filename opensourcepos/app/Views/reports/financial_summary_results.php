@@ -1,5 +1,26 @@
+<style>
+    @media print {
+        .print_only { display: block !important; }
+    }
+    @media screen {
+        .print_only { display: none !important; }
+    }
+</style>
+
+<!-- Print Header -->
+<div class="print_only mb-8">
+    <div class="text-center">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2"><?= lang('Reports.financial_summary') ?></h2>
+        <div class="text-sm text-slate-500 space-y-1">
+            <p><?= lang('Reports.date_range') ?>: <?= esc($subtitle) ?></p>
+            <p><?= lang('Reports.sale_type') ?>: <?= isset($sale_type) ? lang('Reports.' . $sale_type) : lang('Reports.complete') ?></p>
+            <p><?= lang('Reports.date') ?>: <?= date('d/m/Y H:i') ?></p>
+        </div>
+    </div>
+</div>
+
 <!-- Report Card -->
-<div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden print:shadow-none print:border-none">
+<div class="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
 
     <div class="p-8 space-y-8">
 
@@ -96,7 +117,36 @@
     </div>
 
     <!-- Print Footer -->
-    <div class="bg-slate-50 p-4 text-center text-xs text-slate-400 border-t border-slate-100">
+    <div class="bg-slate-50 p-4 text-center text-xs text-slate-400 border-t border-slate-100 print_hide">
         <?= date('d/m/Y H:i') ?>
     </div>
 </div>
+
+<table id="export_table" style="display: none;">
+    <tbody>
+        <tr><td><b><?= lang('Reports.revenue') ?></b></td><td></td></tr>
+        <tr><td><?= lang('Reports.sales') ?></td><td><?= to_currency($total_sales) ?></td></tr>
+        <tr><td><?= lang('Reports.cost') ?></td><td><?= to_currency($total_cost) ?></td></tr>
+        
+        <tr><td></td><td></td></tr>
+
+        <tr><td><b><?= lang('Reports.profit') ?> (<?= lang('Reports.total') ?>)</b></td><td><b><?= to_currency($gross_profit) ?></b></td></tr>
+        <tr><td><?= lang('Reports.margin') ?></td><td><?= $profit_margin ?></td></tr>
+        
+        <tr><td></td><td></td></tr>
+
+        <tr><td><b><?= lang('Reports.expenses') ?></b></td><td></td></tr>
+        <?php if (!empty($expenses_data)): ?>
+            <?php foreach ($expenses_data as $expense): ?>
+                <tr><td><?= $expense['category_name'] ?></td><td><?= to_currency($expense['total_amount']) ?></td></tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr><td><?= lang('Reports.no_expenses_to_display') ?></td><td></td></tr>
+        <?php endif; ?>
+        <tr><td><b><?= lang('Reports.total_expenses') ?></b></td><td><b><?= to_currency($total_expenses) ?></b></td></tr>
+        
+        <tr><td></td><td></td></tr>
+
+        <tr><td><b><?= lang('Reports.net_profit') ?></b></td><td><b><?= to_currency($net_profit) ?></b></td></tr>
+    </tbody>
+</table>

@@ -6,14 +6,26 @@
 
 <div class="max-w-6xl mx-auto mt-6 animate-in fade-in slide-up">
     <!-- Header -->
-    <div class="mb-6">
+    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print_hide">
         <h2 class="text-2xl font-bold text-slate-800">
             <?= lang('Reports.financial_summary') ?>
         </h2>
+        
+        <!-- Export & Print Actions -->
+        <div class="flex flex-wrap gap-2">
+            <button onclick="exportReport('excel')" class="btn btn-default btn-sm flex items-center gap-2">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Excel</span>
+            </button>
+            <button onclick="window.print()" class="btn btn-default btn-sm flex items-center gap-2">
+                <i data-lucide="printer" class="w-4 h-4"></i>
+                <span><?= lang('Common.print') ?></span>
+            </button>
+        </div>
     </div>
 
     <!-- Filters Card -->
-    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6 print_hide">
         <?= form_open('#', ['id' => 'report_form', 'class' => 'space-y-4']) ?>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Date Range Picker -->
@@ -79,6 +91,23 @@
 <?= view('partial/footer') ?>
 
 <script type="text/javascript">
+    function exportReport(format) {
+        if ($('#export_table').length === 0) {
+            console.error("No data available to export.");
+            return;
+        }
+        let fileName = "financial_summary_" + new Date().toISOString().slice(0, 10);
+        let $table = $('#export_table');
+        $table.show();
+        $table.tableExport({
+            type: format,
+            fileName: fileName,
+            escape: false,
+            exportHiddenCells: true
+        });
+        $table.hide();
+    }
+
     $(document).ready(function () {
         // Initialize daterangepicker
         <?= view('partial/daterangepicker') ?>

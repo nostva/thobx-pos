@@ -34,7 +34,7 @@
   border-bottom-right-radius: 4px;
 }
 .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu {
-  text-align: left;
+  text-align: start;
   max-height: 300px;
   overflow: auto;
   -ms-overflow-style: scrollbar;

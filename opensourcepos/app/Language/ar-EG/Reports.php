@@ -134,7 +134,7 @@ return [
     "total_quantity" => "الكمية/العدد",
     "total_retail" => "قيمة المبيع",
     "trans_amount" => "قيمة العملية التجارية",
-    "trans_due" => "مستحق",
+    "trans_due" => "آجل",
     "trans_group" => "مجموعة العمليات التجارية",
     "trans_nopay_sales" => "المبيعات الغير مسدده",
     "trans_payments" => "المدفوعات",
