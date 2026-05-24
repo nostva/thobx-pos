@@ -157,8 +157,8 @@ if ($importProcess.ExitCode -eq 0) {
     Write-Host "WARNING: Import failed or completed with warnings. The database might already be populated." -ForegroundColor Yellow
 }
 
-# 5. Apache settings setup
-# The paths are natively populated by start-service.bat automatically!
+# 5. Apache / PHP paths
+# httpd.conf and php.ini extension_dir are updated by start-service.bat
 
 # 6. Update .env variables in the target directory
 $envPath = "$TargetDirTrim\opensourcepos\.env"

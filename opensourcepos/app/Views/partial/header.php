@@ -99,12 +99,9 @@ $request = Services::request();
             display: none !important;
         }
 
-        /* Legacy Print Hacks - Bulletproof suppression */
+        /* Print styles are handled by ospos_print CSS file.
+           Minimal inline overrides kept for specificity. */
         @media print {
-            @page {
-                margin: 0;
-            }
-
             .no-print,
             .print_hide,
             #menubar,
@@ -134,7 +131,7 @@ $request = Services::request();
 
             .main-content {
                 margin: 0 !important;
-                padding: 5mm !important;
+                padding: 0 !important;
             }
 
             .page-container {

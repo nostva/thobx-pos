@@ -23,6 +23,8 @@ set "PHPROOT=%SCRIPT_DIR%\php"
 set "PHPROOT=%PHPROOT:\=/%"
 set "DOCROOT=%SCRIPT_DIR%\opensourcepos\public"
 set "DOCROOT=%DOCROOT:\=/%"
+set "PHP_EXT_DIR=%PHPROOT%/ext"
+set "PHP_INI=%SCRIPT_DIR%\php\php.ini"
 
 :: Add PHP dir to system PATH so the Apache service can find ICU DLLs (needed by php_intl.dll)
 set "PHP_DIR=%SCRIPT_DIR%\php"
@@ -45,6 +47,21 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 echo Paths configured.
+
+:: Update extension_dir in php.ini (must match install location for extensions like intl)
+if not exist "%PHP_INI%" (
+    echo ERROR: php.ini not found at "%PHP_INI%"
+    if %SILENT_MODE%==0 pause
+    exit /b 1
+)
+echo Configuring php.ini extension_dir...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$c = Get-Content -LiteralPath '%PHP_INI%' -Raw; $c = $c -replace '(?m)^extension_dir\s*=.*$', 'extension_dir = \"%PHP_EXT_DIR%\"'; Set-Content -LiteralPath '%PHP_INI%' -Value $c -NoNewline"
+if %ERRORLEVEL% neq 0 (
+    echo ERROR: Failed to configure extension_dir in php.ini
+    if %SILENT_MODE%==0 pause
+    exit /b 1
+)
+echo php.ini configured.
 
 :: Remove stale service so a fresh install picks up new paths
 sc query "%SERVICE_NAME%" >nul 2>&1
