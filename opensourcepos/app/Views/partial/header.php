@@ -102,6 +102,7 @@ $request = Services::request();
         /* Print styles are handled by ospos_print CSS file.
            Minimal inline overrides kept for specificity. */
         @media print {
+
             .no-print,
             .print_hide,
             #menubar,
@@ -267,8 +268,8 @@ $request = Services::request();
                         <i data-lucide="layers" class="w-6 h-6"></i>
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-bold text-xl tracking-tight text-white leading-none">Anis <span
-                                class="text-emerald-500">Rose</span></span>
+                        <span class="font-bold text-xl tracking-tight text-white leading-none"><?= $config['company'] ?>
+                            <span class="text-emerald-500">POS</span></span>
                     </div>
                 </a>
             </div>

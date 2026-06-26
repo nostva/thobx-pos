@@ -48,7 +48,7 @@ class Services extends BaseService
         if (AppServices::get('request') instanceof IncomingRequest) {
             $requestLocale = AppServices::get('request')->getLocale();
         } else {
-            $requestLocale = Locale::getDefault();
+            $requestLocale = \Locale::getDefault();
         }
 
         // Use '?:' for empty string check

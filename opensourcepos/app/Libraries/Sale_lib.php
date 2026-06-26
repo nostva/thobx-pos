@@ -1365,6 +1365,56 @@ class Sale_lib
         $this->empty_payments();
         $this->remove_customer();
         $this->clear_cash_flags();
+        $this->clear_thobe();
+    }
+
+    // =========================================================================
+    // Thobe Detail session management
+    // =========================================================================
+
+    /**
+     * Returns whether the Thobe Detail section is currently active for this transaction.
+     */
+    public function is_thobe_active(): bool
+    {
+        return (bool) ($this->session->get('thobe_active') ?? true) && $this->get_customer() != -1;
+    }
+
+    /**
+     * Sets whether the Thobe Detail section is active for this transaction.
+     */
+    public function set_thobe_active(bool $active): void
+    {
+        $this->session->set('thobe_active', $active);
+    }
+
+    /**
+     * Returns the current in-progress thobe data from the session.
+     * Guaranteed to return an array (never null).
+     */
+    public function get_thobe_data(): array
+    {
+        $data = $this->session->get('thobe_data');
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * Stores thobe data into the session during the order entry flow.
+     * Merges the incoming data with any existing session data.
+     */
+    public function set_thobe_data(array $data): void
+    {
+        $existing = $this->get_thobe_data();
+        $this->session->set('thobe_data', array_replace_recursive($existing, $data));
+    }
+
+    /**
+     * Clears all thobe-related session state. Called by clear_all().
+     */
+    public function clear_thobe(): void
+    {
+        $this->session->remove('thobe_active');
+        $this->session->remove('thobe_data');
     }
 
     /**

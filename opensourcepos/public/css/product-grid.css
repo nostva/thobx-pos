@@ -460,6 +460,27 @@
   }
 }
 
+/* RTL Support for Floating Action Buttons */
+[dir="rtl"] .floating-add-cart {
+  right: auto;
+  left: 2rem;
+}
+[dir="rtl"] .floating-clear-selection {
+  right: auto;
+  left: 14rem;
+}
+
+@media (max-width: 768px) {
+  [dir="rtl"] .floating-add-cart {
+    right: auto;
+    left: 1rem;
+  }
+  [dir="rtl"] .floating-clear-selection {
+    right: auto;
+    left: 1rem;
+  }
+}
+
 /* Category Wrapper */
 .category-wrapper {
   display: flex;

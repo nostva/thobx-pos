@@ -1,64 +1,160 @@
 #receipt_wrapper {
-    width: 100%;
+  width: 100%;
 }
 
 #receipt_header {
-    text-align: center;
+  text-align: center;
+  justify-content: center;
 }
 
 #company_name {
-    font-size: 150%;
-    font-weight: bold;
+  font-size: 150%;
+  font-weight: bold;
 }
 
 #company_name img {
-    max-width: 150px;
-    max-height: 150px;
+  max-width: 150px;
+  max-height: 150px;
+  margin-top: 0px;
+  margin-bottom: 8px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 #company_phone {
-    margin-bottom: 15px;
-
+  margin-bottom: 15px;
 }
 
 #sale_time {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 #receipt_items {
-    position: relative;
-    border-collapse: collapse;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    width: 100%;
+  position: relative;
+  border-collapse: collapse;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 100%;
 }
 
 #receipt_items td {
-    position: relative;
-    padding: 3px;
-    margin-bottom: 5px;
-
+  position: relative;
+  padding: 3px;
+  margin-bottom: 5px;
 }
 
 #receipt_items tr {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 #sale_return_policy {
-    width: 80%;
-    margin: 0 auto;
-    text-align: center;
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
 }
 
 #receipt_wrapper #barcode {
-    margin-top: 10px;
-    text-align: center;
+  margin-top: 10px;
+  text-align: center;
 }
 
 .total-value {
-    text-align: right;
+  text-align: right;
 }
 
 .discount {
-    font-weight: bold;
+  font-weight: bold;
 }
+
+/* ======================================================
+   80mm Thermal POS Printer Media Print Overrides
+   ====================================================== */
+@media print {
+  @page {
+    margin: 0;
+  }
+  
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  #receipt_wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 4px !important;
+    font-size: 10px !important;
+  }
+  
+  #receipt_items th,
+  #receipt_items td {
+    padding: 3px 2px !important;
+    font-size: 9px !important;
+  }
+
+  /* Thobe Print View on 80mm POS Receipt */
+  .thobe-print-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 10px !important;
+    padding-top: 10px !important;
+    margin: 0 !important;
+  }
+  
+  .thobe-print-header h3 {
+    font-size: 12px !important;
+    margin-bottom: 2px !important;
+  }
+  
+  .thobe-print-header div {
+    font-size: 9px !important;
+  }
+  
+  .thobe-print-section h4 {
+    font-size: 10px !important;
+    margin-top: 8px !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .thobe-print-section table {
+    font-size: 9px !important;
+  }
+  
+  .thobe-print-section table td {
+    padding: 3px 1px !important;
+  }
+  
+  .thobe-print-section div {
+    font-size: 9px !important;
+    padding: 4px !important;
+  }
+
+  /* Responsive visibility triggers for narrow POS paper */
+  .print-only-narrow {
+    display: block !important;
+  }
+  
+  .print-hide-narrow {
+    display: none !important;
+  }
+
+  /* Flex column vertical layout for receipt details */
+  .thobe-print-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  /* Style option images formatting */
+  .thobe-style-image {
+    width: 40px !important;
+    height: 40px !important;
+    border: none !important;
+    border-radius: 4px !important;
+  }
+}
+
+

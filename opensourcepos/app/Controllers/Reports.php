@@ -132,9 +132,10 @@ class Reports extends Secure_Controller
     {
         $this->clearCache();
 
-        // Set default dates if not provided (today)
-        if ($start_date === null || $end_date === null) {
+        if (empty($start_date)) {
             $start_date = date('Y-m-d');
+        }
+        if (empty($end_date)) {
             $end_date = date('Y-m-d');
         }
 
@@ -183,18 +184,21 @@ class Reports extends Secure_Controller
             $stock_locations = $this->stock_location->get_allowed_locations('sales');
             $stock_locations['all'] = lang('Reports.all');
 
-            $unified_data = [
+            $layout_data = [
                 'report_title' => lang('Reports.sales_summary_report'),
-                'report_url_base' => site_url('reports/summary_sales'),
-                'sale_type_options' => $this->get_sale_type_options(),
-                'stock_locations' => array_reverse($stock_locations, true),
-                'default_sale_type' => $sale_type,
-                'default_date_display' => date($this->config['dateformat'], strtotime($start_date)) . ' - ' . date($this->config['dateformat'], strtotime($end_date)),
-                'show_initial_results' => true,
-                'initial_results_html' => view('reports/tabular_content', array_merge($data, ['config' => $this->config]))
+                'config' => $this->config,
+                'filter_data' => [
+                    'report_name' => 'summary_sales',
+                    'report_url' => 'reports/summary_sales',
+                    'sale_type_options' => $this->get_sale_type_options(),
+                    'default_sale_type' => $sale_type,
+                    'default_date_display' => date($this->config['dateformat'], strtotime($start_date)) . ' - ' . date($this->config['dateformat'], strtotime($end_date)),
+                    'stock_locations' => array_reverse($stock_locations, true),
+                ],
+                'table_data' => array_merge($data, ['config' => $this->config])
             ];
 
-            echo view('reports/summary_report_unified', $unified_data);
+            echo view('reports/layouts/unified_report', $layout_data);
         }
     }
 
@@ -908,8 +912,8 @@ class Reports extends Secure_Controller
             'filter_data' => [
                 'report_name' => 'summary_payments',
                 'report_url' => 'reports/summary_payments',
-                'default_date_display' => date($this->config['dateformat'], strtotime($start_date)) . ' - ' . date($this->config['dateformat'], strtotime($end_date))
-                // Note: No sale_type or stock_locations passed here
+                'sale_type_options' => $this->get_sale_type_options(),
+                'default_date_display' => date($this->config['dateformat'], strtotime($start_date)) . ' - ' . date($this->config['dateformat'], strtotime($end_date)),
             ],
             'table_data' => array_merge($data, ['config' => $this->config])
         ];
@@ -2943,24 +2947,14 @@ class Reports extends Secure_Controller
             // Return only the results partial for AJAX requests
             echo view('reports/financial_summary_results', $data);
         } else {
-            // Return the full unified view for regular page loads
+            // Return the view for regular page loads
             $data['sale_type_options'] = $this->get_sale_type_options();
             $data['default_sale_type'] = $sale_type;
             $data['default_date_display'] = date($this->config['dateformat'], strtotime($start_date)) . ' - ' . date($this->config['dateformat'], strtotime($end_date));
             $data['show_initial_results'] = true;
 
-            echo view('reports/financial_summary_unified', $data);
+            echo view('reports/financial_summary', $data);
         }
-    }
-
-    /**
-     * Input for Financial Summary Report
-     * @deprecated Use financial_summary() directly instead
-     */
-    public function financial_summary_input()
-    {
-        // Call the unified method directly for backward compatibility
-        return $this->financial_summary();
     }
 
     /**

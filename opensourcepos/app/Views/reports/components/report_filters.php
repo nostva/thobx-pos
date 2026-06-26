@@ -25,7 +25,6 @@
                         'name' => 'daterangepicker',
                         'class' => 'flex h-11 w-full rounded-xl border border-slate-200 bg-white ps-10 pe-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all',
                         'id' => 'daterangepicker',
-                        'value' => $default_date_display ?? ''
                     ]) ?>
                 </div>
             </div>

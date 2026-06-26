@@ -1,66 +1,571 @@
 @media print {
 
+    /* ======================================================
+       1. GLOBAL PRINT RESET
+       Remove all non-essential UI chrome so only content prints.
+       ====================================================== */
+
+    @page {
+        size: portrait;
+        margin: 10mm;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+    }
+
+    html {
+        font-size: 11px !important;
+    }
+
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, Arial, sans-serif !important;
+        font-size: 11px !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* ======================================================
+       2. HIDE NON-PRINTABLE ELEMENTS
+       Aggressively hide all navigation, toolbars, buttons,
+       pagination, filters, and interactive controls.
+       ====================================================== */
+
     .no-print,
-    .no-print * {
-        display: none !important;
-    }
-
-    #receipt_wrapper,
-    #table {
-        /* background-color:#FFFFFF; */
-        font-size: 75%;
-    }
-
-    .topbar {
-        display: none;
-    }
-
+    .no-print *,
+    .print_hide,
+    .print_hide *,
+    .topbar,
     #menubar,
-    #footer {
-        display: none;
-    }
-
-    #sale_return_policy {
-        width: 100%;
-        text-align: center;
-    }
-
-    /* Hide links in table for printing */
-    table.innertable {
-        display: table;
-    }
-
-    table.innertable a {
-        color: #000000;
-        text-decoration: none;
-    }
-
-    table.report a.expand {
-        visibility: hidden;
-    }
-
-    table.report a {
-        color: #000000;
-        text-decoration: none;
-    }
-
-    table.innertable thead {
-        /* display:none; */
+    .sidebar,
+    .top-nav,
+    #sidebar-toggle,
+    #footer,
+    #toolbar,
+    #title_bar,
+    .fixed-table-toolbar,
+    .fixed-table-pagination,
+    .btn,
+    .btn-group,
+    .dropdown,
+    .selectpicker,
+    .search,
+    .columns,
+    #debug-icon,
+    #debug-bar,
+    #toolbarContainer,
+    .modal-backdrop,
+    .pagination,
+    .pagination-detail,
+    .page-list,
+    input[type="text"],
+    input[type="search"],
+    .daterangepicker,
+    .bs-checkbox,
+    .bs-checkbox *,
+    .fixed-table-body .fixed-table-loading {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
     .print_show {
         display: block !important;
     }
 
-    .print_hide {
+    /* ======================================================
+       3. LAYOUT RESET
+       Strip all dashboard/sidebar layout constraints so
+       the table can use the full page width.
+       ====================================================== */
+
+    .dashboard-container {
+        display: block !important;
+        min-height: auto !important;
+    }
+
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        background: #ffffff !important;
+    }
+
+    .page-container,
+    .page-container.animate-page-entry {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        animation: none !important;
+    }
+
+    /* ======================================================
+       4. TABLE CONTAINER RESET
+       Remove card styling, rounded corners, shadows, and
+       overflow constraints so tables display fully.
+       ====================================================== */
+
+    #table_holder,
+    .card-std {
+        background: #ffffff !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .bootstrap-table {
+        overflow: visible !important;
+        width: 100% !important;
+    }
+
+    .bootstrap-table .fixed-table-container {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+        width: 100% !important;
+        position: static !important;
+    }
+
+    .bootstrap-table .fixed-table-container .fixed-table-header {
+        overflow: visible !important;
+    }
+
+    .bootstrap-table .fixed-table-container .fixed-table-body {
+        overflow: visible !important;
+        height: auto !important;
+    }
+
+    /* ======================================================
+       5. TABLE STRUCTURE — CLEAN CSV-LIKE GRID
+       Full-width table with solid 1px borders on all cells,
+       evenly spaced columns, and visible content.
+
+       NOTE: modern.css sets border:none !important on
+       .table thead th / .table tbody td without @media print,
+       and .fixed-table-container tbody td border-left/right:none.
+       We must use longhand border properties with high-
+       specificity selectors to guarantee they win.
+       ====================================================== */
+
+    table,
+    .bootstrap-table .table,
+    table.report,
+    table.innertable,
+    #table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border-spacing: 0 !important;
+        table-layout: auto !important;
+        margin: 0 !important;
+        page-break-inside: auto !important;
+    }
+
+    /* ---- HEADER CELLS ----
+       Uses body > ... prefix for maximum specificity to beat
+       modern.css `.table thead th { border: none !important }` */
+    body .bootstrap-table .fixed-table-container .table thead th,
+    body .table thead th,
+    body table.report thead th,
+    body table.innertable thead th {
+        background-color: #f2f2f2 !important;
+        color: #000000 !important;
+        font-weight: 700 !important;
+        font-size: 10px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.03em !important;
+        padding: 6px 8px !important;
+        /* Longhand borders — immune to shorthand `border:none` overrides */
+        border-top: 1px solid #999999 !important;
+        border-right: 1px solid #999999 !important;
+        border-bottom: 1px solid #999999 !important;
+        border-left: 1px solid #999999 !important;
+        text-align: start !important;
+        vertical-align: middle !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        box-shadow: none !important;
+    }
+
+    /* ---- BODY CELLS ----
+       Uses body > ... prefix + longhand borders to beat
+       modern.css `.table tbody td` and `.fixed-table-container tbody td` */
+    body .bootstrap-table .fixed-table-container .table tbody td,
+    body .fixed-table-container tbody td,
+    body .table tbody td,
+    body table.report tbody td,
+    body table.innertable tbody td {
+        padding: 5px 8px !important;
+        /* Longhand borders — each side explicitly set */
+        border-top: 1px solid #cccccc !important;
+        border-right: 1px solid #cccccc !important;
+        border-bottom: 1px solid #cccccc !important;
+        border-left: 1px solid #cccccc !important;
+        font-size: 10px !important;
+        color: #000000 !important;
+        background-color: #ffffff !important;
+        text-align: start !important;
+        vertical-align: middle !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+
+    /* Zebra striping for readability */
+    .table tbody tr:nth-child(even) td,
+    .bootstrap-table .table tbody tr:nth-child(even) td {
+        background-color: #fafafa !important;
+    }
+
+    /* ---- FOOTER / TOTALS ROW ---- */
+    .table tfoot th,
+    .table tfoot td,
+    .table tbody tr:last-child td {
+        font-weight: 700 !important;
+    }
+
+    /* ======================================================
+       6. FIX BOOTSTRAP-TABLE INNER WRAPPERS
+       The .th-inner and .fht-cell wrappers clip text via
+       overflow:hidden and white-space:nowrap — override them.
+       ====================================================== */
+
+    .th-inner,
+    .fixed-table-container thead th .th-inner,
+    .fixed-table-container tfoot th .th-inner,
+    .fht-cell {
+        padding: 6px 8px !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+        line-height: 1.3 !important;
+    }
+
+    /* Remove sort indicator padding that wastes space */
+    .fixed-table-container thead th .sortable,
+    .fixed-table-container tfoot th .sortable {
+        padding-right: 8px !important;
+        background-image: none !important;
+        cursor: default !important;
+    }
+
+    /* ======================================================
+       7. LINKS IN TABLES
+       Make links look like plain text for clean print output.
+       ====================================================== */
+
+    table a,
+    table.innertable a,
+    table.report a {
+        color: #000000 !important;
+        text-decoration: none !important;
+    }
+
+    table.report a.expand {
         display: none !important;
     }
 
-    .fixed-table-container {
-        border: none;
+    /* ======================================================
+       8. RECEIPT / SALE RETURN POLICY
+       ====================================================== */
+
+    #receipt_wrapper,
+    #table {
+        font-size: 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
-    .fixed-table-container thead th .sortable {
-        padding-right: 10px;
+    /* Solid borders for receipt items to prevent column floating */
+    #receipt_items {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    #receipt_items th {
+        border-bottom: 2px solid #000000 !important;
+        padding: 4px 2px !important;
+        font-weight: bold !important;
+        color: #000000 !important;
+    }
+
+    #receipt_items td {
+        border-bottom: 1px dashed #666666 !important;
+        padding: 4px 2px !important;
+        color: #000000 !important;
+    }
+
+    #receipt_items tr:last-child td {
+        border-bottom: none !important;
+    }
+
+    #sale_return_policy {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+        font-size: 9px;
+    }
+
+    /* Solid grid borders for invoice printing */
+    #page-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #page-wrap table#items {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 2px solid #000000 !important;
+        margin-top: 15px !important;
+    }
+
+    #page-wrap table#items th {
+        background-color: #f2f2f2 !important;
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+        padding: 6px 4px !important;
+    }
+
+    #page-wrap table#items td {
+        border: 1px solid #444444 !important;
+        color: #000000 !important;
+        padding: 5px 4px !important;
+        background-color: #ffffff !important;
+    }
+
+    #page-wrap table#items td.blank {
+        border: none !important;
+        background: transparent !important;
+    }
+
+    #page-wrap table#items td.total-line {
+        border-top: 1px solid #000000 !important;
+        border-left: 1px solid #000000 !important;
+        border-right: 1px solid #000000 !important;
+        border-bottom: 1px solid #000000 !important;
+        font-weight: bold !important;
+    }
+
+    #page-wrap table#items td.total-value {
+        border: 1px solid #000000 !important;
+        font-weight: bold !important;
+    }
+
+    /* ======================================================
+       9. PAYMENT SUMMARY (Expenses, etc.)
+       ====================================================== */
+
+    #payment_summary {
+        margin-top: 8px !important;
+        padding: 8px !important;
+        font-size: 10px !important;
+        border-top: 2px solid #000000 !important;
+    }
+
+    /* ======================================================
+       10. PAGE BREAK CONTROL
+       Keep table headers repeating on each page and avoid
+       breaking rows mid-way.
+       ====================================================== */
+
+    thead {
+        display: table-header-group !important;
+    }
+
+    tfoot {
+        display: table-footer-group !important;
+    }
+
+    tr {
+        page-break-inside: avoid !important;
+    }
+
+    /* ======================================================
+       11. HIDE CHECKBOX COLUMN
+       The first column is typically a select-all checkbox
+       which is meaningless on paper.
+       ====================================================== */
+
+    th.bs-checkbox,
+    td.bs-checkbox,
+    th[data-field="state"],
+    td[data-field="state"] {
+        display: none !important;
+    }
+
+    /* ======================================================
+       12. DIRECTIONAL (LTR / RTL) ALIGNMENT OVERRIDES
+       Ensure proper text flow and number alignment in print output.
+       ====================================================== */
+
+    /* Default LTR alignment */
+    #receipt_items th,
+    #receipt_items td,
+    #page-wrap table#items th,
+    #page-wrap table#items td {
+        text-align: left !important;
+    }
+    #receipt_items th.total-value,
+    #receipt_items td.total-value,
+    #page-wrap table#items td.total-value,
+    #page-wrap table#items td.total-line,
+    #page-wrap table#items th:last-child,
+    #page-wrap table#items td:last-child {
+        text-align: right !important;
+    }
+
+    /* RTL Arabic overrides */
+    [dir="rtl"] body .bootstrap-table .fixed-table-container .table thead th,
+    [dir="rtl"] body .table thead th,
+    [dir="rtl"] body table.report thead th,
+    [dir="rtl"] body table.innertable thead th {
+        text-align: right !important;
+    }
+
+    [dir="rtl"] #receipt_items th,
+    [dir="rtl"] #receipt_items td,
+    [dir="rtl"] #page-wrap table#items th,
+    [dir="rtl"] #page-wrap table#items td {
+        text-align: right !important;
+    }
+
+    [dir="rtl"] #receipt_items th.total-value,
+    [dir="rtl"] #receipt_items td.total-value,
+    [dir="rtl"] #page-wrap table#items td.total-value,
+    [dir="rtl"] #page-wrap table#items td.total-line,
+    [dir="rtl"] #page-wrap table#items th:last-child,
+    [dir="rtl"] #page-wrap table#items td:last-child {
+        text-align: left !important;
+    }
+
+    /* Thobe Tailoring Details layout grid */
+    .thobe-print-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        width: 100% !important;
+    }
+
+    /* On narrow print (receipt wrapper), stack it vertically using column flexbox */
+    #receipt_wrapper .thobe-print-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    /* Style option images formatting */
+    .thobe-style-image {
+        width: 40px !important;
+        height: 40px !important;
+        border: none !important;
+        border-radius: 4px !important;
+    }
+
+    .print-only-narrow {
+        display: none !important;
+    }
+
+    #receipt_wrapper .print-only-narrow {
+        display: block !important;
+    }
+
+    #receipt_wrapper .print-hide-narrow {
+        display: none !important;
+    }
+
+    /* Financial Summary Report Print Styling (Receipt Design Match) */
+    .financial-summary-card {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .financial-summary-content {
+        padding: 0 !important;
+    }
+
+    .financial-summary-content .space-y-8 > * + * {
+        margin-top: 10px !important;
+    }
+
+    .financial-summary-content h3 {
+        font-weight: bold !important;
+        border-bottom: 1px solid #000000 !important;
+        padding-bottom: 3px !important;
+        margin-top: 12px !important;
+        margin-bottom: 6px !important;
+        color: #000000 !important;
+        text-transform: uppercase !important;
+    }
+
+    .financial-summary-row {
+        padding: 3px 0 !important;
+        border-bottom: 1px dashed #cbd5e1 !important;
+        color: #000000 !important;
+    }
+
+    .financial-summary-row:last-child {
+        border-bottom: none !important;
+    }
+
+    .financial-summary-row span {
+        color: #000000 !important;
+    }
+
+    .financial-summary-expenses-total {
+        background: transparent !important;
+        border: none !important;
+        border-top: 1px solid #000000 !important;
+        border-bottom: 1px solid #000000 !important;
+        padding: 4px 0 !important;
+        margin-top: 6px !important;
+        font-weight: bold !important;
+        border-radius: 0 !important;
+    }
+
+    .financial-summary-expenses-total span {
+        color: #000000 !important;
+        font-weight: bold !important;
+    }
+
+    .financial-summary-net-profit {
+        border-top: 2px solid #000000 !important;
+        padding-top: 6px !important;
+        margin-top: 10px !important;
+    }
+
+    .financial-summary-net-profit span {
+        font-weight: bold !important;
+        color: #000000 !important;
     }
 }
+
+

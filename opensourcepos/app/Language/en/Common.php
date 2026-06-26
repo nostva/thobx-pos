@@ -97,4 +97,7 @@ return [
     "explore_modules" => "Explore Modules",
     "name" => "Name",
     "loading" => "Loading",
+    "actions" => "Actions",
+    "notes" => "Notes",
+    "Select" => "select",
 ];

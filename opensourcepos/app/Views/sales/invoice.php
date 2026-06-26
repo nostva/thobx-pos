@@ -233,7 +233,14 @@ if (isset($error_message)) {
             <?= $sale_id ?>
         </div>
     </div>
+    </div>
 </div>
+
+<?php 
+if (isset($thobe_detail) && !empty($thobe_detail) && isset($config['thobe_detail_print']) && $config['thobe_detail_print']) {
+    echo view('sales/thobe_detail_print');
+}
+?>
 
 <script type="text/javascript">
     $(window).on("load", function() {

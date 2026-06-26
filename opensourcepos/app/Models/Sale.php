@@ -242,6 +242,9 @@ class Sale extends Model
                 $builder->orLike('customer_p.first_name', $search);    // Customer first name
                 $builder->orLike('CONCAT(customer_p.first_name, " ", customer_p.last_name)', $search);    // Customer first and last name
                 $builder->orLike('customer.company_name', $search);    // Customer company name
+                if (ctype_digit($search)) {
+                    $builder->orWhere('sales.sale_id', $search);    // Sale ID
+                }
                 $builder->groupEnd();
             }
         }
@@ -821,6 +824,7 @@ class Sale extends Model
         }
 
         $this->update_sale_status($sale_id, CANCELED);
+        model(\App\Models\Thobe_detail::class)->delete_by_sale($sale_id);
 
         // Execute transaction
         $this->db->transComplete();
@@ -1471,6 +1475,9 @@ class Sale extends Model
                 $builder->orLike('CONCAT(customer_p.first_name, " ", customer_p.last_name)', $search);
                 // Customer company name
                 $builder->orLike('customer.company_name', $search);
+                if (ctype_digit($search)) {
+                    $builder->orWhere('sales.sale_id', $search);    // Sale ID
+                }
                 $builder->groupEnd();
             }
         }

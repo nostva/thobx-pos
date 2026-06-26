@@ -53,7 +53,7 @@
         <!-- Left Side - Branding -->
         <div class="login-left">
             <div class="brand-container">
-                <h1 class="brand-name">Anis <span class="brand-accent">Rose</span></h1>
+                <h1 class="brand-name"><?= $config['company'] ?> <span class="brand-accent">POS</span></h1>
                 <p class="brand-tagline">Modern Point of Sale System</p>
             </div>
             

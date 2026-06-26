@@ -17,37 +17,37 @@ class Barcode_lib
      * @var array Values from Picqer\Barcode\BarcodeGenerator class. If that class changes, this array will need to be updated.
      */
     private array $supported_barcodes = [
-        'C32'      => 'Code 32',
-        'C39'      => 'Code 39',
-        'C39+'     => 'Code 39 Checksum',
-        'C39E'     => 'Code 39E',
-        'C39E+'    => 'Code 39E Checksum',
-        'C93'      => 'Code 93',
-        'S25'      => 'Standard 2 5',
-        'S25+'     => 'Standard 2 5 Checksum',
-        'I25'      => 'Interleaved 2 5',
-        'I25+'     => 'Interleaved 2 5 Checksum',
-        'C128'     => 'Code 128',
-        'C128A'    => 'Code 128 A',
-        'C128B'    => 'Code 128 B',
-        'C128C'    => 'Code 128 C',
-        'EAN2'     => 'EAN 2',
-        'EAN5'     => 'EAN 5',
-        'EAN8'     => 'EAN 8',
-        'EAN13'    => 'EAN 13',
-        'ITF14'    => 'ITF14',
-        'UPCA'     => 'UPC A',
-        'UPCE'     => 'UPC E',
-        'MSI'      => 'Msi',
-        'MSI+'     => 'MSI Checksum',
-        'POSTNET'  => 'Postnet',
-        'PLANET'   => 'Planet',
-        'RMS4CC'   => 'RMS4CC',
-        'KIX'      => 'KIX',
-        'IMB'      => 'IMB',
-        'CODABAR'  => 'Codabar',
-        'CODE11'   => 'Code 11',
-        'PHARMA'   => 'Pharma Code',
+        'C32' => 'Code 32',
+        'C39' => 'Code 39',
+        'C39+' => 'Code 39 Checksum',
+        'C39E' => 'Code 39E',
+        'C39E+' => 'Code 39E Checksum',
+        'C93' => 'Code 93',
+        'S25' => 'Standard 2 5',
+        'S25+' => 'Standard 2 5 Checksum',
+        'I25' => 'Interleaved 2 5',
+        'I25+' => 'Interleaved 2 5 Checksum',
+        'C128' => 'Code 128',
+        'C128A' => 'Code 128 A',
+        'C128B' => 'Code 128 B',
+        'C128C' => 'Code 128 C',
+        'EAN2' => 'EAN 2',
+        'EAN5' => 'EAN 5',
+        'EAN8' => 'EAN 8',
+        'EAN13' => 'EAN 13',
+        'ITF14' => 'ITF14',
+        'UPCA' => 'UPC A',
+        'UPCE' => 'UPC E',
+        'MSI' => 'Msi',
+        'MSI+' => 'MSI Checksum',
+        'POSTNET' => 'Postnet',
+        'PLANET' => 'Planet',
+        'RMS4CC' => 'RMS4CC',
+        'KIX' => 'KIX',
+        'IMB' => 'IMB',
+        'CODABAR' => 'Codabar',
+        'CODE11' => 'Code 11',
+        'PHARMA' => 'Pharma Code',
         'PHARMA2T' => 'Pharma Code Two Tracks',
     ];
 
@@ -147,7 +147,7 @@ class Barcode_lib
             $barcode = $this->generate_barcode($item, $barcode_config);
             $display_table = '<table>';
             $display_table .= '<tr><td style="text-align: center;">' . $this->manage_display_layout($barcode_config['barcode_first_row'], $item, $barcode_config) . '</td></tr>';
-            $display_table .= '<tr><td style="text-align: center;"><div class="barcode">$barcode</div></td></tr>';
+            $display_table .= '<tr><td style="text-align: center;"><div class="barcode">' . $barcode . '</div></td></tr>';
             $display_table .= '<tr><td style="text-align: center;">' . $this->manage_display_layout($barcode_config['barcode_second_row'], $item, $barcode_config) . '</td></tr>';
             $display_table .= '<tr><td style="text-align: center;">' . $this->manage_display_layout($barcode_config['barcode_third_row'], $item, $barcode_config) . '</td></tr>';
             $display_table .= '</table>';

@@ -95,4 +95,7 @@ return [
     "current_month_summary" => "ملخص الشهر الحالي",
     "name" => "الاسم",
     "loading" => "جاري التحميل",
+    "actions" => "إجراءات",
+    "notes" => "ملاحظات",
+    "select" => "اختر",
 ];

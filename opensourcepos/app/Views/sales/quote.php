@@ -201,6 +201,12 @@ if (isset($error_message)) {
     </div>
 </div>
 
+<?php 
+if (isset($thobe_detail) && !empty($thobe_detail) && isset($config['thobe_detail_print']) && $config['thobe_detail_print']) {
+    echo view('sales/thobe_detail_print', ['page_break' => true]);
+}
+?>
+
 <script type="text/javascript">
     $(window).on("load", function() {
         // Install firefox addon in order to use this plugin

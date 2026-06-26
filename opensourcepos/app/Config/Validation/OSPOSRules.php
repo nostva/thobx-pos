@@ -70,7 +70,7 @@ class OSPOSRules
     {
         if (!empty($response)) {
             $check = [
-                'secret'   => $this->config['gcaptcha_secret_key'],
+                'secret' => $this->config['gcaptcha_secret_key'],
                 'response' => $response,
                 'remoteip' => $this->request->getIPAddress()
             ];
@@ -134,5 +134,20 @@ class OSPOSRules
     public function decimal_locale(string $candidate, ?string &$error = null): bool
     {
         return parse_decimals($candidate) !== false;
+    }
+
+    /**
+     * Validates that a locale-aware decimal value is non-negative (>= 0).
+     *
+     * @param string $candidate
+     * @param string|null $error
+     * @return bool
+     * @noinspection PhpUnused
+     */
+    public function nonNegativeDecimal(string $candidate, ?string &$error = null): bool
+    {
+        $value = parse_decimals($candidate);
+
+        return $value !== false && $value >= 0;
     }
 }

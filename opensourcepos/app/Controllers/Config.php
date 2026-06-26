@@ -241,13 +241,18 @@ class Config extends Secure_Controller
         // Load all the themes, already XSS cleaned in the private function
         $data['themes'] = $this->_themes();
 
+        $data['thobe_measurements'] = model(\App\Models\Thobe_measurement::class)->get_all();
+        $data['thobe_option_groups'] = model(\App\Models\Thobe_option::class)->get_all_groups_with_values();
+        $data['thobe_detail_enable'] = $this->config['thobe_detail_enable'] ?? '0';
+        $data['thobe_detail_print'] = $this->config['thobe_detail_print'] ?? '1';
+
         // General related fields
         $image_allowed_types = ['jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'png', 'tif', 'tiff'];
         $data['image_allowed_types'] = array_combine($image_allowed_types, $image_allowed_types);
         $data['selected_image_allowed_types'] = explode(',', $this->config['image_allowed_types']);
 
         // Integrations Related fields
-        $data['mailchimp']    = [];
+        $data['mailchimp'] = [];
 
         if (check_encryption()) {    // TODO: Hungarian notation
             if (!isset($this->encrypter)) {
@@ -288,12 +293,12 @@ class Config extends Secure_Controller
         $upload_success = empty($upload_data['error']);
 
         $batch_save_data = [
-            'company'       => $this->request->getPost('company'),
-            'address'       => $this->request->getPost('address'),
-            'phone'         => $this->request->getPost('phone'),
-            'email'         => strtolower($this->request->getPost('email', FILTER_SANITIZE_EMAIL)),
-            'fax'           => $this->request->getPost('fax'),
-            'website'       => $this->request->getPost('website', FILTER_SANITIZE_URL),
+            'company' => $this->request->getPost('company'),
+            'address' => $this->request->getPost('address'),
+            'phone' => $this->request->getPost('phone'),
+            'email' => strtolower($this->request->getPost('email', FILTER_SANITIZE_EMAIL)),
+            'fax' => $this->request->getPost('fax'),
+            'website' => $this->request->getPost('website', FILTER_SANITIZE_URL),
             'return_policy' => $this->request->getPost('return_policy')
         ];
 
@@ -345,8 +350,8 @@ class Config extends Secure_Controller
 
         $file_info = [
             'orig_name' => $filename,
-            'raw_name'  => $info['filename'],
-            'file_ext'  => $file->guessExtension()
+            'raw_name' => $info['filename'],
+            'file_ext' => $file->guessExtension()
         ];
 
         $file->move(FCPATH . 'uploads/', $file_info['raw_name'] . '.' . $file_info['file_ext'], true);
@@ -363,32 +368,32 @@ class Config extends Secure_Controller
     public function postSaveGeneral(): void
     {
         $batch_save_data = [
-            'theme'                             => $this->request->getPost('theme'),
-            'login_form'                        => $this->request->getPost('login_form'),
-            'default_sales_discount_type'       => $this->request->getPost('default_sales_discount_type') != null,
-            'default_sales_discount'            => parse_decimals($this->request->getPost('default_sales_discount')),
-            'default_receivings_discount_type'  => $this->request->getPost('default_receivings_discount_type') != null,
-            'default_receivings_discount'       => parse_decimals($this->request->getPost('default_receivings_discount')),
-            'enforce_privacy'                   => $this->request->getPost('enforce_privacy') != null,
+            'theme' => $this->request->getPost('theme'),
+            'login_form' => $this->request->getPost('login_form'),
+            'default_sales_discount_type' => $this->request->getPost('default_sales_discount_type') != null,
+            'default_sales_discount' => parse_decimals($this->request->getPost('default_sales_discount')),
+            'default_receivings_discount_type' => $this->request->getPost('default_receivings_discount_type') != null,
+            'default_receivings_discount' => parse_decimals($this->request->getPost('default_receivings_discount')),
+            'enforce_privacy' => $this->request->getPost('enforce_privacy') != null,
             'receiving_calculate_average_price' => $this->request->getPost('receiving_calculate_average_price') != null,
-            'lines_per_page'                    => $this->request->getPost('lines_per_page', FILTER_SANITIZE_NUMBER_INT),
-            'notify_horizontal_position'        => $this->request->getPost('notify_horizontal_position'),
-            'notify_vertical_position'          => $this->request->getPost('notify_vertical_position'),
-            'image_max_width'                   => $this->request->getPost('image_max_width', FILTER_SANITIZE_NUMBER_INT),
-            'image_max_height'                  => $this->request->getPost('image_max_height', FILTER_SANITIZE_NUMBER_INT),
-            'image_max_size'                    => $this->request->getPost('image_max_size', FILTER_SANITIZE_NUMBER_INT),
-            'image_allowed_types'               => implode(',', $this->request->getPost('image_allowed_types')),
-            'gcaptcha_enable'                   => $this->request->getPost('gcaptcha_enable') != null,
-            'gcaptcha_secret_key'               => $this->request->getPost('gcaptcha_secret_key'),
-            'gcaptcha_site_key'                 => $this->request->getPost('gcaptcha_site_key'),
-            'suggestions_first_column'          => $this->request->getPost('suggestions_first_column'),
-            'suggestions_second_column'         => $this->request->getPost('suggestions_second_column'),
-            'suggestions_third_column'          => $this->request->getPost('suggestions_third_column'),
-            'giftcard_number'                   => $this->request->getPost('giftcard_number'),
-            'derive_sale_quantity'              => $this->request->getPost('derive_sale_quantity') != null,
-            'multi_pack_enabled'                => $this->request->getPost('multi_pack_enabled') != null,
-            'include_hsn'                       => $this->request->getPost('include_hsn') != null,
-            'category_dropdown'                 => $this->request->getPost('category_dropdown') != null
+            'lines_per_page' => $this->request->getPost('lines_per_page', FILTER_SANITIZE_NUMBER_INT),
+            'notify_horizontal_position' => $this->request->getPost('notify_horizontal_position'),
+            'notify_vertical_position' => $this->request->getPost('notify_vertical_position'),
+            'image_max_width' => $this->request->getPost('image_max_width', FILTER_SANITIZE_NUMBER_INT),
+            'image_max_height' => $this->request->getPost('image_max_height', FILTER_SANITIZE_NUMBER_INT),
+            'image_max_size' => $this->request->getPost('image_max_size', FILTER_SANITIZE_NUMBER_INT),
+            'image_allowed_types' => implode(',', $this->request->getPost('image_allowed_types')),
+            'gcaptcha_enable' => $this->request->getPost('gcaptcha_enable') != null,
+            'gcaptcha_secret_key' => $this->request->getPost('gcaptcha_secret_key'),
+            'gcaptcha_site_key' => $this->request->getPost('gcaptcha_site_key'),
+            'suggestions_first_column' => $this->request->getPost('suggestions_first_column'),
+            'suggestions_second_column' => $this->request->getPost('suggestions_second_column'),
+            'suggestions_third_column' => $this->request->getPost('suggestions_third_column'),
+            'giftcard_number' => $this->request->getPost('giftcard_number'),
+            'derive_sale_quantity' => $this->request->getPost('derive_sale_quantity') != null,
+            'multi_pack_enabled' => $this->request->getPost('multi_pack_enabled') != null,
+            'include_hsn' => $this->request->getPost('include_hsn') != null,
+            'category_dropdown' => $this->request->getPost('category_dropdown') != null
         ];
 
         $this->module->set_show_office_group($this->request->getPost('show_office_group') != null);
@@ -439,11 +444,11 @@ class Config extends Secure_Controller
         $number_local_example = $fmt->format(1234567890.12300);
 
         echo json_encode([
-            'success'               => $number_local_example != false,
-            'save_number_locale'    => $save_number_locale,
+            'success' => $number_local_example != false,
+            'save_number_locale' => $save_number_locale,
             'number_locale_example' => $number_local_example,
-            'currency_symbol'       => $currency_symbol,
-            'currency_code'         => $currency_code,
+            'currency_symbol' => $currency_symbol,
+            'currency_code' => $currency_code,
         ]);
     }
 
@@ -458,24 +463,24 @@ class Config extends Secure_Controller
     {
         $exploded = explode(":", $this->request->getPost('language'));
         $batch_save_data = [
-            'currency_symbol'       => $this->request->getPost('currency_symbol'),
-            'currency_code'         => $this->request->getPost('currency_code'),
-            'language_code'         => $exploded[0],
-            'language'              => $exploded[1],
-            'timezone'              => $this->request->getPost('timezone'),
-            'dateformat'            => $this->request->getPost('dateformat'),
-            'timeformat'            => $this->request->getPost('timeformat'),
-            'thousands_separator'   => $this->request->getPost('thousands_separator') != null,
-            'number_locale'         => $this->request->getPost('number_locale'),
-            'currency_decimals'     => $this->request->getPost('currency_decimals', FILTER_SANITIZE_NUMBER_INT),
-            'tax_decimals'          => $this->request->getPost('tax_decimals', FILTER_SANITIZE_NUMBER_INT),
-            'quantity_decimals'     => $this->request->getPost('quantity_decimals', FILTER_SANITIZE_NUMBER_INT),
-            'country_codes'         => htmlspecialchars($this->request->getPost('country_codes')),
+            'currency_symbol' => $this->request->getPost('currency_symbol'),
+            'currency_code' => $this->request->getPost('currency_code'),
+            'language_code' => $exploded[0],
+            'language' => $exploded[1],
+            'timezone' => $this->request->getPost('timezone'),
+            'dateformat' => $this->request->getPost('dateformat'),
+            'timeformat' => $this->request->getPost('timeformat'),
+            'thousands_separator' => $this->request->getPost('thousands_separator') != null,
+            'number_locale' => $this->request->getPost('number_locale'),
+            'currency_decimals' => $this->request->getPost('currency_decimals', FILTER_SANITIZE_NUMBER_INT),
+            'tax_decimals' => $this->request->getPost('tax_decimals', FILTER_SANITIZE_NUMBER_INT),
+            'quantity_decimals' => $this->request->getPost('quantity_decimals', FILTER_SANITIZE_NUMBER_INT),
+            'country_codes' => htmlspecialchars($this->request->getPost('country_codes')),
             'payment_options_order' => $this->request->getPost('payment_options_order'),
-            'date_or_time_format'   => $this->request->getPost('date_or_time_format') != null,
-            'cash_decimals'         => $this->request->getPost('cash_decimals', FILTER_SANITIZE_NUMBER_INT),
-            'cash_rounding_code'    => $this->request->getPost('cash_rounding_code'),
-            'financial_year'        => $this->request->getPost('financial_year', FILTER_SANITIZE_NUMBER_INT)
+            'date_or_time_format' => $this->request->getPost('date_or_time_format') != null,
+            'cash_decimals' => $this->request->getPost('cash_decimals', FILTER_SANITIZE_NUMBER_INT),
+            'cash_rounding_code' => $this->request->getPost('cash_rounding_code'),
+            'financial_year' => $this->request->getPost('financial_year', FILTER_SANITIZE_NUMBER_INT)
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);
@@ -499,14 +504,14 @@ class Config extends Secure_Controller
         }
 
         $batch_save_data = [
-            'protocol'     => $this->request->getPost('protocol'),
-            'mailpath'     => $this->request->getPost('mailpath'),
-            'smtp_host'    => $this->request->getPost('smtp_host'),
-            'smtp_user'    => $this->request->getPost('smtp_user'),
-            'smtp_pass'    => $password,
-            'smtp_port'    => $this->request->getPost('smtp_port', FILTER_SANITIZE_NUMBER_INT),
+            'protocol' => $this->request->getPost('protocol'),
+            'mailpath' => $this->request->getPost('mailpath'),
+            'smtp_host' => $this->request->getPost('smtp_host'),
+            'smtp_user' => $this->request->getPost('smtp_user'),
+            'smtp_pass' => $password,
+            'smtp_port' => $this->request->getPost('smtp_port', FILTER_SANITIZE_NUMBER_INT),
             'smtp_timeout' => $this->request->getPost('smtp_timeout', FILTER_SANITIZE_NUMBER_INT),
-            'smtp_crypto'  => $this->request->getPost('smtp_crypto')
+            'smtp_crypto' => $this->request->getPost('smtp_crypto')
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);
@@ -574,8 +579,8 @@ class Config extends Secure_Controller
         $success = count($lists) > 0;
 
         echo json_encode([
-            'success'         => $success,
-            'message'         => lang('Config.mailchimp_key_' . ($success ? '' : 'un') . 'successfully'),
+            'success' => $success,
+            'message' => lang('Config.mailchimp_key_' . ($success ? '' : 'un') . 'successfully'),
             'mailchimp_lists' => $lists
         ]);
     }
@@ -775,16 +780,16 @@ class Config extends Secure_Controller
         $default_tax_2_rate = $this->request->getPost('default_tax_2_rate');
 
         $batch_save_data = [
-            'default_tax_1_rate'        => parse_tax(filter_var($default_tax_1_rate, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)),
-            'default_tax_1_name'        => $this->request->getPost('default_tax_1_name'),
-            'default_tax_2_rate'        => parse_tax(filter_var($default_tax_2_rate, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)),
-            'default_tax_2_name'        => $this->request->getPost('default_tax_2_name'),
-            'tax_included'              => $this->request->getPost('tax_included') != null,
+            'default_tax_1_rate' => parse_tax(filter_var($default_tax_1_rate, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)),
+            'default_tax_1_name' => $this->request->getPost('default_tax_1_name'),
+            'default_tax_2_rate' => parse_tax(filter_var($default_tax_2_rate, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)),
+            'default_tax_2_name' => $this->request->getPost('default_tax_2_name'),
+            'tax_included' => $this->request->getPost('tax_included') != null,
             'use_destination_based_tax' => $this->request->getPost('use_destination_based_tax') != null,
-            'default_tax_code'          => $this->request->getPost('default_tax_code'),
-            'default_tax_category'      => $this->request->getPost('default_tax_category'),
-            'default_tax_jurisdiction'  => $this->request->getPost('default_tax_jurisdiction'),
-            'tax_id'                    => $this->request->getPost('tax_id', FILTER_SANITIZE_NUMBER_INT)
+            'default_tax_code' => $this->request->getPost('default_tax_code'),
+            'default_tax_category' => $this->request->getPost('default_tax_category'),
+            'default_tax_jurisdiction' => $this->request->getPost('default_tax_jurisdiction'),
+            'tax_id' => $this->request->getPost('tax_id', FILTER_SANITIZE_NUMBER_INT)
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);
@@ -858,21 +863,21 @@ class Config extends Secure_Controller
     public function postSaveBarcode(): void
     {
         $batch_save_data = [
-            'barcode_type'              => $this->request->getPost('barcode_type'),
-            'barcode_width'             => $this->request->getPost('barcode_width', FILTER_SANITIZE_NUMBER_INT),
-            'barcode_height'            => $this->request->getPost('barcode_height', FILTER_SANITIZE_NUMBER_INT),
-            'barcode_font'              => $this->request->getPost('barcode_font'),
-            'barcode_font_size'         => $this->request->getPost('barcode_font_size', FILTER_SANITIZE_NUMBER_INT),
-            'barcode_first_row'         => $this->request->getPost('barcode_first_row'),
-            'barcode_second_row'        => $this->request->getPost('barcode_second_row'),
-            'barcode_third_row'         => $this->request->getPost('barcode_third_row'),
-            'barcode_num_in_row'        => $this->request->getPost('barcode_num_in_row', FILTER_SANITIZE_NUMBER_INT),
-            'barcode_page_width'        => $this->request->getPost('barcode_page_width', FILTER_SANITIZE_NUMBER_INT),
-            'barcode_page_cellspacing'  => $this->request->getPost('barcode_page_cellspacing', FILTER_SANITIZE_NUMBER_INT),
+            'barcode_type' => $this->request->getPost('barcode_type'),
+            'barcode_width' => $this->request->getPost('barcode_width', FILTER_SANITIZE_NUMBER_INT),
+            'barcode_height' => $this->request->getPost('barcode_height', FILTER_SANITIZE_NUMBER_INT),
+            'barcode_font' => $this->request->getPost('barcode_font'),
+            'barcode_font_size' => $this->request->getPost('barcode_font_size', FILTER_SANITIZE_NUMBER_INT),
+            'barcode_first_row' => $this->request->getPost('barcode_first_row'),
+            'barcode_second_row' => $this->request->getPost('barcode_second_row'),
+            'barcode_third_row' => $this->request->getPost('barcode_third_row'),
+            'barcode_num_in_row' => $this->request->getPost('barcode_num_in_row', FILTER_SANITIZE_NUMBER_INT),
+            'barcode_page_width' => $this->request->getPost('barcode_page_width', FILTER_SANITIZE_NUMBER_INT),
+            'barcode_page_cellspacing' => $this->request->getPost('barcode_page_cellspacing', FILTER_SANITIZE_NUMBER_INT),
             'barcode_generate_if_empty' => $this->request->getPost('barcode_generate_if_empty') != null,
-            'allow_duplicate_barcodes'  => $this->request->getPost('allow_duplicate_barcodes') != null,
-            'barcode_content'           => $this->request->getPost('barcode_content'),
-            'barcode_formats'           => json_encode($this->request->getPost('barcode_formats'))
+            'allow_duplicate_barcodes' => $this->request->getPost('allow_duplicate_barcodes') != null,
+            'barcode_content' => $this->request->getPost('barcode_content'),
+            'barcode_formats' => json_encode($this->request->getPost('barcode_formats'))
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);
@@ -890,24 +895,24 @@ class Config extends Secure_Controller
     public function postSaveReceipt(): void
     {
         $batch_save_data = [
-            'receipt_template'              => $this->request->getPost('receipt_template'),
-            'receipt_font_size'             => $this->request->getPost('receipt_font_size', FILTER_SANITIZE_NUMBER_INT),
-            'print_delay_autoreturn'        => $this->request->getPost('print_delay_autoreturn', FILTER_SANITIZE_NUMBER_INT),
+            'receipt_template' => $this->request->getPost('receipt_template'),
+            'receipt_font_size' => $this->request->getPost('receipt_font_size', FILTER_SANITIZE_NUMBER_INT),
+            'print_delay_autoreturn' => $this->request->getPost('print_delay_autoreturn', FILTER_SANITIZE_NUMBER_INT),
             'email_receipt_check_behaviour' => $this->request->getPost('email_receipt_check_behaviour'),
             'print_receipt_check_behaviour' => $this->request->getPost('print_receipt_check_behaviour'),
-            'receipt_show_company_name'     => $this->request->getPost('receipt_show_company_name') != null,
-            'receipt_show_taxes'            => $this->request->getPost('receipt_show_taxes') != null,
-            'receipt_show_tax_ind'          => $this->request->getPost('receipt_show_tax_ind') != null,
-            'receipt_show_total_discount'   => $this->request->getPost('receipt_show_total_discount') != null,
-            'receipt_show_description'      => $this->request->getPost('receipt_show_description') != null,
-            'receipt_show_serialnumber'     => $this->request->getPost('receipt_show_serialnumber') != null,
-            'print_silently'                => $this->request->getPost('print_silently') != null,
-            'print_header'                  => $this->request->getPost('print_header') != null,
-            'print_footer'                  => $this->request->getPost('print_footer') != null,
-            'print_top_margin'              => $this->request->getPost('print_top_margin', FILTER_SANITIZE_NUMBER_INT),
-            'print_left_margin'             => $this->request->getPost('print_left_margin', FILTER_SANITIZE_NUMBER_INT),
-            'print_bottom_margin'           => $this->request->getPost('print_bottom_margin', FILTER_SANITIZE_NUMBER_INT),
-            'print_right_margin'            => $this->request->getPost('print_right_margin', FILTER_SANITIZE_NUMBER_INT)
+            'receipt_show_company_name' => $this->request->getPost('receipt_show_company_name') != null,
+            'receipt_show_taxes' => $this->request->getPost('receipt_show_taxes') != null,
+            'receipt_show_tax_ind' => $this->request->getPost('receipt_show_tax_ind') != null,
+            'receipt_show_total_discount' => $this->request->getPost('receipt_show_total_discount') != null,
+            'receipt_show_description' => $this->request->getPost('receipt_show_description') != null,
+            'receipt_show_serialnumber' => $this->request->getPost('receipt_show_serialnumber') != null,
+            'print_silently' => $this->request->getPost('print_silently') != null,
+            'print_header' => $this->request->getPost('print_header') != null,
+            'print_footer' => $this->request->getPost('print_footer') != null,
+            'print_top_margin' => $this->request->getPost('print_top_margin', FILTER_SANITIZE_NUMBER_INT),
+            'print_left_margin' => $this->request->getPost('print_left_margin', FILTER_SANITIZE_NUMBER_INT),
+            'print_bottom_margin' => $this->request->getPost('print_bottom_margin', FILTER_SANITIZE_NUMBER_INT),
+            'print_right_margin' => $this->request->getPost('print_right_margin', FILTER_SANITIZE_NUMBER_INT)
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);
@@ -925,20 +930,20 @@ class Config extends Secure_Controller
     public function postSaveInvoice(): void
     {
         $batch_save_data = [
-            'invoice_enable'              => $this->request->getPost('invoice_enable') != null,
-            'sales_invoice_format'        => $this->request->getPost('sales_invoice_format'),
-            'sales_quote_format'          => $this->request->getPost('sales_quote_format'),
-            'recv_invoice_format'         => $this->request->getPost('recv_invoice_format'),
-            'invoice_default_comments'    => $this->request->getPost('invoice_default_comments'),
-            'invoice_email_message'       => $this->request->getPost('invoice_email_message'),
-            'line_sequence'               => $this->request->getPost('line_sequence'),
-            'last_used_invoice_number'    => $this->request->getPost('last_used_invoice_number', FILTER_SANITIZE_NUMBER_INT),
-            'last_used_quote_number'      => $this->request->getPost('last_used_quote_number', FILTER_SANITIZE_NUMBER_INT),
-            'quote_default_comments'      => $this->request->getPost('quote_default_comments'),
-            'work_order_enable'           => $this->request->getPost('work_order_enable') != null,
-            'work_order_format'           => $this->request->getPost('work_order_format'),
+            'invoice_enable' => $this->request->getPost('invoice_enable') != null,
+            'sales_invoice_format' => $this->request->getPost('sales_invoice_format'),
+            'sales_quote_format' => $this->request->getPost('sales_quote_format'),
+            'recv_invoice_format' => $this->request->getPost('recv_invoice_format'),
+            'invoice_default_comments' => $this->request->getPost('invoice_default_comments'),
+            'invoice_email_message' => $this->request->getPost('invoice_email_message'),
+            'line_sequence' => $this->request->getPost('line_sequence'),
+            'last_used_invoice_number' => $this->request->getPost('last_used_invoice_number', FILTER_SANITIZE_NUMBER_INT),
+            'last_used_quote_number' => $this->request->getPost('last_used_quote_number', FILTER_SANITIZE_NUMBER_INT),
+            'quote_default_comments' => $this->request->getPost('quote_default_comments'),
+            'work_order_enable' => $this->request->getPost('work_order_enable') != null,
+            'work_order_format' => $this->request->getPost('work_order_format'),
             'last_used_work_order_number' => $this->request->getPost('last_used_work_order_number', FILTER_SANITIZE_NUMBER_INT),
-            'invoice_type'                => $this->request->getPost('invoice_type')
+            'invoice_type' => $this->request->getPost('invoice_type')
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);
@@ -967,6 +972,232 @@ class Config extends Secure_Controller
     {
         $success = $this->appconfig->save(['company_logo' => '']);
 
+        echo json_encode(['success' => $success]);
+    }
+
+    public function postSaveThobe(): void
+    {
+        $batch_save_data = [
+            'thobe_detail_enable' => $this->request->getPost('thobe_detail_enable') != null ? '1' : '0',
+            'thobe_detail_print' => $this->request->getPost('thobe_detail_print') != null ? '1' : '0'
+        ];
+        $success = $this->appconfig->batch_save($batch_save_data);
+        echo json_encode(['success' => $success, 'message' => lang('Config.saved_' . ($success ? '' : 'un') . 'successfully')]);
+    }
+
+    public function postSaveThobeMeasurements(): void
+    {
+        $raw_id = $this->request->getPost('measurement_id');
+        $id = ($raw_id !== null && (int) $raw_id > 0) ? (int) $raw_id : -1;
+
+        $label = trim($this->request->getPost('label') ?? '');
+        if (empty($label)) {
+            echo json_encode(['success' => false, 'message' => 'Label is required.']);
+            return;
+        }
+
+        $data = [
+            'label' => $label,
+            'value_type' => $this->request->getPost('value_type') ?? 'string',
+            'sort_order' => (int) ($this->request->getPost('sort_order') ?? 0)
+        ];
+        $success = model(\App\Models\Thobe_measurement::class)->save_value($data, $id);
+        echo json_encode(['success' => $success]);
+    }
+
+
+    /* Save a thobe option group (create or update).
+     * Used in app/Views/partial/thobe_option_groups.php (option_group_form)
+     */
+    public function postSaveThobeGroup(): void
+    {
+        $id = (int) ($this->request->getPost('option_group_id') ?? -1);
+        if ($id === 0)
+            $id = -1;
+
+        $data = [
+            'name' => $this->request->getPost('name'),
+            'sort_order' => (int) ($this->request->getPost('sort_order') ?? 0)
+        ];
+
+        if (empty(trim($data['name']))) {
+            echo json_encode(['success' => false, 'message' => 'Group name is required.']);
+            return;
+        }
+
+        $saved_id = model(\App\Models\Thobe_option::class)->save_group($data, $id);
+        if ($saved_id === false) {
+            echo json_encode(['success' => false, 'message' => 'Failed to save group.']);
+            return;
+        }
+        
+        $real_group_id = ($id === -1) ? $saved_id : $id;
+        
+        // Process deleted values
+        $deleted_values = $this->request->getPost('deleted_values') ?? [];
+        foreach ($deleted_values as $val_id) {
+            model(\App\Models\Thobe_option::class)->delete_value((int) $val_id);
+        }
+        
+        // Process existing values update
+        $existing_values = $this->request->getPost('values') ?? [];
+        foreach ($existing_values as $val_id => $val_data) {
+            if (trim($val_data['name']) !== '') {
+                $update_data = [
+                    'name' => $val_data['name'],
+                    'sort_order' => (int) ($val_data['sort_order'] ?? 0)
+                ];
+
+                // Handle image upload
+                $file = $this->request->getFile("image_" . $val_id);
+                if ($file && $file->isValid() && !$file->hasMoved()) {
+                    if (!is_dir(FCPATH . 'uploads/thobe_options')) {
+                        mkdir(FCPATH . 'uploads/thobe_options', 0755, true);
+                    }
+                    $newName = $file->getRandomName();
+                    $file->move(FCPATH . 'uploads/thobe_options', $newName);
+                    $update_data['image'] = $newName;
+                }
+
+                model(\App\Models\Thobe_option::class)->save_value($update_data, (int) $val_id);
+            }
+        }
+        
+        // Process new values
+        $new_values = $this->request->getPost('new_values') ?? [];
+        foreach ($new_values as $idx => $val_data) {
+            if (trim($val_data['name']) !== '') {
+                $insert_data = [
+                    'option_group_id' => $real_group_id,
+                    'name' => $val_data['name'],
+                    'sort_order' => (int) ($val_data['sort_order'] ?? 0)
+                ];
+
+                // Handle image upload
+                $file = $this->request->getFile("new_image_" . $idx);
+                if ($file && $file->isValid() && !$file->hasMoved()) {
+                    if (!is_dir(FCPATH . 'uploads/thobe_options')) {
+                        mkdir(FCPATH . 'uploads/thobe_options', 0755, true);
+                    }
+                    $newName = $file->getRandomName();
+                    $file->move(FCPATH . 'uploads/thobe_options', $newName);
+                    $insert_data['image'] = $newName;
+                }
+
+                model(\App\Models\Thobe_option::class)->save_value($insert_data);
+            }
+        }
+
+        echo json_encode(['success' => true, 'message' => 'Group and values saved.']);
+    }
+
+    /**
+     * Save a thobe option value (create only — values cannot be edited, only deleted).
+     * Used in app/Views/partial/thobe_option_groups.php (option_value_form)
+     */
+    public function postSaveThobeOptionValue(): void
+    {
+        $group_id = (int) $this->request->getPost('option_group_id');
+        $val_name = trim($this->request->getPost('value_name') ?? '');
+
+        if (empty($val_name) || $group_id <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Value name and group are required.']);
+            return;
+        }
+
+        $val_data = [
+            'option_group_id' => $group_id,
+            'name' => $val_name,
+            'sort_order' => (int) ($this->request->getPost('value_sort_order') ?? 0),
+        ];
+
+        $file = $this->request->getFile('value_image');
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            // Ensure upload directory exists
+            if (!is_dir(FCPATH . 'uploads/thobe_options')) {
+                mkdir(FCPATH . 'uploads/thobe_options', 0755, true);
+            }
+            $newName = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/thobe_options', $newName);
+            $val_data['image'] = $newName;
+        }
+
+        $success = model(\App\Models\Thobe_option::class)->save_value($val_data);
+        echo json_encode(['success' => $success]);
+    }
+
+    /**
+     * Modal dialog view for Thobe Measurement
+     */
+    public function getViewThobeMeasurement(int $measurement_id = -1): void
+    {
+        $data['measurement'] = model(\App\Models\Thobe_measurement::class)->get_info($measurement_id);
+        echo view('configs/thobe_measurement_form', $data);
+    }
+
+    /**
+     * Modal dialog view for Thobe Option Group
+     */
+    public function getViewThobeOptionGroup(int $option_group_id = -1): void
+    {
+        $data['group'] = model(\App\Models\Thobe_option::class)->get_group_info($option_group_id);
+        $data['values'] = model(\App\Models\Thobe_option::class)->get_values_for_group($option_group_id);
+        echo view('configs/thobe_option_group_form', $data);
+    }
+
+    /**
+     * Modal dialog view for adding a Thobe Option Value to a specific group
+     */
+    public function getViewThobeOptionValue(int $option_group_id): void
+    {
+        $data['option_group_id'] = $option_group_id;
+        echo view('configs/thobe_option_value_form', $data);
+    }
+
+    /**
+     * @deprecated Use postSaveThobeGroup and postSaveThobeOptionValue instead.
+     * Kept for backward compatibility only — redirects are not possible from AJAX.
+     */
+    public function postSaveThobeOptions(): void
+    {
+        $val_name = $this->request->getPost('value_name');
+        if ($val_name) {
+            $this->postSaveThobeOptionValue();
+        } else {
+            $this->postSaveThobeGroup();
+        }
+    }
+
+    public function getThobeMeasurements(): void
+    {
+        $data['thobe_measurements'] = model(\App\Models\Thobe_measurement::class)->get_all();
+        echo view('partial/thobe_measurements', $data);
+    }
+
+    public function getThobeOptionGroups(): void
+    {
+        $data['thobe_option_groups'] = model(\App\Models\Thobe_option::class)->get_all_groups_with_values();
+        echo view('partial/thobe_option_groups', $data);
+    }
+
+    public function postDeleteThobeMeasurement(): void
+    {
+        $id = $this->request->getPost('id');
+        $success = model(\App\Models\Thobe_measurement::class)->delete_value($id);
+        echo json_encode(['success' => $success]);
+    }
+
+    public function postDeleteThobeOptionGroup(): void
+    {
+        $id = $this->request->getPost('id');
+        $success = model(\App\Models\Thobe_option::class)->delete_group($id);
+        echo json_encode(['success' => $success]);
+    }
+
+    public function postDeleteThobeOptionValue(): void
+    {
+        $id = $this->request->getPost('id');
+        $success = model(\App\Models\Thobe_option::class)->delete_value($id);
         echo json_encode(['success' => $success]);
     }
 }

@@ -410,7 +410,7 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function postSelectCustomer(): void
+    public function postSelectCustomer()
     {
         $customer_id = (int) $this->request->getPost('customer', FILTER_SANITIZE_NUMBER_INT);
         if ($this->customer->exists($customer_id)) {
@@ -424,7 +424,7 @@ class Sales extends Secure_Controller
             }
         }
 
-        $this->_reload();
+        return redirect()->to('sales');
     }
 
     /**
@@ -433,7 +433,7 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function postChangeMode(): void
+    public function postChangeMode()
     {
         $mode = $this->request->getPost('mode', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $this->sale_lib->set_mode($mode);
@@ -474,7 +474,7 @@ class Sales extends Secure_Controller
 
         $this->sale_lib->empty_payments();
 
-        $this->_reload();
+        return redirect()->to('sales');
     }
 
     /**
@@ -627,11 +627,11 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function getDeletePayment(string $payment_id): void
+    public function getDeletePayment(string $payment_id)
     {
         $this->sale_lib->delete_payment(base64_decode($payment_id));
 
-        $this->_reload();    // TODO: Hungarian notation
+        return redirect()->to('sales');
     }
 
     /**
@@ -734,13 +734,25 @@ class Sales extends Secure_Controller
         $data = [];
 
         $rules = [
-            'price' => 'trim|required|decimal_locale',
+            'price' => 'trim|required|decimal_locale|nonNegativeDecimal',
             'quantity' => 'trim|required|decimal_locale',
-            'discount' => 'trim|permit_empty|decimal_locale',
-            'cost_price' => 'trim|permit_empty|decimal_locale',
+            'discount' => 'trim|permit_empty|decimal_locale|nonNegativeDecimal',
+            'cost_price' => 'trim|permit_empty|decimal_locale|nonNegativeDecimal',
         ];
 
-        if ($this->validate($rules)) {
+        $messages = [
+            'price' => [
+                'nonNegativeDecimal' => lang('Sales.negative_price_invalid'),
+            ],
+            'discount' => [
+                'nonNegativeDecimal' => lang('Sales.negative_discount_invalid'),
+            ],
+            'cost_price' => [
+                'nonNegativeDecimal' => lang('Sales.negative_cost_price_invalid'),
+            ],
+        ];
+
+        if ($this->validate($rules, $messages)) {
             $description = $this->request->getPost('description', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $serialnumber = $this->request->getPost('serialnumber', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
             $price = parse_decimals($this->request->getPost('price'));
@@ -749,6 +761,20 @@ class Sales extends Secure_Controller
             $discount = $discount_type
                 ? parse_quantity($this->request->getPost('discount'))
                 : parse_decimals($this->request->getPost('discount'));
+
+            $discount = $discount ?: 0;
+            // Return mode legitimately uses negative quantities for refunds
+            if ($this->sale_lib->get_mode() != 'return' && $quantity < 0) {
+                return redirect()->to('sales')->with('error', lang('Sales.negative_quantity_invalid'));
+            }
+            // Business logic: discount bounds depend on discount_type and item values
+            if ($discount_type == PERCENT && $discount > 100) {
+                return redirect()->to('sales')->with('error', lang('Sales.discount_percent_exceeds_100'));
+            }
+            if ($discount_type == FIXED && bccomp((string) $discount, bcmul((string) abs($quantity), (string) $price, 2), 2) > 0) {
+                return redirect()->to('sales')->with('error', lang('Sales.discount_exceeds_item_total'));
+            }
+
 
             $item_location = $this->request->getPost('location', FILTER_SANITIZE_NUMBER_INT);
             $discounted_total = $this->request->getPost('discounted_total') != ''
@@ -804,13 +830,102 @@ class Sales extends Secure_Controller
         $this->sale_lib->delete_payment(lang('Sales.rewards'));
         $this->sale_lib->clear_invoice_number();
         $this->sale_lib->clear_quote_number();
+        $this->sale_lib->clear_thobe();
         $this->sale_lib->remove_customer();
 
         return redirect()->to('sales');
     }
 
+    public function postToggleThobeDetail()
+    {
+        $active = $this->request->getPost('active') === 'true';
+        $this->sale_lib->set_thobe_active($active);
+        echo json_encode(['success' => true]);
+    }
+
+    public function postSetThobeData()
+    {
+        $data = $this->request->getPost('thobe_data');
+        $this->sale_lib->set_thobe_data($data);
+        echo json_encode(['success' => true]);
+    }
+
+    public function getThobeCustomerProfiles(int $customer_id): void
+    {
+        $profile_model = model(\App\Models\Thobe_customer_profile::class);
+        $measurement_model = model(\App\Models\Thobe_measurement::class);
+
+        $data['customer_id'] = $customer_id;
+        $data['profiles'] = $profile_model->get_profiles($customer_id);
+        $data['measurements'] = $measurement_model->get_all();
+        $data['config'] = $this->config;
+
+        $customer_model = model(\App\Models\Customer::class);
+        $customer_info = $customer_model->get_info($customer_id);
+        $data['customer_name'] = $customer_info->first_name . ' ' . $customer_info->last_name;
+
+        echo view('sales/thobe_customer_profiles', $data);
+    }
+
+    public function postSaveThobeCustomerProfile(int $customer_id): void
+    {
+        $profile_model = model(\App\Models\Thobe_customer_profile::class);
+
+        $thobe_data = $this->sale_lib->get_thobe_data();
+
+        $profile_id = empty($thobe_data['selected_profile_id'])
+            ? null
+            : (int) $thobe_data['selected_profile_id'];
+
+        $existing = $profile_model->find($profile_id);
+
+        if ($profile_id !== null && $existing === null) {
+            unset($thobe_data['selected_profile_id']);
+            $this->sale_lib->set_thobe_data($thobe_data);
+            $profile_id = null;
+        }
+
+        $measurements = $thobe_data['measurements'] ?? [];
+        $name = $thobe_data['measurements_profile_name'] ?? lang('Thobe.default');
+        $notes = '';
+
+        $result = $profile_model->save_profile(
+            $customer_id,
+            $name,
+            $notes,
+            $measurements,
+            $profile_id
+        );
+        $success = $result["success"];
+        $profile_id = $result['profile_id'];
+
+        if ($success) {
+            $thobe_data['selected_profile_id'] = $profile_id;
+            $this->sale_lib->set_thobe_data($thobe_data);
+        }
+
+        echo json_encode([
+            'success' => $success,
+            'message' => $success
+                ? lang('Thobe.profile_saved_successfully')
+                : lang('Thobe.profile_save_failed'),
+        ]);
+    }
+
+    public function postDeleteThobeCustomerProfile(int $profile_id): void
+    {
+        $profile_model = model(\App\Models\Thobe_customer_profile::class);
+        $success = $profile_model->delete_profile($profile_id);
+        if ($success) {
+            echo json_encode(['success' => true, 'message' => lang('Thobe.profile_deleted_successfully')]);
+        } else {
+            echo json_encode(['success' => false, 'message' => lang('Thobe.profile_delete_failed')]);
+        }
+    }
+
     /**
      * Complete and finalize a sale. Used in app/Views/sales/register.php
+
      *
      * @return void
      * @throws ReflectionException
@@ -830,6 +945,16 @@ class Sales extends Secure_Controller
         $data['transaction_date'] = to_date($__time);
         $data['show_stock_locations'] = $this->stock_location->show_locations('sales');
         $data['comments'] = $this->sale_lib->get_comment();
+
+        $is_thobe_active = $this->sale_lib->is_thobe_active();
+        $customer_id = $this->sale_lib->get_customer();
+
+        if ($is_thobe_active && $customer_id == -1) {
+            $data['error'] = lang('Thobe.customer_required');
+            $this->_reload($data);
+            return;
+        }
+
         $employee_id = $this->employee->get_logged_in_employee_info()->person_id;
         $employee_info = $this->employee->get_info($employee_id);
         $data['employee'] = $employee_info->first_name . ' ' . mb_substr($employee_info->last_name, 0, 1);
@@ -882,6 +1007,12 @@ class Sales extends Secure_Controller
         $data['cash_amount_due'] = $totals['cash_amount_due'];
         $data['non_cash_amount_due'] = $totals['amount_due'];
 
+        // Prevent negative total sales (fraud/theft vector) - returns can have negative totals for legitimate refunds
+        if ($this->sale_lib->get_mode() != 'return' && bccomp($totals['total'], '0') < 0) {
+            redirect()->to('sales')->with('error', lang('Sales.negative_total_invalid'));
+            return;
+        }
+
         if ($data['cash_mode']) {    // TODO: Convert this to ternary notation
             $data['amount_due'] = $totals['cash_amount_due'];
         } else {
@@ -933,6 +1064,16 @@ class Sales extends Secure_Controller
 
                 // Save the data to the sales table
                 $data['sale_id_num'] = $this->sale->save_value($sale_id, $data['sale_status'], $data['cart'], $customer_id, $employee_id, $data['comments'], $invoice_number, $work_order_number, $quote_number, $sale_type, $data['payments'], $data['dinner_table'], $tax_details);
+
+                if ($data['sale_id_num'] > 0 && $is_thobe_active) {
+                    model(\App\Models\Thobe_detail::class)->save_thobe_detail(
+                        $data['sale_id_num'],
+                        $customer_id,
+                        $this->sale_lib->get_thobe_data()
+                    );
+                    $this->_load_thobe_data($data, $data['sale_id_num']);
+                }
+
                 $data['sale_id'] = 'POS ' . $data['sale_id_num'];
 
                 // Resort and filter cart lines for printing
@@ -942,8 +1083,8 @@ class Sales extends Secure_Controller
                     $data['error_message'] = lang('Sales.transaction_failed');
                 } else {
                     $data['barcode'] = $this->barcode_lib->generate_receipt_barcode($data['sale_id']);
-                    echo view('sales/' . $invoice_view, $data);
                     $this->sale_lib->clear_all();
+                    echo view('sales/' . $invoice_view, $data);
                 }
             }
         } elseif ($this->sale_lib->is_work_order_mode()) {
@@ -970,15 +1111,25 @@ class Sales extends Secure_Controller
                 $sale_type = SALE_TYPE_WORK_ORDER;
 
                 $data['sale_id_num'] = $this->sale->save_value($sale_id, $data['sale_status'], $data['cart'], $customer_id, $employee_id, $data['comments'], $invoice_number, $work_order_number, $quote_number, $sale_type, $data['payments'], $data['dinner_table'], $tax_details);
+
+                if ($data['sale_id_num'] > 0 && $is_thobe_active) {
+                    model(\App\Models\Thobe_detail::class)->save_thobe_detail(
+                        $data['sale_id_num'],
+                        $customer_id,
+                        $this->sale_lib->get_thobe_data()
+                    );
+                    $this->_load_thobe_data($data, $data['sale_id_num']);
+                }
+
                 $this->sale_lib->set_suspended_id($data['sale_id_num']);
 
                 $data['cart'] = $this->sale_lib->sort_and_filter_cart($data['cart']);
 
                 $data['barcode'] = null;
 
-                echo view('sales/work_order', $data);
                 $this->sale_lib->clear_mode();
                 $this->sale_lib->clear_all();
+                echo view('sales/work_order', $data);
             }
         } elseif ($this->sale_lib->is_quote_mode()) {
             $data['sales_quote'] = lang('Sales.quote');
@@ -999,14 +1150,24 @@ class Sales extends Secure_Controller
                 $sale_type = SALE_TYPE_QUOTE;
 
                 $data['sale_id_num'] = $this->sale->save_value($sale_id, $data['sale_status'], $data['cart'], $customer_id, $employee_id, $data['comments'], $invoice_number, $work_order_number, $quote_number, $sale_type, $data['payments'], $data['dinner_table'], $tax_details);
+
+                if ($data['sale_id_num'] > 0 && $is_thobe_active) {
+                    model(\App\Models\Thobe_detail::class)->save_thobe_detail(
+                        $data['sale_id_num'],
+                        $customer_id,
+                        $this->sale_lib->get_thobe_data()
+                    );
+                    $this->_load_thobe_data($data, $data['sale_id_num']);
+                }
+
                 $this->sale_lib->set_suspended_id($data['sale_id_num']);
 
                 $data['cart'] = $this->sale_lib->sort_and_filter_cart($data['cart']);
                 $data['barcode'] = null;
 
-                echo view('sales/quote', $data);
                 $this->sale_lib->clear_mode();
                 $this->sale_lib->clear_all();
+                echo view('sales/quote', $data);
             }
         } else {
             // Save the data to the sales table
@@ -1019,6 +1180,15 @@ class Sales extends Secure_Controller
 
             $data['sale_id_num'] = $this->sale->save_value($sale_id, $data['sale_status'], $data['cart'], $customer_id, $employee_id, $data['comments'], $invoice_number, $work_order_number, $quote_number, $sale_type, $data['payments'], $data['dinner_table'], $tax_details);
 
+            if ($data['sale_id_num'] > 0 && $is_thobe_active) {
+                model(\App\Models\Thobe_detail::class)->save_thobe_detail(
+                    $data['sale_id_num'],
+                    $customer_id,
+                    $this->sale_lib->get_thobe_data()
+                );
+                $this->_load_thobe_data($data, $data['sale_id_num']);
+            }
+
             $data['sale_id'] = 'POS ' . $data['sale_id_num'];
 
             $data['cart'] = $this->sale_lib->sort_and_filter_cart($data['cart']);
@@ -1027,8 +1197,8 @@ class Sales extends Secure_Controller
                 $data['error_message'] = lang('Sales.transaction_failed');
             } else {
                 $data['barcode'] = $this->barcode_lib->generate_receipt_barcode($data['sale_id']);
-                echo view('sales/receipt', $data);
                 $this->sale_lib->clear_all();
+                echo view('sales/receipt', $data);
             }
         }
     }
@@ -1256,6 +1426,8 @@ class Sales extends Secure_Controller
             $data['company_info'] .= "\n" . lang('Sales.tax_id') . ": " . $this->config['tax_id'];
         }
 
+        $this->_load_thobe_data($data, $sale_id);
+
         $data['barcode'] = $this->barcode_lib->generate_receipt_barcode($data['sale_id']);
         $data['print_after_sale'] = false;
         $data['price_work_orders'] = false;
@@ -1284,6 +1456,34 @@ class Sales extends Secure_Controller
     }
 
     /**
+     * Loads thobe-related metadata and details into the data array if applicable.
+     * 
+     * @param array $data
+     * @param int|null $sale_id
+     * @return void
+     */
+    private function _load_thobe_data(array &$data, ?int $sale_id = null): void
+    {
+        $thobe_detail_model = model(\App\Models\Thobe_detail::class);
+
+        if ($sale_id !== null && $sale_id > 0) {
+            $data['thobe_detail'] = $thobe_detail_model->get_thobe_detail($sale_id);
+            if ($data['thobe_detail']) {
+                $data['thobe_measurements'] = model(\App\Models\Thobe_measurement::class)->get_all();
+                $data['thobe_options'] = model(\App\Models\Thobe_option::class)->get_all_groups_with_values();
+            }
+        } else {
+            $data['thobe_detail_enable'] = $this->config['thobe_detail_enable'] ?? '0';
+            if ($data['thobe_detail_enable']) {
+                $data['thobe_active'] = $this->sale_lib->is_thobe_active();
+                $data['thobe_data'] = $this->sale_lib->get_thobe_data();
+                $data['thobe_measurements'] = model(\App\Models\Thobe_measurement::class)->get_all();
+                $data['thobe_options'] = model(\App\Models\Thobe_option::class)->get_all_groups_with_values();
+            }
+        }
+    }
+
+    /**
      * @param array $data
      * @return void
      */
@@ -1306,6 +1506,8 @@ class Sales extends Secure_Controller
 
         // cash_rounding indicates only that the site is configured for cash rounding
         $data['cash_rounding'] = $cash_rounding;
+
+        $this->_load_thobe_data($data);
 
         $data['cart'] = $this->sale_lib->get_cart();
         $customer_info = $this->_load_customer_data($this->sale_lib->get_customer(), $data, true);
@@ -1635,7 +1837,7 @@ class Sales extends Secure_Controller
      * @throws ReflectionException
      * @noinspection PhpUnused
      */
-    public function postCancel(): void
+    public function postCancel()
     {
         $sale_id = $this->sale_lib->get_sale_id();
         if ($sale_id != NEW_ENTRY && $sale_id != '') {
@@ -1657,7 +1859,7 @@ class Sales extends Secure_Controller
         }
 
         $this->sale_lib->clear_all();
-        $this->_reload();    // TODO: Hungarian notation
+        return redirect()->to('sales');
     }
 
     /**
@@ -1666,12 +1868,12 @@ class Sales extends Secure_Controller
      * @return void
      * @noinspection PhpUnused
      */
-    public function getDiscardSuspendedSale(): void
+    public function getDiscardSuspendedSale()
     {
         $suspended_id = $this->sale_lib->get_suspended_id();
         $this->sale_lib->clear_all();
         $this->sale->delete_suspended_sale($suspended_id);
-        $this->_reload();    // TODO: Hungarian notation
+        return redirect()->to('sales');
     }
 
     /**

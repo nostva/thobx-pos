@@ -290,6 +290,33 @@
     #receipt_wrapper,
     #table {
         font-size: 100% !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Solid borders for receipt items to prevent column floating */
+    #receipt_items {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    #receipt_items th {
+        border-bottom: 2px solid #000000 !important;
+        padding: 4px 2px !important;
+        font-weight: bold !important;
+        color: #000000 !important;
+    }
+
+    #receipt_items td {
+        border-bottom: 1px dashed #666666 !important;
+        padding: 4px 2px !important;
+        color: #000000 !important;
+    }
+
+    #receipt_items tr:last-child td {
+        border-bottom: none !important;
     }
 
     #sale_return_policy {
@@ -297,6 +324,54 @@
         text-align: center;
         margin-top: 10px;
         font-size: 9px;
+    }
+
+    /* Solid grid borders for invoice printing */
+    #page-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #page-wrap table#items {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        border: 2px solid #000000 !important;
+        margin-top: 15px !important;
+    }
+
+    #page-wrap table#items th {
+        background-color: #f2f2f2 !important;
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+        padding: 6px 4px !important;
+    }
+
+    #page-wrap table#items td {
+        border: 1px solid #444444 !important;
+        color: #000000 !important;
+        padding: 5px 4px !important;
+        background-color: #ffffff !important;
+    }
+
+    #page-wrap table#items td.blank {
+        border: none !important;
+        background: transparent !important;
+    }
+
+    #page-wrap table#items td.total-line {
+        border-top: 1px solid #000000 !important;
+        border-left: 1px solid #000000 !important;
+        border-right: 1px solid #000000 !important;
+        border-bottom: 1px solid #000000 !important;
+        font-weight: bold !important;
+    }
+
+    #page-wrap table#items td.total-value {
+        border: 1px solid #000000 !important;
+        font-weight: bold !important;
     }
 
     /* ======================================================
@@ -340,4 +415,157 @@
     td[data-field="state"] {
         display: none !important;
     }
+
+    /* ======================================================
+       12. DIRECTIONAL (LTR / RTL) ALIGNMENT OVERRIDES
+       Ensure proper text flow and number alignment in print output.
+       ====================================================== */
+
+    /* Default LTR alignment */
+    #receipt_items th,
+    #receipt_items td,
+    #page-wrap table#items th,
+    #page-wrap table#items td {
+        text-align: left !important;
+    }
+    #receipt_items th.total-value,
+    #receipt_items td.total-value,
+    #page-wrap table#items td.total-value,
+    #page-wrap table#items td.total-line,
+    #page-wrap table#items th:last-child,
+    #page-wrap table#items td:last-child {
+        text-align: right !important;
+    }
+
+    /* RTL Arabic overrides */
+    [dir="rtl"] body .bootstrap-table .fixed-table-container .table thead th,
+    [dir="rtl"] body .table thead th,
+    [dir="rtl"] body table.report thead th,
+    [dir="rtl"] body table.innertable thead th {
+        text-align: right !important;
+    }
+
+    [dir="rtl"] #receipt_items th,
+    [dir="rtl"] #receipt_items td,
+    [dir="rtl"] #page-wrap table#items th,
+    [dir="rtl"] #page-wrap table#items td {
+        text-align: right !important;
+    }
+
+    [dir="rtl"] #receipt_items th.total-value,
+    [dir="rtl"] #receipt_items td.total-value,
+    [dir="rtl"] #page-wrap table#items td.total-value,
+    [dir="rtl"] #page-wrap table#items td.total-line,
+    [dir="rtl"] #page-wrap table#items th:last-child,
+    [dir="rtl"] #page-wrap table#items td:last-child {
+        text-align: left !important;
+    }
+
+    /* Thobe Tailoring Details layout grid */
+    .thobe-print-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        width: 100% !important;
+    }
+
+    /* On narrow print (receipt wrapper), stack it vertically using column flexbox */
+    #receipt_wrapper .thobe-print-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    /* Style option images formatting */
+    .thobe-style-image {
+        width: 40px !important;
+        height: 40px !important;
+        border: none !important;
+        border-radius: 4px !important;
+    }
+
+    .print-only-narrow {
+        display: none !important;
+    }
+
+    #receipt_wrapper .print-only-narrow {
+        display: block !important;
+    }
+
+    #receipt_wrapper .print-hide-narrow {
+        display: none !important;
+    }
+
+    /* Financial Summary Report Print Styling (Receipt Design Match) */
+    .financial-summary-card {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .financial-summary-content {
+        padding: 0 !important;
+    }
+
+    .financial-summary-content .space-y-8 > * + * {
+        margin-top: 10px !important;
+    }
+
+    .financial-summary-content h3 {
+        font-weight: bold !important;
+        border-bottom: 1px solid #000000 !important;
+        padding-bottom: 3px !important;
+        margin-top: 12px !important;
+        margin-bottom: 6px !important;
+        color: #000000 !important;
+        text-transform: uppercase !important;
+    }
+
+    .financial-summary-row {
+        padding: 3px 0 !important;
+        border-bottom: 1px dashed #cbd5e1 !important;
+        color: #000000 !important;
+    }
+
+    .financial-summary-row:last-child {
+        border-bottom: none !important;
+    }
+
+    .financial-summary-row span {
+        color: #000000 !important;
+    }
+
+    .financial-summary-expenses-total {
+        background: transparent !important;
+        border: none !important;
+        border-top: 1px solid #000000 !important;
+        border-bottom: 1px solid #000000 !important;
+        padding: 4px 0 !important;
+        margin-top: 6px !important;
+        font-weight: bold !important;
+        border-radius: 0 !important;
+    }
+
+    .financial-summary-expenses-total span {
+        color: #000000 !important;
+        font-weight: bold !important;
+    }
+
+    .financial-summary-net-profit {
+        border-top: 2px solid #000000 !important;
+        padding-top: 6px !important;
+        margin-top: 10px !important;
+    }
+
+    .financial-summary-net-profit span {
+        font-weight: bold !important;
+        color: #000000 !important;
+    }
 }
+
+

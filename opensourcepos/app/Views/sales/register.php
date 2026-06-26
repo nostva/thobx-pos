@@ -170,15 +170,7 @@ if (isset($success)) {
             </div>
         </div>
 
-        <!-- Floating Buttons -->
-        <button class="floating-clear-selection" id="floating-clear-selection">
-            <span><?= lang('Sales.clear_cart') ?></span>
-        </button>
 
-        <button class="floating-add-cart" id="floating-add-cart">
-            <span><?= lang('Sales.add_to_cart') ?></span>
-            <span class="selection-badge" id="selection-count">0</span>
-        </button>
 
         <!-- Cart Table inside a card -->
         <div class="register-card overflow-hidden">
@@ -366,6 +358,333 @@ if (isset($success)) {
                 </tbody>
             </table>
         </div> <!-- End Cart Card -->
+
+        <!-- Thobe Detail Section -->
+        <?php if (isset($thobe_detail_enable) && $thobe_detail_enable && isset($customer)): ?>
+            <div class="register-card">
+                <div class="flex items-center justify-between cursor-pointer group" id="thobe_toggle_header">
+                    <div class="flex items-center gap-2 text-slate-400">
+                        <i data-lucide="scissors" class="w-3.5 h-3.5 text-emerald-600"></i>
+                        <span class="text-sm font-bold uppercase tracking-wider
+                            text-emerald-600"><?= lang('Thobe.thobe_detail') ?>
+                        </span>
+
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="switch mb-0">
+                            <input type="checkbox" id="thobe_active_toggle" <?= isset($thobe_active) && $thobe_active ? 'checked' : '' ?>>
+                            <span class="slider round"></span>
+                        </label>
+                        <i data-lucide="chevron-up" class="w-4 h-4 text-slate-400 transition-transform"
+                            id="thobe_chevron"></i>
+                    </div>
+                </div>
+
+                <div id="thobe_detail_body" class="pt-4 mt-3 border-t border-slate-100">
+                    <form id="thobe_detail_form" class="space-y-4">
+                        <!-- Fabric -->
+                        <div>
+                            <h6 class="text-xs font-bold text-slate-500 uppercase mb-2"><?= lang('Thobe.fabric') ?></h6>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" name="thobe_data[fabric_item_number]"
+                                    placeholder="<?= lang('Thobe.fabric_item_number') ?>"
+                                    class="form-control rounded-md text-sm border-slate-300 h-9"
+                                    value="<?= esc($thobe_data['fabric_item_number'] ?? '') ?>">
+                                <div class="relative">
+                                    <input type="text" inputmode="decimal"
+                                        oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"
+                                        placeholder="<?= lang('Thobe.fabric_quantity') ?>"
+                                        name="thobe_data[fabric_quantity]"
+                                        class="form-control rounded-md text-sm border-slate-300 h-9 pe-8 rtl:pl-8"
+                                        value="<?= isset($thobe_data['fabric_quantity']) && $thobe_data['fabric_quantity'] !== '' ? esc((float) $thobe_data['fabric_quantity']) : '' ?>">
+                                    <span class="absolute end-3 top-2 text-slate-400 text-sm">
+                                        <?= lang('Thobe.m') ?>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Measurements -->
+                        <?php if (!empty($thobe_measurements)): ?>
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <h6 class="text-xs font-bold text-slate-500 uppercase mb-0">
+                                        <?= lang('Thobe.measurement_fields') ?>
+                                    </h6>
+                                    <?php if (isset($customer_id) && $customer_id != -1): ?>
+                                        <div class="flex items-center gap-1">
+                                            <button type="button"
+                                                class="btn btn-info btn-xs modal-dlg select-customer-profile-btn no-print"
+                                                data-href="<?= site_url("sales/thobeCustomerProfiles/" . $customer_id) ?>"
+                                                title="<?= lang('Thobe.select_customer_profile') . " " . $customer ?>"
+                                                style="margin: 0; padding: 2px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">
+                                                <?= lang('Thobe.select_customer_profile') . " " . $customer ?>
+                                            </button>
+                                            <button type="button" id="save_customer_profile_btn"
+                                                class="btn btn-default btn-xs no-print"
+                                                style="margin: 0; padding: 2px 8px; font-size: 11px; font-weight: bold; border-radius: 4px;">
+                                                <?= lang('Thobe.save_profile') ?>
+                                            </button>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="relative">
+                                        <label
+                                            class="text-[10px] font-bold text-slate-400 absolute top-1 start-2 uppercase"><?= esc(lang("Thobe.profile_name")) ?></label>
+                                        <input type="text" name="thobe_data[measurements_profile_name]"
+                                            class="form-control rounded-md text-sm border-slate-300 h-12 pt-6 pb-1 px-2 w-full"
+                                            value="<?= esc($thobe_data['measurements_profile_name'] ?? lang("Thobe.default")) ?>">
+                                    </div>
+
+                                    <?php foreach ($thobe_measurements as $m): ?>
+                                        <?php $m_val = $thobe_data['measurements'][$m['measurement_id']] ?? ''; ?>
+                                        <?php if ($m['value_type'] == 'boolean'): ?>
+                                            <div
+                                                class="col-span-2 flex items-center gap-2 p-2 border border-slate-200 rounded-md bg-slate-50">
+                                                <input type="hidden" name="thobe_data[measurements][<?= $m['measurement_id'] ?>]"
+                                                    value="0">
+                                                <input type="checkbox" id="m_<?= $m['measurement_id'] ?>"
+                                                    name="thobe_data[measurements][<?= $m['measurement_id'] ?>]" value="1" <?= $m_val ? 'checked' : '' ?>
+                                                    class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+                                                <label for="m_<?= $m['measurement_id'] ?>"
+                                                    class="text-sm text-slate-700 cursor-pointer font-medium"><?= esc($m['label']) ?></label>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="relative">
+                                                <label class="text-[10px] font-bold text-slate-400 absolute top-1 start-2 uppercase">
+                                                    <?= esc($m['label']) ?>
+                                                </label>
+                                                <input type="text" <?= $m['value_type'] == 'number'
+                                                    ? 'inputmode="decimal"
+                                                        oninput="
+                                                            this.value = this.value
+                                                                .replace(/[^0-9.]/g, \'\')
+                                                                .replace(/(\..*)\./g, \'$1\');
+                                                        "'
+                                                    : '' ?> name="thobe_data[measurements][<?= $m['measurement_id'] ?>]"
+                                                    class="form-control rounded-md text-sm border-slate-300 h-12 pt-6 pb-1 px-2 w-full"
+                                                    value="<?= esc($m_val) ?>">
+                                            </div>
+                                        <?php endif; ?>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Options -->
+                        <?php if (!empty($thobe_options)): ?>
+                            <div>
+                                <h6 class="text-xs font-bold text-slate-500 uppercase mb-2"><?= lang('Thobe.style_options') ?>
+                                </h6>
+                                <div class="space-y-4">
+                                    <?php foreach ($thobe_options as $group): ?>
+                                        <?php $g_val = $thobe_data['options'][$group['option_group_id']] ?? ''; ?>
+                                        <div class="border border-slate-100 rounded-lg p-3 bg-slate-50/50">
+                                            <span
+                                                class="text-xs font-bold text-slate-600 block mb-2"><?= esc($group['name']) ?></span>
+                                            <div class="flex flex-wrap gap-2">
+                                                <!-- None Option -->
+                                                <label
+                                                    class="flex items-center gap-2 px-3 py-2 border <?= empty($g_val) ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200 bg-white' ?> rounded-lg hover:bg-slate-50 cursor-pointer text-sm font-medium transition-all thobe-radio-label min-h-[64px]">
+                                                    <input type="radio" name="thobe_data[options][<?= $group['option_group_id'] ?>]"
+                                                        value="" <?= empty($g_val) ? 'checked' : '' ?>
+                                                        class="text-emerald-600 focus:ring-emerald-500 thobe-radio-input"
+                                                        style="margin:0;">
+                                                    <span><?= lang('Thobe.none') ?></span>
+                                                </label>
+                                                <?php foreach ($group['values'] as $val): ?>
+                                                    <?php $is_selected = ($g_val == $val['option_value_id']); ?>
+                                                    <label
+                                                        class="flex items-center gap-2 px-3 py-2 border <?= $is_selected ? 'border-emerald-500 bg-emerald-50/50' : 'border-slate-200 bg-white' ?> rounded-lg hover:bg-slate-50 cursor-pointer text-sm font-medium transition-all thobe-radio-label min-h-[64px]">
+                                                        <input type="radio" name="thobe_data[options][<?= $group['option_group_id'] ?>]"
+                                                            value="<?= $val['option_value_id'] ?>" <?= $is_selected ? 'checked' : '' ?>
+                                                            class="text-emerald-600 focus:ring-emerald-500 thobe-radio-input"
+                                                            style="margin:0;">
+                                                        <?php if (!empty($val['image'])): ?>
+                                                            <img src="<?= base_url('uploads/thobe_options/' . $val['image']) ?>"
+                                                                class="w-12 h-12 object-cover rounded-md border border-slate-200">
+                                                        <?php endif; ?>
+                                                        <span><?= esc($val['name']) ?></span>
+                                                    </label>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Notes -->
+                        <div>
+                            <textarea name="thobe_data[notes]" placeholder="<?= lang('Thobe.tailoring_notes') ?>"
+                                class="form-control rounded-md text-sm border-slate-300 w-full resize-none"
+                                rows="2"><?= esc($thobe_data['notes'] ?? '') ?></textarea>
+                        </div>
+                    </form>
+                    <button type="button" id="reset_thobe_btn"
+                        class="ms-2 px-2 py-0.5 text-[10px] font-bold text-red-500 hover:bg-red-50 rounded transition-colors group-hover:block"
+                        onclick="event.stopPropagation(); resetThobeForm();">
+                        <?= lang('Thobe.reset') ?>
+                    </button>
+                </div>
+            </div>
+            <script>
+                function resetThobeForm() {
+                    if (confirm('<?= lang('Thobe.clear_tailoring_confirm') ?>')) {
+                        $('#thobe_detail_form')[0].reset();
+                        // Uncheck checkboxes & radio buttons
+                        $('#thobe_detail_form input[type="checkbox"]').prop('checked', false);
+                        $('#thobe_detail_form input[type="radio"]').prop('checked', false);
+                        // Check the 'None' radio buttons
+                        $('#thobe_detail_form input[type="radio"][value=""]').prop('checked', true);
+                        // Reset label borders
+                        $('.thobe-radio-label').removeClass('border-emerald-500 bg-emerald-50/50').addClass('border-slate-200 bg-white');
+                        $('.thobe-radio-input[value=""]').closest('.thobe-radio-label').removeClass('border-slate-200 bg-white').addClass('border-emerald-500 bg-emerald-50/50');
+                        // Reset measurements inputs
+                        $('#thobe_detail_form input[name^="thobe_data[measurements]"]').val('');
+                        $('#thobe_detail_form input[name^="thobe_data[measurements_profile_name]"]').val('');
+                        // Reset selected profile id
+                        let data = $('#thobe_detail_form').serializeArray();
+                        data.push({
+                            name: 'thobe_data[selected_profile_id]',
+                            value: ""
+                        });
+
+                        $.post('<?= site_url("sales/setThobeData") ?>', data);
+                        $.notify({ message: '<?= lang('Thobe.clear_tailoring_success') ?>' }, { type: 'success' });
+                    }
+                }
+
+                $(document).ready(function () {
+                    function updateThobeState(active) {
+                        let hasCustomer = <?= isset($customer) ? 'true' : 'false' ?>;
+                        if (active) {
+                            $('#thobe_detail_body').removeClass('opacity-50 pointer-events-none grayscale');
+                            $('#thobe_detail_form').find('input, select, textarea').prop('disabled', false);
+
+                            if (!hasCustomer) {
+                                $('#finish_sale_container').addClass('hidden');
+                                $('#finish_invoice_quote_container').addClass('hidden');
+                                $('#thobe_customer_warning').removeClass('hidden');
+                            }
+                        } else {
+                            $('#thobe_detail_body').addClass('opacity-50 pointer-events-none grayscale');
+                            $('#thobe_detail_form').find('input, select, textarea').prop('disabled', true);
+
+                            $('#finish_sale_container').removeClass('hidden');
+                            $('#finish_invoice_quote_container').removeClass('hidden');
+                            $('#thobe_customer_warning').addClass('hidden');
+                        }
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                    }
+
+                    // Init state
+                    updateThobeState($('#thobe_active_toggle').is(':checked'));
+
+                    $('#thobe_active_toggle').change(function (e) {
+                        let active = $(this).is(':checked');
+                        updateThobeState(active);
+                        $.post('<?= site_url("sales/toggleThobeDetail") ?>', { active: active });
+                    });
+
+                    $('#thobe_toggle_header').click(function (e) {
+                        if ($(e.target).closest('.switch').length) return; // Ignore clicks on the toggle switch
+                        $('#thobe_detail_body').slideToggle();
+                        $('#thobe_chevron').toggleClass('rotate-180');
+                    });
+
+                    $('#save_customer_profile_btn').click(function () {
+                        var btn = $(this);
+                        btn.prop('disabled', true);
+                        $.post('<?= site_url("sales/saveThobeCustomerProfile/" . ($customer_id ?? -1)) ?>', function (response) {
+                            btn.prop('disabled', false);
+                            if (response.success) {
+                                $.notify({ message: response.message }, { type: 'success' });
+                            } else {
+                                $.notify({ message: response.message }, { type: 'danger' });
+                            }
+                        }, 'json');
+                    });
+
+                    $(document).on('change', '.thobe-radio-input', function () {
+                        let groupName = $(this).attr('name');
+                        // Reset all borders in the same group
+                        $(`input[name="${groupName}"]`).closest('.thobe-radio-label')
+                            .removeClass('border-emerald-500 bg-emerald-50/50')
+                            .addClass('border-slate-200 bg-white');
+                        // Add active border to selected
+                        $(this).closest('.thobe-radio-label')
+                            .removeClass('border-slate-200 bg-white')
+                            .addClass('border-emerald-500 bg-emerald-50/50');
+                    });
+
+                    let thobeTimeout = null;
+                    $('#thobe_detail_form input, #thobe_detail_form select, #thobe_detail_form textarea').on('change input', function () {
+                        clearTimeout(thobeTimeout);
+                        thobeTimeout = setTimeout(function () {
+                            $.post('<?= site_url("sales/setThobeData") ?>', $('#thobe_detail_form').serialize());
+                        }, 500);
+                    });
+                });
+            </script>
+            <style>
+                .switch {
+                    position: relative;
+                    display: inline-block;
+                    width: 34px;
+                    height: 20px;
+                }
+
+                .switch input {
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+
+                .slider {
+                    position: absolute;
+                    cursor: pointer;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: #cbd5e1;
+                    transition: .4s;
+                }
+
+                .slider:before {
+                    position: absolute;
+                    content: "";
+                    height: 16px;
+                    width: 16px;
+                    left: 2px;
+                    bottom: 2px;
+                    background-color: white;
+                    transition: .4s;
+                }
+
+                input:checked+.slider {
+                    background-color: #059669;
+                }
+
+                input:checked+.slider:before {
+                    transform: translateX(14px);
+                }
+
+                .slider.round {
+                    border-radius: 20px;
+                }
+
+                .slider.round:before {
+                    border-radius: 50%;
+                }
+
+                #thobe_toggle_header .rotate-180 {
+                    transform: rotate(180deg);
+                }
+            </style>
+        <?php endif; ?>
     </div> <!-- End Left Column -->
 
     <!-- Overall Sale -->
@@ -449,7 +768,9 @@ if (isset($success)) {
                 </div>
             <?php } ?>
             <?= form_close() ?>
-        </div>
+        </div> <!-- End Customer Section -->
+
+
 
         <!-- Summary Section -->
         <div class="register-card">
@@ -547,6 +868,9 @@ if (isset($success)) {
                 <!-- Final Actions -->
                 <div>
                     <?php
+                    $thobe_active = $thobe_active ?? false;
+                    $hide_complete_for_thobe = ($thobe_active && !isset($customer));
+
                     // Only show this part if in sale or return mode
                     if ($pos_mode && $payments_cover_total) {
                         $due_payment = false;
@@ -558,22 +882,30 @@ if (isset($success)) {
                                 }
                             }
                         }
-
-                        if (!$due_payment || ($due_payment && isset($customer))) {
-                            ?>
-                            <button class="btn btn-success action-btn mb-2 w-full inline-flex items-center justify-center gap-2"
-                                id="finish_sale_button" tabindex="<?= ++$tabindex ?>">
-                                <i data-lucide="check-check" class="w-5 h-5"></i>
-                                <?= lang(ucfirst($controller_name) . '.complete_sale') ?>
-                            </button>
-                            <?php
-                        }
+                        ?>
+                        <div id="finish_sale_container" class="<?= ($hide_complete_for_thobe) ? 'hidden' : '' ?>">
+                            <?php if (!$due_payment || ($due_payment && isset($customer))) { ?>
+                                <button class="btn btn-success action-btn mb-2 w-full inline-flex items-center justify-center gap-2"
+                                    id="finish_sale_button" tabindex="<?= ++$tabindex ?>">
+                                    <i data-lucide="check-check" class="w-5 h-5"></i>
+                                    <?= lang(ucfirst($controller_name) . '.complete_sale') ?>
+                                </button>
+                            <?php } ?>
+                        </div>
+                        <div id="thobe_customer_warning"
+                            class="alert alert-danger text-center p-2 mb-2 text-sm font-semibold <?= ($hide_complete_for_thobe) ? '' : 'hidden' ?>">
+                            <i data-lucide="alert-circle" class="w-4 h-4 inline me-1"></i>
+                            <?= lang('Thobe.customer_required') ?>
+                        </div>
+                        <?php
                     } elseif (!$pos_mode && isset($customer)) { ?>
-                        <button class="btn btn-success action-btn mb-2 w-full inline-flex items-center justify-center gap-2"
-                            id="finish_invoice_quote_button">
-                            <i data-lucide="file-check" class="w-5 h-5"></i>
-                            <?= esc($mode_label) ?>
-                        </button>
+                        <div id="finish_invoice_quote_container" class="<?= ($hide_complete_for_thobe) ? 'hidden' : '' ?>">
+                            <button class="btn btn-success action-btn mb-2 w-full inline-flex items-center justify-center gap-2"
+                                id="finish_invoice_quote_button">
+                                <i data-lucide="file-check" class="w-5 h-5"></i>
+                                <?= esc($mode_label) ?>
+                            </button>
+                        </div>
                     <?php } ?>
 
                     <?= form_open("$controller_name/cancel", ['id' => 'buttons_form']) ?>
@@ -622,8 +954,23 @@ if (isset($success)) {
     </div>
 </div> <!-- End Register Layout Grid -->
 
+<!-- Floating Buttons -->
+<button class="floating-clear-selection" id="floating-clear-selection">
+    <span><?= lang('Sales.clear_cart') ?></span>
+</button>
+
+<button class="floating-add-cart" id="floating-add-cart">
+    <span><?= lang('Sales.add_to_cart') ?></span>
+    <span class="selection-badge" id="selection-count">0</span>
+</button>
+
 <script type="text/javascript">
     $(document).ready(function () {
+        // Fix fixed position container context after page slide animation completes
+        setTimeout(function () {
+            $('main.page-container, .register-layout').removeClass('animate-page-entry');
+        }, 600);
+
         const redirect = function () {
             window.location.href = "<?= site_url('sales'); ?>";
         };

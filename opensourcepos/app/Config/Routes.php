@@ -24,6 +24,10 @@ $routes->add('reports/summary_sales/(:any)/(:any)/(:any)/(:any)', 'Reports::summ
 $routes->add('reports/summary_sales/(:any)/(:any)/(:any)', 'Reports::summary_sales/$1/$2/$3');
 $routes->add('reports/summary_sales', 'Reports::summary_sales');
 
+$routes->add('reports/summary_payments/(:any)/(:any)/(:any)/(:any)', 'Reports::summary_payments/$1/$2/$3/$4');
+$routes->add('reports/summary_payments/(:any)/(:any)/(:any)', 'Reports::summary_payments/$1/$2/$3');
+$routes->add('reports/summary_payments', 'Reports::summary_payments');
+
 $routes->add('reports/summary_categories/(:any)/(:any)/(:any)/(:any)', 'Reports::summary_categories/$1/$2/$3/$4');
 $routes->add('reports/summary_categories/(:any)/(:any)/(:any)', 'Reports::summary_categories/$1/$2/$3');
 $routes->add('reports/summary_categories', 'Reports::summary_categories');
@@ -55,10 +59,6 @@ $routes->add('reports/summary_sales_taxes', 'Reports::summary_sales_taxes');
 $routes->add('reports/summary_discounts/(:any)/(:any)/(:any)/(:any)', 'Reports::summary_discounts/$1/$2/$3/$4');
 $routes->add('reports/summary_discounts/(:any)/(:any)/(:any)', 'Reports::summary_discounts/$1/$2/$3');
 $routes->add('reports/summary_discounts', 'Reports::summary_discounts');
-
-$routes->add('reports/summary_payments/(:any)/(:any)/(:any)/(:any)', 'Reports::summary_payments/$1/$2/$3/$4');
-$routes->add('reports/summary_payments/(:any)/(:any)/(:any)', 'Reports::summary_payments/$1/$2/$3');
-$routes->add('reports/summary_payments', 'Reports::summary_payments');
 
 $routes->add('reports/summary_expenses_categories/(:any)/(:any)/(:any)', 'Reports::summary_expenses_categories/$1/$2/$3');
 $routes->add('reports/summary_expenses_categories', 'Reports::summary_expenses_categories');

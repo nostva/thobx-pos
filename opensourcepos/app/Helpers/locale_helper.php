@@ -227,6 +227,8 @@ function get_payment_options(): array
 
     $payments[lang('Sales.due')] = lang('Sales.due');
     $payments[lang('Sales.check')] = lang('Sales.check');
+    $payments[lang('Sales.tabby')] = lang('Sales.tabby');
+    $payments[lang('Sales.tamara')] = lang('Sales.tamara');
 
     // If India (list of country codes include India) then include Unified Payment Interface
     if (stripos($config['country_codes'], 'IN') !== false) {
