@@ -328,4 +328,6 @@ return [
     "wholesale_markup" => "",
     "work_order_enable" => "تفعيل طلبات العمل",
     "work_order_format" => "شكل طلبات العمل",
+    "qz_enable" => "تفعيل QZ",
+    "qz_printer_name" => "اسم طابعة QZ"
 ];

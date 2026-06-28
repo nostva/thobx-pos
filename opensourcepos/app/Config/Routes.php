@@ -93,3 +93,6 @@ $routes->add('reports/specific_discounts/(:any)/(:any)/(:any)/(:any)/(:any)', 'R
 $routes->add('reports/specific_suppliers', 'Reports::specific_suppliers'); // Changed from input
 $routes->add('reports/specific_suppliers/(:any)/(:any)/(:any)/(:any)', 'Reports::specific_suppliers/$1/$2/$3/$4');
 
+$routes->get('qz/cert', 'Qz::cert');
+$routes->get('qz/sign', 'Qz::sign');
+

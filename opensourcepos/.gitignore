@@ -84,4 +84,7 @@ auth.json
 /writable/logs/*.log
 /writable/debugbar/*.json
 /writable/cache/settings
+/writable/qz/*.txt
+/writable/qz/*.pem
+/writable/qz/*.p12
 /.env.bak

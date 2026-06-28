@@ -112,6 +112,10 @@ class ContentSecurityPolicy extends BaseConfig
     public $connectSrc = [
         'self',
         'nominatim.openstreetmap.org',
+        'ws://localhost:*',
+        'wss://localhost:*',
+        'ws://localhost.qz.io:*',
+        'wss://localhost.qz.io:*',
     ];
 
     /**

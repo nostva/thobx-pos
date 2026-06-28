@@ -31,10 +31,10 @@ if (isset($error_message)) {
 
 <?php if (!empty($customer_email)): ?>
     <script type="text/javascript">
-        $(document).ready(function() {
-            var send_email = function() {
+        $(document).ready(function () {
+            var send_email = function () {
                 $.get('<?= site_url() . "sales/sendPdf/$sale_id_num" ?>',
-                    function(response) {
+                    function (response) {
                         $.notify({
                             message: response.message
                         }, {
@@ -57,7 +57,8 @@ if (isset($error_message)) {
 
 <div class="print_hide" id="control_buttons" style="text-align: right;">
     <a href="javascript:printdoc();">
-        <div class="btn btn-info btn-sm" id="show_print_button"><?= '<span class="glyphicon glyphicon-print">&nbsp;</span>' . lang('Common.print') ?></div>
+        <div class="btn btn-info btn-sm" id="show_print_button">
+            <?= '<span class="glyphicon glyphicon-print">&nbsp;</span>' . lang('Common.print') ?></div>
     </a>
     <?php
     /* This line will allow to print and go back to sales automatically.
@@ -66,7 +67,8 @@ if (isset($error_message)) {
     ?>
     <?php if (isset($customer_email) && !empty($customer_email)): ?>
         <a href="javascript:void(0);">
-            <div class="btn btn-info btn-sm" id="show_email_button"><?= '<span class="glyphicon glyphicon-envelope">&nbsp;</span>' . lang('Sales.send_invoice') ?></div>
+            <div class="btn btn-info btn-sm" id="show_email_button">
+                <?= '<span class="glyphicon glyphicon-envelope">&nbsp;</span>' . lang('Sales.send_invoice') ?></div>
         </a>
     <?php endif; ?>
     <?= anchor("sales", '<span class="glyphicon glyphicon-shopping-cart">&nbsp;</span>' . lang('Sales.register'), ['class' => 'btn btn-info btn-sm', 'id' => 'show_sales_button']) ?>
@@ -118,7 +120,7 @@ if (isset($error_message)) {
             $invoice_columns = 6;
             if ($include_hsn) {
                 $invoice_columns += 1;
-            ?>
+                ?>
                 <th><?= lang('Sales.hsn') ?></th>
             <?php } ?>
             <th><?= lang('Sales.item_name') ?></th>
@@ -128,7 +130,7 @@ if (isset($error_message)) {
             <?php
             if ($discount > 0) {
                 $invoice_columns += 1;
-            ?>
+                ?>
                 <th><?= lang('Sales.customer_discount') ?></th>
             <?php } ?>
             <th><?= lang('Sales.total') ?></th>
@@ -137,16 +139,20 @@ if (isset($error_message)) {
         <?php
         foreach ($cart as $line => $item) {
             if ($item['print_option'] == PRINT_YES) {
-        ?>
+                ?>
                 <tr class="item-row">
                     <td><?= esc($item['item_number']) ?></td>
                     <?php if ($include_hsn): ?>
                         <td style="text-align: center;"><?= esc($item['hsn_code']) ?></td>
                     <?php endif; ?>
-                    <td class="item-name"><?= ($item['is_serialized'] || $item['allow_alt_description']) && !empty($item['description']) ? $item['description'] : $item['name'] . ' ' . $item['attribute_values'] ?></td>
+                    <td class="item-name">
+                        <?= ($item['is_serialized'] || $item['allow_alt_description']) && !empty($item['description']) ? $item['description'] : $item['name'] . ' ' . $item['attribute_values'] ?>
+                    </td>
                     <td style="text-align: center;"><?= to_quantity_decimals($item['quantity']) ?></td>
                     <td><?= to_currency($item['price']) ?></td>
-                    <td style="height: center;"><?= ($item['discount_type'] == FIXED) ? to_currency($item['discount']) : to_decimals($item['discount']) . '%' ?></td>
+                    <td style="height: center;">
+                        <?= ($item['discount_type'] == FIXED) ? to_currency($item['discount']) : to_decimals($item['discount']) . '%' ?>
+                    </td>
                     <?php if ($discount > 0): ?>
                         <td style="text-align: center;"><?= to_currency($item['discounted_total'] / $item['quantity']) ?></td>
                     <?php endif; ?>
@@ -155,9 +161,11 @@ if (isset($error_message)) {
                 <?php if ($item['is_serialized']) { ?>
                     <tr class="item-row">
                         <td class="item-description" colspan="<?= $invoice_columns - 1 ?>"></td>
-                        <td style="text-align: center;"><?= $item['serialnumber']    // TODO: serialnumber does not match variable naming conventions for this project ?></td>
+                        <td style="text-align: center;">
+                            <?= $item['serialnumber']    // TODO: serialnumber does not match variable naming conventions for this project ?>
+                        </td>
                     </tr>
-        <?php
+                    <?php
                 }
             }
         }
@@ -176,7 +184,7 @@ if (isset($error_message)) {
         <?php foreach ($taxes as $tax_group_index => $tax) { ?>
             <tr>
                 <td colspan="<?= $invoice_columns - 3 ?>" class="blank"> </td>
-                <td colspan="2" class="total-line"><?= (float)$tax['tax_rate'] . '% ' . $tax['tax_group'] ?></td>
+                <td colspan="2" class="total-line"><?= (float) $tax['tax_rate'] . '% ' . $tax['tax_group'] ?></td>
                 <td class="total-value" id="taxes"><?= to_currency_tax($tax['sale_tax_amount']) ?></td>
             </tr>
         <?php } ?>
@@ -194,7 +202,7 @@ if (isset($error_message)) {
             $only_sale_check |= $payment['payment_type'] == lang('Sales.check');
             $splitpayment = explode(':', $payment['payment_type']);    // TODO: $splitpayment does not meet variable naming standards for this project
             $show_giftcard_remainder |= $splitpayment[0] == lang('Sales.giftcard');
-        ?>
+            ?>
             <tr>
                 <td colspan="<?= $invoice_columns - 3 ?>" class="blank"> </td>
                 <td colspan="2" class="total-line"><?= $splitpayment[0] ?></td>
@@ -213,7 +221,9 @@ if (isset($error_message)) {
         <?php if (!empty($payments)) { ?>
             <tr>
                 <td colspan="<?= $invoice_columns - 3 ?>" class="blank"> </td>
-                <td colspan="2" class="total-line"><?= lang($amount_change >= 0 ? ($only_sale_check ? 'Sales.check_balance' : 'Sales.change_due') : 'Sales.amount_due') ?></td>
+                <td colspan="2" class="total-line">
+                    <?= lang($amount_change >= 0 ? ($only_sale_check ? 'Sales.check_balance' : 'Sales.change_due') : 'Sales.amount_due') ?>
+                </td>
                 <td class="total-value" id="change"><?= to_currency($amount_change) ?></td>
             </tr>
         <?php } ?>
@@ -224,7 +234,8 @@ if (isset($error_message)) {
         <div id="sale_return_policy">
             <h5>
                 <span><?= nl2br(esc($config['payment_message'])) ?></span>
-                <span style="padding: 4%;"><?= empty($comments) ? esc($config['invoice_default_comments']) : lang('Sales.comments') . ': ' . esc($comments) ?></span>
+                <span
+                    style="padding: 4%;"><?= empty($comments) ? esc($config['invoice_default_comments']) : lang('Sales.comments') . ': ' . esc($comments) ?></span>
             </h5>
             <div style="padding: 2%;"><?= nl2br(esc($config['return_policy'])) ?></div>
         </div>
@@ -233,17 +244,17 @@ if (isset($error_message)) {
             <?= $sale_id ?>
         </div>
     </div>
-    </div>
+
+    <?php
+    if (isset($thobe_detail) && !empty($thobe_detail) && isset($config['thobe_detail_print']) && $config['thobe_detail_print']) {
+        echo view('sales/thobe_detail_print');
+    }
+    ?>
 </div>
 
-<?php 
-if (isset($thobe_detail) && !empty($thobe_detail) && isset($config['thobe_detail_print']) && $config['thobe_detail_print']) {
-    echo view('sales/thobe_detail_print');
-}
-?>
 
 <script type="text/javascript">
-    $(window).on("load", function() {
+    $(window).on("load", function () {
         // Install firefox addon in order to use this plugin
         if (window.jsPrintSetup) {
             <?php if (!$config['print_header']) { ?>

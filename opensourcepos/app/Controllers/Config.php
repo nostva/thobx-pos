@@ -912,7 +912,10 @@ class Config extends Secure_Controller
             'print_top_margin' => $this->request->getPost('print_top_margin', FILTER_SANITIZE_NUMBER_INT),
             'print_left_margin' => $this->request->getPost('print_left_margin', FILTER_SANITIZE_NUMBER_INT),
             'print_bottom_margin' => $this->request->getPost('print_bottom_margin', FILTER_SANITIZE_NUMBER_INT),
-            'print_right_margin' => $this->request->getPost('print_right_margin', FILTER_SANITIZE_NUMBER_INT)
+            'print_right_margin' => $this->request->getPost('print_right_margin', FILTER_SANITIZE_NUMBER_INT),
+            'qz_enable' => $this->request->getPost('qz_enable') != null,
+            'qz_printer_name' => $this->request->getPost('qz_printer_name'),
+
         ];
 
         $success = $this->appconfig->batch_save($batch_save_data);
@@ -1030,15 +1033,15 @@ class Config extends Secure_Controller
             echo json_encode(['success' => false, 'message' => 'Failed to save group.']);
             return;
         }
-        
+
         $real_group_id = ($id === -1) ? $saved_id : $id;
-        
+
         // Process deleted values
         $deleted_values = $this->request->getPost('deleted_values') ?? [];
         foreach ($deleted_values as $val_id) {
             model(\App\Models\Thobe_option::class)->delete_value((int) $val_id);
         }
-        
+
         // Process existing values update
         $existing_values = $this->request->getPost('values') ?? [];
         foreach ($existing_values as $val_id => $val_data) {
@@ -1062,7 +1065,7 @@ class Config extends Secure_Controller
                 model(\App\Models\Thobe_option::class)->save_value($update_data, (int) $val_id);
             }
         }
-        
+
         // Process new values
         $new_values = $this->request->getPost('new_values') ?? [];
         foreach ($new_values as $idx => $val_data) {

@@ -328,4 +328,6 @@ return [
     "wholesale_markup" => "",
     "work_order_enable" => "Work Order Support",
     "work_order_format" => "Work Order Format",
+    "qz_enable" => "QZ Enable",
+    "qz_printer_name" => "QZ Printer Name"
 ];
